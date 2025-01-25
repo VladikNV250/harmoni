@@ -1,0 +1,42 @@
+.dragdown-menu {
+    width: 100%;
+    max-height: 60vh;
+    border-radius: 10px 10px 0 0;
+    backdrop-filter: blur(100px);
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    z-index: 11;
+    animation: slideDown 300ms ease-in-out;
+    &.opened { 
+        animation: slideUp 300ms ease-in-out;
+        bottom: 0;
+    }
+    &.dark { background: rgba($color: #202020, $alpha: 0.3); }
+    &.light { background: rgba($color: #202020, $alpha: 0.3); }
+}
+
+.drag-handle {
+    margin: 9px auto 0;
+    width: 43px;
+    height: 4px;
+    background: #585858;
+    border-radius: 34px;
+    cursor: grab;
+}
+
+@keyframes slideUp {
+    from {
+        bottom: -100%;
+    } to {
+        bottom: 0;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        bottom: 0;
+    } to {
+        bottom: -100%;
+    }
+}

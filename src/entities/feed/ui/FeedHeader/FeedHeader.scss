@@ -1,0 +1,48 @@
+.feed-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .menu-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 30px 20px;
+
+        .menu-button {
+            max-width: 100%;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            text-align: left;
+            color: var(--fg-secondary);
+
+            .button-icon { min-width: 40px; }
+
+            &:hover { color: var(--fg-primary); }
+        }        
+    }
+
+    .feed-name { color: var(--fg-primary); }
+
+    .catalogue-actions {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        .catalogue-button {
+            color: var(--fg-secondary);
+            
+            &:disabled { opacity: 0.5; }
+            &:hover { color: var(--fg-primary); }
+            &:disabled:hover { 
+                cursor: default;
+                color: var(--fg-secondary); 
+            }
+
+            &:nth-child(1) { display: none; }
+            &:nth-child(2) { display: none; }
+        }
+    }   
+}

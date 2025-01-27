@@ -10,3 +10,13 @@ export const selectArtists = createSelector(
     selectBase,
     (state: IArtistState) => state.artists,
 )
+
+export const selectArtistLoading = createSelector(
+    selectBase,
+    (state: IArtistState) => state.loading,
+)
+
+export const selectArtistError = createSelector(
+    selectBase,
+    (state: IArtistState) => state.error,
+)

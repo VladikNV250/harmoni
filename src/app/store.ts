@@ -1,10 +1,11 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { albumReducer } from "entities/album";
 import { artistReducer } from "entities/artist";
-import { audiobookReducer } from "entities/audiobook";
+import { episodeReducer } from "entities/episode";
 import { feedReducer } from "entities/feed";
 import { playlistReducer } from "entities/playlist";
-import { podcastReducer } from "entities/podcast";
+import { showReducer } from "entities/show";
+import { trackReducer } from "entities/track";
 import { userReducer } from "entities/user";
 import { 
     FLUSH,
@@ -21,17 +22,18 @@ import storage from 'redux-persist/lib/storage'
 const rootReducer = combineReducers({
     feed: feedReducer,    
     playlist: playlistReducer,
+    track: trackReducer,
     artist: artistReducer,
-    audiobook: audiobookReducer,
-    podcast: podcastReducer,
     album: albumReducer,
+    show: showReducer,
+    episode: episodeReducer,
     user: userReducer,
 })
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ["feed"],
+    // whitelist: ["feed"],
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

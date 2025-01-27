@@ -1,4 +1,4 @@
 export interface IColor {
-    color: string,
-    count: number,
+    readonly color: string,
+    readonly count: number,
 }

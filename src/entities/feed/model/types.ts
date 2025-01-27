@@ -6,5 +6,5 @@ export interface IFeed {
     isPined: boolean,
     name: string,
     isHidden: boolean,
-    itemType: "playlist" | "artist" | "podcast" | "audiobook" | "album",
+    itemType: "album"| "artist" | "playlist" | "show" | "episode",
 }

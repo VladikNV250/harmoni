@@ -1,10 +1,7 @@
+import { IAlbum, RejectedDataType } from "shared/types";
+
 export interface IAlbumState {
     albums: IAlbum[];
-}
-
-export interface IAlbum {
-    type: "album"
-    name: string,
-    preview: string,
-    author: string,
+    loading: boolean,
+    error: RejectedDataType | null;
 }

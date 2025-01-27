@@ -52,16 +52,16 @@ const initialState: IFeedState = {
             itemType: "playlist",
         },
         {
-            name: "Audiobooks For You",
-            isPined: false,
-            isHidden: false,
-            itemType: "audiobook",
-        },
-        {
             name: "Spotify Original Podcasts",
             isPined: false,
             isHidden: false,
-            itemType: "podcast",
+            itemType: "show",
+        },
+        {
+            name: "Episodes For You",
+            isPined: false,
+            isHidden: false,
+            itemType: "episode",
         },
         {
             name: "Your Top Mixes",

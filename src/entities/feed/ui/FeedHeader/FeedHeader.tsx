@@ -7,15 +7,11 @@ import More from "shared/assets/icons/more-big.svg?react";
 import Hide from "shared/assets/icons/hide-big.svg?react";
 import Pin from "shared/assets/icons/pin-big.svg?react";
 import "./FeedHeader.scss";
-import { IPlaylist } from "entities/playlist";
-import { IArtist } from "entities/artist";
-import { IPodcast } from "entities/podcast";
-import { IAudiobook } from "entities/audiobook";
-import { IAlbum } from "entities/album";
+import { IAlbum, IArtist, IEpisode, IPlaylist, IShow } from "shared/types";
 
 interface IFeedHeader {
     feed: IFeed;
-    list: (IPlaylist | IArtist | IPodcast | IAudiobook | IAlbum)[]
+    list: (IPlaylist | IArtist | IShow | IAlbum | IEpisode)[]
 }
 
 export const FeedHeader: FC<IFeedHeader> = ({ feed }) => {

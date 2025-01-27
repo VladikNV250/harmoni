@@ -1,33 +1,21 @@
 import { FC } from "react";
 import { FeedHeader, IFeed } from "entities/feed";
-import { IPlaylist, PlaylistCard } from "entities/playlist";
-import "./Catalogue.scss";
 import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/scss/alice-carousel.scss"
-import { ArtistCard, IArtist } from "entities/artist";
-import { IPodcast, PodcastCard } from "entities/podcast";
-import { AudiobookCard, IAudiobook } from "entities/audiobook";
-import { AlbumCard, IAlbum } from "entities/album";
+import { IAlbum, IArtist, IEpisode, IPlaylist, IShow } from "shared/types";
+import { PlaylistCard } from "entities/playlist";
+import { AlbumCard } from "entities/album";
+import { ArtistCard } from "entities/artist";
+import { ShowCard } from "entities/show";
+import "./Catalogue.scss";
+import { EpisodeCard } from "entities/episode";
 
 interface ICatalogue {
     feed: IFeed;
-    list: (IPlaylist | IPodcast | IArtist | IAudiobook | IAlbum)[];
+    list: (IPlaylist | IShow | IArtist | IAlbum | IEpisode)[];
 }
 
 export const Catalogue: FC<ICatalogue> = ({ feed, list }) => {
-
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-    
-    const shuffledItems: 
-        (IPlaylist | IPodcast | IArtist | IAudiobook | IAlbum)[] 
-        = shuffleArray([...list]);
-
     const responsive = {
         0: { items: list.length }
     };
@@ -47,17 +35,17 @@ export const Catalogue: FC<ICatalogue> = ({ feed, list }) => {
                     paddingRight={(list.length - 1) * 9}
                     responsive={responsive}
                 >
-                    {shuffledItems.map((item: IPlaylist | IArtist | IAudiobook | IPodcast | IAlbum, index) => 
+                    {list.map((item: IPlaylist | IArtist | IEpisode | IShow | IAlbum, index) => 
                         item.type === "playlist" ?
                             <PlaylistCard key={index} playlist={item} /> :
                         item.type === "album" ?
                             <AlbumCard key={index} album={item} /> :
                         item.type === "artist" ?
                             <ArtistCard key={index} artist={item} /> :
-                        item.type === "podcast" ?
-                            <PodcastCard key={index} podcast={item} /> :
-                        item.type === "audiobook" &&
-                            <AudiobookCard key={index} audiobook={item} />
+                        item.type === "show" ?
+                            <ShowCard key={index} show={item} /> :
+                        item.type === "episode" && 
+                            <EpisodeCard key={index} episode={item} />
                     )}
                 </AliceCarousel>
             </div>

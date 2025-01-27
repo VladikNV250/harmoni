@@ -1,35 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IAlbumState } from "./types";
-import example11 from "shared/assets/example11.png";
-import example6 from "shared/assets/example6.png";
+import { getAlbum } from "./albumThunk";
 
 const initialState: IAlbumState = {
-    albums: [
-        {
-            type: "album",
-            name: "Black Holes and Revelations",
-            preview: example11,
-            author: "Muse",
-        },
-        {
-            type: "album",
-            name: "Random Access Memories",
-            preview: example6,
-            author: "Daft Punk",
-        },
-        {
-            type: "album",
-            name: "Abbey Road",
-            preview: "",
-            author: "The Beatles",
-        },
-    ]
+    albums: [],
+    loading: false,
+    error: null
 }
 
 export const albumSlice = createSlice({
     name: "album",
     initialState,
     reducers: {},
+    extraReducers: builder =>
+        builder
+            .addCase(getAlbum.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAlbum.fulfilled, (state, action) => {
+                if (!state.albums.find(album => album.id === action.payload.id))
+                    state.albums.push(action.payload);
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(getAlbum.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload ?? null
+            })
 })
 
 export default albumSlice.reducer;

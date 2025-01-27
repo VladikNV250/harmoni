@@ -1,6 +1,6 @@
 export type TIconComponent = React.FunctionComponent<React.SVGProps<SVGSVGElement> & {
-    title?: string;
-    titleId?: string;
-    desc?: string;
-    descId?: string;
+    readonly title?: string;
+    readonly titleId?: string;
+    readonly desc?: string;
+    readonly descId?: string;
 }>

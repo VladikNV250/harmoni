@@ -10,3 +10,13 @@ export const selectAlbums = createSelector(
     selectBase,
     (state: IAlbumState) => state.albums,
 )
+
+export const selectAlbumLoading = createSelector(
+    selectBase,
+    (state: IAlbumState) => state.loading,
+)
+
+export const selectAlbumError = createSelector(
+    selectBase,
+    (state: IAlbumState) => state.error,
+)

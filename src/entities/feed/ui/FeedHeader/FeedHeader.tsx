@@ -10,11 +10,11 @@ import "./FeedHeader.scss";
 import { IAlbum, IArtist, IEpisode, IPlaylist, IShow } from "shared/types";
 
 interface IFeedHeader {
-    feed: IFeed;
+    name: IFeed["name"];
     list: (IPlaylist | IArtist | IShow | IAlbum | IEpisode)[]
 }
 
-export const FeedHeader: FC<IFeedHeader> = ({ feed }) => {
+export const FeedHeader: FC<IFeedHeader> = ({ name }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -31,7 +31,7 @@ export const FeedHeader: FC<IFeedHeader> = ({ feed }) => {
                     </button>
                 </div>
             </DragDownMenu>
-            <Title className="feed-name">{feed.name}</Title>
+            <Title className="feed-name">{name}</Title>
             <div className="catalogue-actions">
                 <button className="catalogue-button" disabled>
                     <ArrowLeft width={40} height={40} className="button-icon" />

@@ -97,6 +97,9 @@ export const ProfilePage: FC = () => {
                     </div>
                 </div> */}
             </div>
+            <button className="button" onClick={() => localStorage.clear()}>
+                Clear Local Storage
+            </button>
             {error && error.messageError}
         </div>
     )

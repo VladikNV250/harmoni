@@ -10,3 +10,13 @@ export const selectFeeds = createSelector(
     selectBase,
     (state: IFeedState) => state.feeds,
 )
+
+export const selectFeedLoading = createSelector(
+    selectBase,
+    (state: IFeedState) => state.loading,
+)
+
+export const selectFeedError = createSelector(
+    selectBase,
+    (state: IFeedState) => state.error,
+)

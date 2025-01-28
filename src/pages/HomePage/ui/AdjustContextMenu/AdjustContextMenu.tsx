@@ -2,7 +2,7 @@ import { Description, DragDownMenu, Paragraph, Switch } from "shared/ui"
 import AddIcon from "shared/assets/icons/add-sample-big.svg?react"
 import { useTheme } from "entities/theme";
 import { FC } from "react";
-import { FeedList, feedSlice } from "entities/feed";
+import { FeedList } from "entities/feed";
 import { useAppDispatch } from "shared/lib";
 import "./AdjustContextMenu.scss";
 
@@ -14,8 +14,6 @@ interface IAdjustContextMenu {
 
 export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setIsOpen }) => {
     const { theme } = useTheme();
-    const dispatch = useAppDispatch();
-    const { addFeed } = feedSlice.actions;
 
     return (
         <DragDownMenu isOpen={isOpen} setIsOpen={setIsOpen} className={theme}>
@@ -25,12 +23,7 @@ export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setI
                 <div className="scroll-container">
                     <button 
                         className="button-select_from_library" 
-                        onClick={() => dispatch(addFeed({
-                            name: "My Playlist",
-                            isHidden: false,
-                            isPined: false,
-                            itemType: "playlist"
-                        }))}>
+                        >
                         <AddIcon width={40} height={40} className="button-icon" />
                         Select from Library
                     </button>

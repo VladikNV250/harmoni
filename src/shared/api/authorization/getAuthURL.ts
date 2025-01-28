@@ -22,7 +22,7 @@ export const getAuthURL = async (): Promise<string> => {
     // scopes += "user-follow-modify "; // Manage who you are following.
     // scopes += "user-follow-read "; // Access your followers and who you are following.
     // scopes += "user-read-playback-position "; // Get an Episodes and Shows
-    // scopes += "user-top-read "; // Read your top artists and content.
+    scopes += "user-top-read "; // Read your top artists and content.
     // scopes += "user-read-recently-played "; // Access your recently played items.
     // scopes += "user-library-modify "; // Manage your saved content.
     // scopes += "user-library-read "; //	Access your saved content.

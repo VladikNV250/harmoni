@@ -5,3 +5,7 @@ export {
     REDIRECT_URI,
     BASIC_AUTH_URL,
 } from "./auth";
+
+export {
+    STANDARD_FEEDS,
+} from "./feeds";

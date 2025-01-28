@@ -3,43 +3,107 @@ import { useTheme } from "entities/theme";
 import { TagItem } from "../TagItem/TagItem";
 import { AdjustContextMenu } from "../AdjustContextMenu/AdjustContextMenu";
 import { RecommendationCard } from "../RecommendationCard/RecommendationCard";
-import { Catalogue } from "widgets/Catalogue";
 import Adjust from "shared/assets/icons/adjust-big.svg?react";
 import clsx from "clsx";
 import { useAppDispatch, useAppSelector } from "shared/lib";
-import { getPlaylist, selectPlaylists } from "entities/playlist";
-import { selectFeeds } from "entities/feed";
-import { getArtist, selectArtists } from "entities/artist";
-import { getAlbum, selectAlbums } from "entities/album";
-import { getShow, selectShows } from "entities/show";
-import { getEpisode, selectEpisodes } from "entities/episode";
-import { getTrack } from "entities/track";
+import { FeedHeader, IFeed, selectFeedLoading, selectFeeds } from "entities/feed";
+import { STANDARD_FEEDS } from "shared/consts";
+import { getFeedAlbums, getFeedArtists, getFeedEpisodes, getFeedPlaylists, getFeedShows, getNewReleases, getUserTopArtists } from "entities/feed/model/feedThunk";
+import AliceCarousel from "react-alice-carousel";
+import { IAlbum } from "shared/api/album";
+import { IShow } from "shared/api/show";
+import { IEpisode } from "shared/api/episode";
+import { IArtist } from "shared/api/artist";
+import { IPlaylist } from "shared/api/playlist";
+import { PlaylistPreview } from "entities/playlist";
+import { AlbumPreview } from "entities/album";
+import { ArtistPreview } from "entities/artist";
+import { ShowPreview } from "entities/show";
+import { EpisodePreview } from "entities/episode";
+import { Loader } from "shared/ui/loaders/loader";
+import "react-alice-carousel/lib/scss/alice-carousel.scss"
 import "./HomePage.scss";
 
 
 export const HomePage: FC = () => {
     const { theme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
-
-    const dispatch = useAppDispatch();
     const feeds = useAppSelector(selectFeeds);
-    const playlists = useAppSelector(selectPlaylists);
-    const artists = useAppSelector(selectArtists);
-    const albums = useAppSelector(selectAlbums);
-    const shows = useAppSelector(selectShows);
-    const episodes = useAppSelector(selectEpisodes);
+    const loading = useAppSelector(selectFeedLoading);
+    const dispatch = useAppDispatch();
+
 
     useEffect(() => {
-        dispatch(getTrack("2kol6tv2jcinBERq425Ahv"))
-        dispatch(getArtist("1PYz5uoK1NSdWERupvt8BR"));
-        dispatch(getAlbum("2zFjd5mjFDv6LKG1wpV9rM"));
-        dispatch(getPlaylist({id: "0l7czkexq5zuu2aWshvsFY"}));
-        dispatch(getShow("4rOoJ6Egrf8K2IrywzwOMk"));
-        dispatch(getEpisode("3wUQy68EVwNjTb0yBOhYm9"));
-    }, [dispatch])
+        dispatch(getNewReleases());
+        STANDARD_FEEDS.forEach(({name, type, ids}) => {
+            switch (type) {
+                case "playlist":
+                    dispatch(getFeedPlaylists({name, ids}));
+                    break;
+                case "show":
+                    dispatch(getFeedShows({name, ids}));
+                    break;
+                case "episode":
+                    dispatch(getFeedEpisodes({name, ids}));
+                    break;
+                case "album":
+                    dispatch(getFeedAlbums({name, ids}));
+                    break;
+                case "artist":
+                    dispatch(getFeedArtists({name, ids}));
+                    break;
+            }
+        })
+        dispatch(getUserTopArtists());
+    }, [dispatch]);
+
+    const renderFeedItems = (items: IFeed["items"]) => {
+        const responsive = {
+            0: { items: items.length }
+        };
+    
+        return (
+            <AliceCarousel 
+                autoWidth
+                disableDotsControls
+                disableButtonsControls
+                mouseTracking
+                paddingRight={(items.length - 1) * 9}
+                responsive={responsive}
+            >
+                {items.map((item: IPlaylist | IArtist | IEpisode | IShow | IAlbum, index) => 
+                    item.type === "playlist" ?
+                        <PlaylistPreview key={index} playlist={item} /> :
+                    item.type === "album" ?
+                        <AlbumPreview key={index} album={item} /> :
+                    item.type === "artist" ?
+                        <ArtistPreview key={index} artist={item} /> :
+                    item.type === "show" ?
+                        <ShowPreview key={index} show={item} /> :
+                    item.type === "episode" && 
+                        <EpisodePreview key={index} episode={item} />
+                )}
+            </AliceCarousel>
+        )
+    }
+
+    const renderFeeds = (feeds: {
+        [key: string]: IFeed,
+    }) => {
+        return Object.keys(feeds)?.map(feedName => 
+            <div className="catalogue" key={feedName}>
+                <FeedHeader 
+                    name={feedName}
+                    list={feeds[feedName].items}
+                />
+                {renderFeedItems(feeds[feedName].items)}
+            </div>
+        )
+    }
 
     return (
         <div className="home">
+            <Loader loading={loading} />
             <AdjustContextMenu isOpen={isOpen} setIsOpen={setIsOpen} />
             <div className="filter-bar">
                 <div className={clsx("tags-container", theme)}>
@@ -76,39 +140,7 @@ export const HomePage: FC = () => {
                 />
             </div>
             <div className="catalogues-container">
-                {feeds.map((feed, index) => 
-                    feed.itemType === "playlist" ?
-                        <Catalogue
-                            key={index} 
-                            feed={feed}
-                            list={playlists}
-                        /> :
-                    feed.itemType === "album" ?
-                        <Catalogue
-                            key={index} 
-                            feed={feed}
-                            list={albums}
-                        /> :
-                    feed.itemType === "artist" ?
-                        <Catalogue
-                            key={index} 
-                            feed={feed}
-                            list={artists}
-                        /> :
-                    feed.itemType === "show" ?
-                        <Catalogue
-                            key={index} 
-                            feed={feed}
-                            list={shows}
-                        /> :
-                    feed.itemType === "episode" &&
-                        <Catalogue
-                            key={index} 
-                            feed={feed}
-                            list={episodes}
-                        />
-
-                )}
+                {renderFeeds(feeds)}
             </div>
             
         </div>

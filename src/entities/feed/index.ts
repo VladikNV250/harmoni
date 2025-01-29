@@ -6,7 +6,8 @@ export type { IFeed } from "./model/types";
 export { 
     selectFeeds,
     selectFeedLoading,
-    selectFeedError
+    selectFeedError,
+    selectFeedUpdate,
 } from "./model/selectors";
 
 export { FeedList } from "./ui/FeedList/FeedList";

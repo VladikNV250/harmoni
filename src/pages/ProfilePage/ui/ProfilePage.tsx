@@ -9,12 +9,16 @@ import Share from "shared/assets/icons/share-big.svg?react";
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
 import AddFriend from "shared/assets/icons/add-friend-big.svg?react";
 import Playing from "shared/assets/icons/playing-big.svg?react";
+import { feedSlice, selectFeedUpdate } from "entities/feed";
+import { Loader } from "shared/ui/loaders/loader";
 
 export const ProfilePage: FC = () => {
     const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
     const loading = useAppSelector(selectUserLoading);
     const error = useAppSelector(selectUserError);
+    const updateAfterEveryReload = useAppSelector(selectFeedUpdate);
+    const { setUpdateAfterEveryReload } = feedSlice.actions;
 
     useEffect(() => {
         dispatch(getUserInfo());
@@ -22,7 +26,7 @@ export const ProfilePage: FC = () => {
 
     return (
         <div className="profile">
-            {loading && "Loading..."}
+            <Loader loading={loading} />
             {user &&
             <div className="user-info">
                 <img src={user.images[0]?.url ?? placeholderProfileImage} className="user-avatar" />
@@ -99,6 +103,9 @@ export const ProfilePage: FC = () => {
             </div>
             <button className="button" onClick={() => localStorage.clear()}>
                 Clear Local Storage
+            </button>
+            <button className="button" onClick={() => dispatch(setUpdateAfterEveryReload(!updateAfterEveryReload))}>
+                Update After Every Reload {`${updateAfterEveryReload}`}
             </button>
             {error && error.messageError}
         </div>

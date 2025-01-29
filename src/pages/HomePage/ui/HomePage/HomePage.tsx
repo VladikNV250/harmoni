@@ -6,9 +6,23 @@ import { RecommendationCard } from "../RecommendationCard/RecommendationCard";
 import Adjust from "shared/assets/icons/adjust-big.svg?react";
 import clsx from "clsx";
 import { useAppDispatch, useAppSelector } from "shared/lib";
-import { FeedHeader, IFeed, selectFeedLoading, selectFeeds } from "entities/feed";
+import { 
+    FeedHeader, 
+    IFeed, 
+    selectFeedLoading, 
+    selectFeeds, 
+    selectFeedUpdate 
+} from "entities/feed";
 import { STANDARD_FEEDS } from "shared/consts";
-import { getFeedAlbums, getFeedArtists, getFeedEpisodes, getFeedPlaylists, getFeedShows, getNewReleases, getUserTopArtists } from "entities/feed/model/feedThunk";
+import { 
+    getFeedAlbums, 
+    getFeedArtists, 
+    getFeedEpisodes, 
+    getFeedPlaylists, 
+    getFeedShows, 
+    getNewReleases, 
+    getUserTopArtists 
+} from "entities/feed/model/feedThunk";
 import AliceCarousel from "react-alice-carousel";
 import { IAlbum } from "shared/api/album";
 import { IShow } from "shared/api/show";
@@ -29,32 +43,36 @@ export const HomePage: FC = () => {
     const { theme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
     const feeds = useAppSelector(selectFeeds);
+    const updateAfterEveryReload = useAppSelector(selectFeedUpdate);
     const loading = useAppSelector(selectFeedLoading);
     const dispatch = useAppDispatch();
 
 
     useEffect(() => {
-        dispatch(getNewReleases());
-        STANDARD_FEEDS.forEach(({name, type, ids}) => {
-            switch (type) {
-                case "playlist":
-                    dispatch(getFeedPlaylists({name, ids}));
-                    break;
-                case "show":
-                    dispatch(getFeedShows({name, ids}));
-                    break;
-                case "episode":
-                    dispatch(getFeedEpisodes({name, ids}));
-                    break;
-                case "album":
-                    dispatch(getFeedAlbums({name, ids}));
-                    break;
-                case "artist":
-                    dispatch(getFeedArtists({name, ids}));
-                    break;
-            }
-        })
-        dispatch(getUserTopArtists());
+        if (updateAfterEveryReload || Object.keys(feeds).length === 0) { // get fresh feeds after every reload or if feeds store is empty
+            dispatch(getNewReleases({name: "New Releases", order: -1}));
+            STANDARD_FEEDS.forEach(({name, type, ids, order, hidden}) => {
+                switch (type) {
+                    case "playlist":
+                        dispatch(getFeedPlaylists({name, ids, order, hidden}));
+                        break;
+                    case "show":
+                        dispatch(getFeedShows({name, ids, order, hidden}));
+                        break;
+                    case "episode":
+                        dispatch(getFeedEpisodes({name, ids, order, hidden}));
+                        break;
+                    case "album":
+                        dispatch(getFeedAlbums({name, ids, order, hidden}));
+                        break;
+                    case "artist":
+                        dispatch(getFeedArtists({name, ids, order, hidden}));
+                        break;
+                }
+            })
+            dispatch(getUserTopArtists({name: "Your Top Artists", order: -2}));
+        }
+        
     }, [dispatch]);
 
     const renderFeedItems = (items: IFeed["items"]) => {
@@ -91,7 +109,8 @@ export const HomePage: FC = () => {
         [key: string]: IFeed,
     }) => {
         return Object.keys(feeds)?.map(feedName => 
-            <div className="catalogue" key={feedName}>
+            (feeds[feedName].items.length > 0 && !feeds[feedName].hidden.isHidden) &&
+            <div className="catalogue" key={feedName} style={{order: feeds[feedName].order}}>
                 <FeedHeader 
                     name={feedName}
                     list={feeds[feedName].items}
@@ -142,7 +161,6 @@ export const HomePage: FC = () => {
             <div className="catalogues-container">
                 {renderFeeds(feeds)}
             </div>
-            
         </div>
     )
 }

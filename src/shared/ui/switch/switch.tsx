@@ -9,10 +9,16 @@ interface ISwitch {
 }
 
 export const Switch: FC<ISwitch> = ({ active = false, setActive }) => {
+
     return (
         <label className="switch" onClick={() => setActive?.(!active)}>
-            <input type="checkbox" defaultChecked={active} />
-            <div className="slider" />
+            <input 
+                type="checkbox" 
+                checked={active} 
+                onClick={(e) => e.stopPropagation()} 
+                readOnly
+            />
+            <div className="slider"/>
         </label>
     )
 }

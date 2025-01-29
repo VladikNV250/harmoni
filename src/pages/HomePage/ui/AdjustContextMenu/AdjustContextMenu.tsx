@@ -1,19 +1,25 @@
 import { Description, DragDownMenu, Paragraph, Switch } from "shared/ui"
 import AddIcon from "shared/assets/icons/add-sample-big.svg?react"
 import { useTheme } from "entities/theme";
-import { FC } from "react";
-import { FeedList } from "entities/feed";
+import { FC, useEffect, useState } from "react";
+import { FeedList, feedSlice } from "entities/feed";
 import { useAppDispatch } from "shared/lib";
 import "./AdjustContextMenu.scss";
 
 interface IAdjustContextMenu {
     readonly isOpen?: boolean;
-    
     readonly setIsOpen?: (isOpen: boolean) => void;
 }
 
 export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setIsOpen }) => {
     const { theme } = useTheme();
+    const [active, setActive] = useState(true);
+    const dispatch = useAppDispatch();
+    const { hideRecommendedFeeds } = feedSlice.actions;
+
+    useEffect(() => {
+        dispatch(hideRecommendedFeeds(!active))
+    }, [active, dispatch, hideRecommendedFeeds])
 
     return (
         <DragDownMenu isOpen={isOpen} setIsOpen={setIsOpen} className={theme}>
@@ -32,7 +38,10 @@ export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setI
                         <Description className="allow-recommendation-rows-text">
                             Allow Recommendation Rows
                         </Description>
-                        <Switch active={true} />
+                        <Switch 
+                            active={active}
+                            setActive={setActive} 
+                        />
                     </div>
                 </div>
                 

@@ -8,6 +8,8 @@ import Hide from "shared/assets/icons/hide-big.svg?react";
 import Pin from "shared/assets/icons/pin-big.svg?react";
 import "./FeedHeader.scss";
 import { IAlbum, IArtist, IEpisode, IPlaylist, IShow } from "shared/types";
+import { useAppDispatch } from "shared/lib";
+import { feedSlice } from "entities/feed/model/feedSlice";
 
 interface IFeedHeader {
     name: IFeed["name"];
@@ -16,16 +18,18 @@ interface IFeedHeader {
 
 export const FeedHeader: FC<IFeedHeader> = ({ name }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const dispatch = useAppDispatch();
+    const { pinFeed, hideFeed } = feedSlice.actions;
 
     return (
         <header className="feed-header">
             <DragDownMenu isOpen={isOpen} setIsOpen={setIsOpen}>
                 <div className="menu-content">
-                    <button className="menu-button">
+                    <button className="menu-button" onClick={() => dispatch(pinFeed(name))}>
                         <Pin width={40} height={40} className="button-icon" />
                         <Paragraph>Pin to Home</Paragraph>
                     </button>
-                    <button className="menu-button">
+                    <button className="menu-button" onClick={() => dispatch(hideFeed(name))}>
                         <Hide width={40} height={40} className="button-icon" />
                         <Paragraph>Hide this section</Paragraph>
                     </button>

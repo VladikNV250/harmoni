@@ -10,14 +10,19 @@ import { fetchUserTopArtists } from "shared/api/user";
 
 export const getFeedPlaylists = createAsyncThunk<
     IFeed,
-    {name: string, ids: string[]},
+    {name: string, ids: string[], order?: number, hidden?: boolean},
     { readonly rejectValue: RejectedDataType }
->("feed/getFeedPlaylists", async ({name, ids}, thunkAPI) => {
+>("feed/getFeedPlaylists", async ({name, ids, order = 0, hidden}, thunkAPI) => {
     try {
         const response = await fetchSeveralPlaylists(ids);
         return {
             name, 
             items: response,
+            hidden: {
+                isHidden: hidden ?? false,
+                locked: false,
+            },
+            order: order,
         };
     } catch (e: unknown) {
         const knownError = e as ErrorType;
@@ -31,14 +36,19 @@ export const getFeedPlaylists = createAsyncThunk<
 
 export const getFeedAlbums = createAsyncThunk<
     IFeed,
-    {name: string, ids: string[]},
+    {name: string, ids: string[], order?: number, hidden?: boolean},
     { readonly rejectValue: RejectedDataType }
->("feed/getFeedAlbums", async ({name, ids}, thunkAPI) => {
+>("feed/getFeedAlbums", async ({name, ids, order = 0, hidden}, thunkAPI) => {
     try {
         const response = await fetchSeveralAlbums(ids);
         return {
             name, 
-            items: response.albums
+            items: response.albums,
+            hidden: {
+                isHidden: hidden ?? false,
+                locked: false,
+            },
+            order: order,
         };
     } catch (e: unknown) {
         const knownError = e as ErrorType;
@@ -52,14 +62,19 @@ export const getFeedAlbums = createAsyncThunk<
 
 export const getFeedArtists = createAsyncThunk<
     IFeed,
-    {name: string, ids: string[]},
+    {name: string, ids: string[], order?: number, hidden?: boolean},
     { readonly rejectValue: RejectedDataType }
->("feed/getFeedArtists", async ({name, ids}, thunkAPI) => {
+>("feed/getFeedArtists", async ({name, ids, order = 0, hidden}, thunkAPI) => {
     try {
         const response = await fetchSeveralArtists(ids);
         return {
             name, 
-            items: response.artists
+            items: response.artists,
+            hidden: {
+                isHidden: hidden ?? false,
+                locked: false,
+            },
+            order: order,
         };
     } catch (e: unknown) {
         const knownError = e as ErrorType;
@@ -73,14 +88,19 @@ export const getFeedArtists = createAsyncThunk<
 
 export const getFeedShows = createAsyncThunk<
     IFeed,
-    {name: string, ids: string[]},
+    {name: string, ids: string[], order?: number, hidden?: boolean},
     { readonly rejectValue: RejectedDataType }
->("feed/getFeedShows", async ({name, ids}, thunkAPI) => {
+>("feed/getFeedShows", async ({name, ids, order = 0, hidden}, thunkAPI) => {
     try {
         const response = await fetchSeveralShows(ids);
         return {
             name, 
-            items: response.shows
+            items: response.shows,
+            hidden: {
+                isHidden: hidden ?? false,
+                locked: false,
+            },
+            order: order,
         };
     } catch (e: unknown) {
         const knownError = e as ErrorType;
@@ -94,14 +114,19 @@ export const getFeedShows = createAsyncThunk<
 
 export const getFeedEpisodes = createAsyncThunk<
     IFeed,
-    {name: string, ids: string[]},
+    {name: string, ids: string[], order?: number, hidden?: boolean},
     { readonly rejectValue: RejectedDataType }
->("feed/getFeedEpisodes", async ({name, ids}, thunkAPI) => {
+>("feed/getFeedEpisodes", async ({name, ids, order = 0, hidden}, thunkAPI) => {
     try {
         const response = await fetchSeveralEpisodes(ids);
         return {
             name, 
-            items: response.episodes
+            items: response.episodes,
+            hidden: {
+                isHidden: hidden ?? false,
+                locked: false,
+            },
+            order: order,
         };
     } catch (e: unknown) {
         const knownError = e as ErrorType;
@@ -115,15 +140,20 @@ export const getFeedEpisodes = createAsyncThunk<
 
 export const getNewReleases = createAsyncThunk<
     IFeed,
-    void,
+    {name: string, order?: number, hidden?: boolean},
     { readonly rejectValue: RejectedDataType }
->("feed/getNewReleases", async (_, thunkAPI) => {
+>("feed/getNewReleases", async ({name, order = 0, hidden}, thunkAPI) => {
     try {
         const response = await fetchNewReleases();
         
         return {
-            name: "New Releases", 
-            items: response.albums.items as IAlbum[]
+            name, 
+            items: response.albums.items as IAlbum[],
+            hidden: {
+                isHidden: hidden ?? false,
+                locked: false,
+            },
+            order: order,
         };
     } catch (e: unknown) {
         const knownError = e as ErrorType;
@@ -137,15 +167,20 @@ export const getNewReleases = createAsyncThunk<
 
 export const getUserTopArtists = createAsyncThunk<
     IFeed,
-    void,
+    {name: string, order?: number, hidden?: boolean},
     { readonly rejectValue: RejectedDataType }
->("feed/getUserTopArtists", async (_, thunkAPI) => {
+>("feed/getUserTopArtists", async ({name, order = 0, hidden}, thunkAPI) => {
     try {
         const response = await fetchUserTopArtists();
         
         return {
-            name: "Your Top Artists", 
+            name, 
             items: response.items,
+            hidden: {
+                isHidden: hidden ?? false,
+                locked: false,
+            },
+            order: order,
         };
     } catch (e: unknown) {
         const knownError = e as ErrorType;

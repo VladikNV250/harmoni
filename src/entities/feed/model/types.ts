@@ -11,6 +11,7 @@ export interface IFeedState {
     };
     loading: boolean,
     error: RejectedDataType | null,
+    updateAfterEveryReload: boolean,
 }
 
 export interface IFeed {
@@ -22,4 +23,9 @@ export interface IFeed {
         IShow | 
         IEpisode
     )[],
+    hidden: {
+        isHidden: boolean,
+        locked: boolean,
+    },
+    order: number, // negative order means feed is pinned, positive is unpinned    
 }

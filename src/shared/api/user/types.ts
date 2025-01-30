@@ -1,7 +1,8 @@
 import { IAlbum } from "../album";
 import { IArtist } from "../artist";
+import { ITrack } from "../track";
 
-export interface IUserTopArtists {
+export interface IUserTopItems {
     /** A link to the Web API endpoint returning the full result of the request */
     readonly href: string,
     /** The maximum number of items in the response */
@@ -15,7 +16,7 @@ export interface IUserTopArtists {
     /** The total number of items available to return */
     readonly total: number,
     /** Array of artists */
-    readonly items: IArtist[];
+    readonly items: IArtist[] | ITrack[];
 }
 
 export interface IUserSavedAlbums {

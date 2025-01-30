@@ -8,8 +8,8 @@ import Edit from "shared/assets/icons/edit-big.svg?react";
 import Share from "shared/assets/icons/share-big.svg?react";
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
 import AddFriend from "shared/assets/icons/add-friend-big.svg?react";
-import Playing from "shared/assets/icons/playing-big.svg?react";
-import { feedSlice, selectFeedUpdate } from "entities/feed";
+// import Playing from "shared/assets/icons/playing-big.svg?react";
+import { feedSlice, selectFeedSettings } from "entities/feed";
 import { Loader } from "shared/ui/loaders/loader";
 
 export const ProfilePage: FC = () => {
@@ -17,7 +17,7 @@ export const ProfilePage: FC = () => {
     const user = useAppSelector(selectUser);
     const loading = useAppSelector(selectUserLoading);
     const error = useAppSelector(selectUserError);
-    const updateAfterEveryReload = useAppSelector(selectFeedUpdate);
+    const feedSettings = useAppSelector(selectFeedSettings);
     const { setUpdateAfterEveryReload } = feedSlice.actions;
 
     useEffect(() => {
@@ -104,8 +104,10 @@ export const ProfilePage: FC = () => {
             <button className="button" onClick={() => localStorage.clear()}>
                 Clear Local Storage
             </button>
-            <button className="button" onClick={() => dispatch(setUpdateAfterEveryReload(!updateAfterEveryReload))}>
-                Update After Every Reload {`${updateAfterEveryReload}`}
+            <button 
+                className="button" 
+                onClick={() => dispatch(setUpdateAfterEveryReload(!feedSettings.updateAfterEveryReload))}>
+                Update After Every Reload {`${feedSettings.updateAfterEveryReload}`}
             </button>
             {error && error.messageError}
         </div>

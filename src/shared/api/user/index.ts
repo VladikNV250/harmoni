@@ -1,10 +1,11 @@
 export type {
     ISavedAlbum,
-    IUserTopArtists,
+    IUserTopItems,
     IUserSavedAlbums,
 } from './types';
 
 export {
     fetchUserSavedAlbums,
     fetchUserTopArtists,
+    fetchUserTopTracks,
 } from "./user"

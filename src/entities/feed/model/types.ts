@@ -3,6 +3,7 @@ import { IArtist } from "shared/api/artist";
 import { IEpisode } from "shared/api/episode";
 import { IPlaylist } from "shared/api/playlist";
 import { IShow } from "shared/api/show";
+import { ITrack } from "shared/api/track";
 import { RejectedDataType } from "shared/types";
 
 export interface IFeedState {
@@ -11,7 +12,13 @@ export interface IFeedState {
     };
     loading: boolean,
     error: RejectedDataType | null,
-    updateAfterEveryReload: boolean,
+    userTracks: {
+        items: ITrack[],
+        showForUser: boolean,
+    },
+    settings: {
+        updateAfterEveryReload: boolean,
+    }
 }
 
 export interface IFeed {
@@ -29,3 +36,5 @@ export interface IFeed {
     },
     order: number, // negative order means feed is pinned, positive is unpinned    
 }
+
+export type TFeedFilter = "all" | "music" | "podcasts"

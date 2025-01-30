@@ -1,9 +1,9 @@
+import { FC } from "react";
 import { Description, DragDownMenu, Paragraph, Switch } from "shared/ui"
 import AddIcon from "shared/assets/icons/add-sample-big.svg?react"
 import { useTheme } from "entities/theme";
-import { FC, useEffect, useState } from "react";
-import { FeedList, feedSlice } from "entities/feed";
-import { useAppDispatch } from "shared/lib";
+import { FeedList, feedSlice, selectFeedUserTracks } from "entities/feed";
+import { useAppDispatch, useAppSelector } from "shared/lib";
 import "./AdjustContextMenu.scss";
 
 interface IAdjustContextMenu {
@@ -13,13 +13,9 @@ interface IAdjustContextMenu {
 
 export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setIsOpen }) => {
     const { theme } = useTheme();
-    const [active, setActive] = useState(true);
+    const userTracks = useAppSelector(selectFeedUserTracks);
     const dispatch = useAppDispatch();
-    const { hideRecommendedFeeds } = feedSlice.actions;
-
-    useEffect(() => {
-        dispatch(hideRecommendedFeeds(!active))
-    }, [active, dispatch, hideRecommendedFeeds])
+    const { setShowForUser } = feedSlice.actions;
 
     return (
         <DragDownMenu isOpen={isOpen} setIsOpen={setIsOpen} className={theme}>
@@ -34,13 +30,14 @@ export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setI
                         Select from Library
                     </button>
                     <FeedList />
-                    <div className="allow-recommendation-rows-container">
-                        <Description className="allow-recommendation-rows-text">
-                            Allow Recommendation Rows
+                    <div className="allow-usertracks-container">
+                        <Description className="allow-usertracks-text">
+                            Allow Displaying User Tracks
                         </Description>
                         <Switch 
-                            active={active}
-                            setActive={setActive} 
+                            active={userTracks.showForUser}
+                            setActive={(active: boolean) => dispatch(setShowForUser(active))} 
+                            disabled={userTracks.items.length === 0}
                         />
                     </div>
                 </div>

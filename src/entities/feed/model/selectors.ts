@@ -11,9 +11,14 @@ export const selectFeeds = createSelector(
     (state: IFeedState) => state.feeds,
 )
 
-export const selectFeedUpdate = createSelector(
+export const selectFeedSettings = createSelector(
     selectBase,
-    (state: IFeedState) => state.updateAfterEveryReload,
+    (state: IFeedState) => state.settings,
+)
+
+export const selectFeedUserTracks = createSelector(
+    selectBase,
+    (state: IFeedState) => state.userTracks,
 )
 
 export const selectFeedLoading = createSelector(

@@ -47,27 +47,6 @@
             &:hover .icon { color: var(--fg-primary); }
         }
     }
-    
-    .recommendation-container {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr 1fr;
-        gap: 10px;
-        margin-top: 13px;
-        margin-bottom: 30px;
-    }
-
-    .catalogues-container { 
-        display: flex;
-        flex-direction: column;
-        gap: 30px;
-    }
-    .catalogue {
-        overflow: hidden;    
-        .alice-carousel__stage-item:not(:last-child) { margin-right: 9px; }
-    }
-    
 }
 
 

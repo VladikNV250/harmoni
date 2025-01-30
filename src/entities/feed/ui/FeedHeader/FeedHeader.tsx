@@ -7,13 +7,11 @@ import More from "shared/assets/icons/more-big.svg?react";
 import Hide from "shared/assets/icons/hide-big.svg?react";
 import Pin from "shared/assets/icons/pin-big.svg?react";
 import "./FeedHeader.scss";
-import { IAlbum, IArtist, IEpisode, IPlaylist, IShow } from "shared/types";
 import { useAppDispatch } from "shared/lib";
 import { feedSlice } from "entities/feed/model/feedSlice";
 
 interface IFeedHeader {
     name: IFeed["name"];
-    list: (IPlaylist | IArtist | IShow | IAlbum | IEpisode)[]
 }
 
 export const FeedHeader: FC<IFeedHeader> = ({ name }) => {

@@ -3,10 +3,11 @@ import { IFeed } from "./types";
 import { ErrorType, RejectedDataType } from "shared/types";
 import { fetchSeveralPlaylists } from "shared/api/playlist";
 import { fetchNewReleases, fetchSeveralAlbums, IAlbum } from "shared/api/album";
-import { fetchSeveralArtists } from "shared/api/artist";
+import { fetchSeveralArtists, IArtist } from "shared/api/artist";
 import { fetchSeveralShows } from "shared/api/show";
 import { fetchSeveralEpisodes } from "shared/api/episode";
-import { fetchUserTopArtists } from "shared/api/user";
+import { fetchUserTopArtists, fetchUserTopTracks } from "shared/api/user";
+import { ITrack } from "shared/api/track";
 
 export const getFeedPlaylists = createAsyncThunk<
     IFeed,
@@ -175,13 +176,32 @@ export const getUserTopArtists = createAsyncThunk<
         
         return {
             name, 
-            items: response.items,
+            items: response.items as IArtist[],
             hidden: {
                 isHidden: hidden ?? false,
                 locked: false,
             },
             order: order,
         };
+    } catch (e: unknown) {
+        const knownError = e as ErrorType;
+
+        return thunkAPI.rejectWithValue({
+            messageError: knownError.message,
+            status: knownError.response?.status,
+        })
+    }
+})
+
+export const getUserTopTracks = createAsyncThunk<
+    ITrack[],
+    {limit?: number, offset?: number, time_range?: string},
+    { readonly rejectValue: RejectedDataType }
+>("feed/getUserTopTracks", async (options = {}, thunkAPI) => {
+    try {
+        const response = await fetchUserTopTracks(options);
+        
+        return response.items as ITrack[];
     } catch (e: unknown) {
         const knownError = e as ErrorType;
 

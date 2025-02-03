@@ -1,6 +1,6 @@
 import { apiInstance } from "shared/api/base";
 import { IArtist } from "shared/types";
-import { ISeveralArtists } from "./types";
+import { IArtistAlbums, IArtistTopTracks, ISeveralArtists } from "./types";
 
 const ENDPOINT = "/v1/artists"
 
@@ -16,3 +16,25 @@ export const fetchSeveralArtists = (artistIds: string[]): Promise<ISeveralArtist
     });
 }
 
+export const fetchArtistTopTracks = (artistId: string): Promise<IArtistTopTracks> => {
+    return apiInstance.get(ENDPOINT + `/${artistId}/top-tracks`)
+}
+
+export const fetchArtistAlbums = (
+    artistId: string,
+    params?: {
+        readonly include_groups?: string,
+        readonly market?: string,
+        readonly limit?: number,
+        readonly offset?: number,
+    }
+): Promise<IArtistAlbums> => {
+    return apiInstance.get(ENDPOINT + `/${artistId}/albums`, {
+        params: {
+            include_groups: params?.include_groups || null,
+            market: params?.market || null,
+            limit: params?.limit ?? null,
+            offset: params?.offset ?? null,
+        }
+    });
+}

@@ -3,16 +3,15 @@ import "./ProfilePage.scss";
 import { useAppDispatch, useAppSelector } from "shared/lib";
 import { getUserInfo, selectUser, selectUserError, selectUserLoading,  } from "entities/user";
 import placeholderProfileImage from "shared/assets/placeholder/placeholder.jpg";
-import { Description, Paragraph, Subtitle, Text, Title } from "shared/ui";
+import { Description, Loader, Paragraph, Subtitle, Text, Title } from "shared/ui";
 import Edit from "shared/assets/icons/edit-big.svg?react";
 import Share from "shared/assets/icons/share-big.svg?react";
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
 import AddFriend from "shared/assets/icons/add-friend-big.svg?react";
 // import Playing from "shared/assets/icons/playing-big.svg?react";
 import { feedSlice, selectFeedSettings } from "entities/feed";
-import { Loader } from "shared/ui/loaders/loader";
 
-export const ProfilePage: FC = () => {
+const ProfilePage: FC = () => {
     const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
     const loading = useAppSelector(selectUserLoading);
@@ -113,3 +112,5 @@ export const ProfilePage: FC = () => {
         </div>
     )
 }
+
+export default ProfilePage;

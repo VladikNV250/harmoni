@@ -1,0 +1,36 @@
+.tab-list {
+    width: 100%;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    gap: 30px;
+    padding: 0 15px;
+    box-shadow: inset 0px -1px 0px -0.125px var(--fg-secondary);
+    overflow-y: visible;
+    overflow-x: auto;
+    scrollbar-width: 0;
+    &::-webkit-scrollbar { display: none; }
+
+    .tab {
+        position: relative;
+        height: 60px;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+    
+        &.active {
+            border-bottom: 2px solid var(--primary);
+            .tab-name { color: var(--fg-primary); }
+        }
+    
+        &-name { 
+            color: var(--fg-secondary);
+            font-weight: 500; 
+        }
+    }
+}

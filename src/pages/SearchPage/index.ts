@@ -1,1 +1,1 @@
-export { SearchPage } from "./ui/SearchPage";
+export { LazySearchPage as SearchPage } from "./ui/lazy";

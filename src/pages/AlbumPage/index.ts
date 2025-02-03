@@ -1,0 +1,1 @@
+export { LazyAlbumPage as AlbumPage } from "./ui/lazy";

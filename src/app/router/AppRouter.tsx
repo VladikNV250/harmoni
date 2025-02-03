@@ -14,6 +14,11 @@ import {
     Routes
 } from "react-router";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { PlaylistPage } from "pages/PlaylistPage";
+import { AlbumPage } from "pages/AlbumPage";
+import { ArtistPage } from "pages/ArtistPage";
+import { ShowPage } from "pages/ShowPage";
+import { EpisodePage } from "pages/EpisodePage";
 
 export const AppRouter: FC = () => {
     const { theme } = useTheme();
@@ -39,11 +44,32 @@ export const AppRouter: FC = () => {
                         <Route 
                             path="profile" 
                             element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} 
+                        />
+                        <Route
+                            path="playlists/:id"
+                            element={<ProtectedRoute><PlaylistPage /></ProtectedRoute>}
+                        /> 
+                        <Route
+                            path="albums/:id"
+                            element={<ProtectedRoute><AlbumPage /></ProtectedRoute>}
+                        /> 
+                        <Route
+                            path="artists/:id"
+                            element={<ProtectedRoute><ArtistPage /></ProtectedRoute>}
+                        /> 
+                        <Route
+                            path="shows/:id"
+                            element={<ProtectedRoute><ShowPage /></ProtectedRoute>}
+                        /> 
+                        <Route
+                            path="episodes/:id"
+                            element={<ProtectedRoute><EpisodePage /></ProtectedRoute>}
                         /> 
                         <Route
                             path="callback"
                             element={<Callback />}
                         />
+
                     </Route>
                     <Route  
                         path="/login"

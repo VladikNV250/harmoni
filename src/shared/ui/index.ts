@@ -9,3 +9,9 @@ export { Modal } from "./modal/modal";
 export { DragDownMenu } from "./dragdownmenu/dragDownMenu"
 
 export { Switch } from "./switch/switch";
+
+export { Input } from "./inputs/input";
+
+export { Loader } from './loaders/loader';
+
+export { Tabs } from "./tabs/tabs";

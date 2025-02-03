@@ -1,1 +1,1 @@
-export { HomePage } from "./ui/HomePage/HomePage";
+export { LazyHomePage as HomePage } from "./ui/HomePage/lazy";

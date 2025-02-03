@@ -13,14 +13,14 @@ interface IPlaylistPreview {
 }
 
 export const PlaylistPreview: FC<IPlaylistPreview> = ({ playlist }) => {
-    const { name, images, tracks, description } = playlist;
+    const { name, images, tracks, description, id } = playlist;
     const color= useColor(images[0]?.url || placeholderImage);
     const navigate = useNavigate();
     
 
     return (
-        <div className="playlist-preview" onContextMenu={(e) => e.preventDefault()}>
-            <div className="playlist-content" onClick={() => navigate("/library")}>
+        <div className="playlist-preview playlist" onContextMenu={(e) => e.preventDefault()}>
+            <div className="playlist-content" onClick={() => navigate(`/playlists/${id}`)}>
                 <div className="playlist-image-container">
                     <img src={images[0]?.url || placeholderImage} className="playlist-image" />
                     <div style={{background: color}} className="playlist-image__back" />

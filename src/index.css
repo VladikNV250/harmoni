@@ -69,6 +69,7 @@ button {
   border: none;
   appearance: none;
   cursor: pointer;
+  font-family: "Satoshi", sans-serif;
 }
 
 button {

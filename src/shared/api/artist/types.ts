@@ -1,4 +1,6 @@
 import { IImage } from "shared/types"
+import { ITrack } from "../track";
+import { ISimplifiedAlbum } from "../album";
 
 export interface IArtist {
     /** Known external URLs for this artist */
@@ -51,4 +53,25 @@ export interface ISimplifiedArtist {
 
 export interface ISeveralArtists {
     readonly artists: IArtist[];
+}
+
+export interface IArtistTopTracks {
+    readonly tracks: ITrack[];
+}
+
+export interface IArtistAlbums {
+    /** A link to the Web API endpoint returning the full result of the request */
+    readonly href: string,
+    /** The maximum number of items in the response */
+    readonly limit: number,
+    /** URL to the next page of items */
+    readonly next: string | null,
+    /** The offset of the items returned */
+    readonly offset: number,
+    /** URL to the previous page of items */
+    readonly previous: string | null,
+    /** The total number of items available to return */
+    readonly total: number,
+    /** Array of albums */
+    readonly items: ISimplifiedAlbum[];
 }

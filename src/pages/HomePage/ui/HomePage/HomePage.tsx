@@ -6,12 +6,12 @@ import Adjust from "shared/assets/icons/adjust-big.svg?react";
 import clsx from "clsx";
 import { useAppSelector } from "shared/lib";
 import { selectFeedLoading, TFeedFilter } from "entities/feed";
-import { Loader } from "shared/ui/loaders/loader";
 import { Catalogue } from "../Catalogue/Catalogue";
 import { UserTrackList } from "../UserTrackList/UserTrackList";
 import "./HomePage.scss";
+import { Loader } from "shared/ui";
 
-export const HomePage: FC = () => {
+const HomePage: FC = () => {
     const { theme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
     const [catalogueType, setCatalogueType] = useState<TFeedFilter>("all");
@@ -45,3 +45,5 @@ export const HomePage: FC = () => {
         </div>
     )
 }
+
+export default HomePage;

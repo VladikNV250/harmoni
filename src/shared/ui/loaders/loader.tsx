@@ -1,18 +1,18 @@
 import { FC } from "react";
-import { Modal } from "../modal/modal";
 import "./loader.scss";
+import clsx from "clsx";
 
 interface ILoader {
-    loading: boolean,
+    readonly loading: boolean,
 }
 
 export const Loader: FC<ILoader> = ({ loading }) => {
     return (
         loading &&
-        <Modal isOpen={true}>
+        <div className={clsx("loader-modal", "open")}>
             <div className="loader-container">
                 <div className="loader" />
             </div>
-        </Modal>
+        </div>
     ) 
 }

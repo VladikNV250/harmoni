@@ -1,10 +1,12 @@
 import { FC } from "react";
 import "./LibraryPage.scss";
 
-export const LibraryPage: FC = () => {
+const LibraryPage: FC = () => {
     return (
         <div>
 
         </div>
     )
 }
+
+export default LibraryPage;

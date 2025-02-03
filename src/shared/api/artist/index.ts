@@ -6,4 +6,6 @@ export type {
 export {
     fetchArtist,
     fetchSeveralArtists,
+    fetchArtistTopTracks,
+    fetchArtistAlbums,
 } from "./artist";

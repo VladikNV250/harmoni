@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, Suspense, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { currentToken } from "shared/api/authorization";
 
@@ -13,5 +13,9 @@ export const ProtectedRoute: FC<IProtectedRoute> = ({ children }) => {
         if (!currentToken.access_token) navigate("/login", { replace: true });
     }, [navigate])
 
-    return currentToken ? children : null;
+    return currentToken ? 
+    <Suspense>
+        {children}
+    </Suspense>
+    : null;
 }

@@ -7,6 +7,25 @@
         justify-content: center;
     }
 
+    &-modal {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 100ms ease-in-out 300ms;
+        background: var(--bg-main);
+
+        &.open { 
+            visibility: visible;
+            opacity: 1;    
+            transition: all 100ms ease-in-out;
+        }
+    }
+
     width: 60px;
     height: 60px;
     border: 10px solid var(--primary);

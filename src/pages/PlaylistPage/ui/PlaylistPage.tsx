@@ -7,7 +7,7 @@ import Sort from "shared/assets/icons/sort-big.svg?react";
 import { calculateDuration, useColor } from "shared/lib";
 import { TrackItem } from "entities/track";
 import { EpisodeItem } from "entities/episode";
-import { ControlPanel } from "features/controlPanel";
+import { PagePlaybackControl } from "entities/playback";
 import './PlaylistPage.scss';
 
 
@@ -42,9 +42,17 @@ const PlaylistPage: FC = () => {
     const renderPlaylistTracks = (tracks: IPlaylist["tracks"]["items"]) => {
         return tracks.length > 0 && tracks.map(({ track }) =>
             track.type === "track" ?
-                <TrackItem key={track.id} track={track} /> :
+                <TrackItem 
+                    key={track.id} 
+                    track={track} 
+                    contextUri={playlist?.uri} 
+                /> :
             track.type === "episode" ? 
-                <EpisodeItem key={track.id} episode={track} /> 
+                <EpisodeItem 
+                    key={track.id} 
+                    episode={track} 
+                    showURI={track.show.uri} 
+                /> 
             : null
         )
     }
@@ -79,7 +87,7 @@ const PlaylistPage: FC = () => {
                     {calculateTracksDuration(playlist?.tracks.items)}
                 </Description>
             </div>
-            <ControlPanel />
+            <PagePlaybackControl contextUri={playlist?.uri} />
             <div className="playlist-items-container">
                 {renderPlaylistTracks(playlist?.tracks.items ?? [])}
             </div>

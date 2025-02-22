@@ -51,6 +51,7 @@ figure,
 figcaption,
 blockquote,
 dl,
+input,
 dd {
   margin: 0;
 }

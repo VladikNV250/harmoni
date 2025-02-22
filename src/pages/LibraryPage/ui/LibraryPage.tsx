@@ -3,8 +3,8 @@ import "./LibraryPage.scss";
 
 const LibraryPage: FC = () => {
     return (
-        <div>
-
+        <div className="library">
+            
         </div>
     )
 }

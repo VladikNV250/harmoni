@@ -1,0 +1,30 @@
+.menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 30px 20px;
+
+    .menu-button,
+    .menu-link {
+        max-width: 100%;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        text-align: left;
+        color: var(--fg-secondary);
+
+        .button-icon { min-width: 40px; }
+
+        &:hover { color: var(--fg-primary); }
+    }        
+}
+
+.menu-artists {
+    padding: 10px;
+    > *:not(:last-child) {
+        margin-bottom: 5px;
+    }
+}
+.dragdown-menu-artists {
+    background: var(--bg-main);
+}

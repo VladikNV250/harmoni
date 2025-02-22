@@ -1,0 +1,24 @@
+.volume-bar {
+    background-color: transparent;
+    width: 110px;
+    height: 3px;
+
+    &:focus {
+        outline: none;
+    }
+    &::-webkit-slider-runnable-track {
+        background: linear-gradient(90deg, var(--primary) var(--value), rgba(219, 219, 219, 0.21) var(--value));
+        height: 6px;
+        width: 100%;
+        border-radius: 3px;
+    }
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 15px;
+        width: 15px;
+        background: var(--fg-primary);
+        border: none;
+        border-radius: 50%;
+        margin-top: -4.5px; /** (track height / 2) - (thumb height / 2) */
+    }
+}

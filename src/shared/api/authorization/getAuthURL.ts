@@ -11,17 +11,17 @@ export const getAuthURL = async (): Promise<string> => {
 
     let scopes = "";
     // scopes += "ugc-image-upload "; // Add Custom Playlist Cover Image
-    // scopes += "user-read-playback-state "; // Read your currently playing content and Spotify Connect devices information.
-    // scopes += "user-modify-playback-state "; // Control playback on your Spotify clients and Spotify Connect devices.
-    // scopes += "user-read-currently-playing "; // Get the User's Currently Playing Track and Queue
-    // scopes += "streaming "; // Control playback of a Spotify track. Web Playback SDK. Need Premium Account of User
+    scopes += "user-read-playback-state "; // Read your currently playing content and Spotify Connect devices information.
+    scopes += "user-modify-playback-state "; // Control playback on your Spotify clients and Spotify Connect devices.
+    scopes += "user-read-currently-playing "; // Get the User's Currently Playing Track and Queue
+    scopes += "streaming "; // Control playback of a Spotify track. Web Playback SDK. Need Premium Account of User
     // scopes += "playlist-read-private "; // Access your private playlists.
     // scopes += "playlist-read-collaborative "; // Access your collaborative playlists.
     // scopes += "playlist-modify-private "; // Manage your private playlists.
     // scopes += "playlist-modify-public "; // Manage your public playlists.
     // scopes += "user-follow-modify "; // Manage who you are following.
     // scopes += "user-follow-read "; // Access your followers and who you are following.
-    // scopes += "user-read-playback-position "; // Get an Episodes and Shows
+    scopes += "user-read-playback-position "; // Get an Episodes and Shows
     scopes += "user-top-read "; // Read your top artists and content.
     // scopes += "user-read-recently-played "; // Access your recently played items.
     // scopes += "user-library-modify "; // Manage your saved content.

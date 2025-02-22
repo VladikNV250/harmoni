@@ -2,21 +2,23 @@ import { FC } from "react";
 import { useNavigate } from "react-router";
 import { IEpisode, ISimplifiedEpisode } from "shared/api/episode";
 import { Description, Paragraph } from "shared/ui";
-import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import { getDate } from "entities/episode/lib/getDate";
 import { calculateDuration } from "shared/lib";
-import More from "shared/assets/icons/more-big.svg?react";
-import Play from "shared/assets/icons/play-big.svg?react";
-import AddToQueue from "shared/assets/icons/add-to-queue-big.svg?react";
-import Shuffle from "shared/assets/icons/shuffle-big.svg?react";
-import Loop from "shared/assets/icons/loop-big.svg?react";
+import { playTrack } from "shared/api/player";
+import { 
+    AddToQueue, 
+    More, 
+    PlaceholderImage, 
+    Play 
+} from "shared/assets";
 import "./EpisodeItem.scss";
 
 interface IEpisodeItem {
     readonly episode: IEpisode | ISimplifiedEpisode;
+    readonly showURI: string;
 }
 
-export const EpisodeItem: FC<IEpisodeItem> = ({ episode }) => {
+export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
     const { 
         id,
         name, 
@@ -24,9 +26,19 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode }) => {
         release_date, 
         release_date_precision, 
         duration_ms, 
-        images 
+        images,
+        uri,
     } = episode;
     const navigate = useNavigate();
+
+    const handlePlay = async () => {
+        await playTrack({
+            context_uri: showURI,
+            offset: {
+                uri: uri
+            }
+        })
+    }
 
     return (
         <div className="episode-item item">
@@ -63,13 +75,7 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode }) => {
                     </button>
                 </div>
                 <div className="control-panel-button-container">
-                    <button className="control-panel-button">
-                        <Loop width={40} height={40} />
-                    </button>
-                    <button className="control-panel-button">
-                        <Shuffle width={40} height={40} />
-                    </button>
-                    <button className="control-panel-button">
+                    <button className="control-panel-button" onClick={handlePlay}>
                         <Play width={40} height={40} />
                     </button>
                 </div>

@@ -8,7 +8,7 @@ import { ITrack } from "shared/api/track";
 import { ISimplifiedAlbum } from "shared/api/album";
 import { AlbumPreview } from "entities/album";
 import { TrackItem } from "entities/track";
-import { ControlPanel } from "features/controlPanel";
+import { PagePlaybackControl } from "entities/playback";
 import './ArtistPage.scss';
 
 const ArtistPage: FC = () => {
@@ -81,7 +81,7 @@ const ArtistPage: FC = () => {
     }
 
     const renderTracks = (tracks: ITrack[]) => {
-        return tracks.length > 0 && tracks.map(track =>
+        return tracks.length > 0 && tracks.map((track) =>
             <TrackItem 
                 key={track.id}
                 track={track}
@@ -114,9 +114,9 @@ const ArtistPage: FC = () => {
                     </Description>
                 </div>
             </div>
-            <ControlPanel 
+            <PagePlaybackControl 
                 className="artist-control-panel" 
-                addToPlaylist={false} 
+                contextUri={artist?.uri}
             />
             <Tabs 
                 tabs={tabs}

@@ -15,3 +15,6 @@ export { Input } from "./inputs/input";
 export { Loader } from './loaders/loader';
 
 export { Tabs } from "./tabs/tabs";
+
+export { SeekBar } from "./progressbars/seekbar/seekbar";
+export { VolumeBar } from "./progressbars/volumebar/volumebar";

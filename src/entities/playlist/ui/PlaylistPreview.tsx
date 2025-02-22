@@ -1,28 +1,27 @@
 import { FC } from "react";
-import "./PlaylistPreview.scss";
 import { useColor } from "shared/lib";
-import placeholderImage from "shared/assets/placeholder/placeholder.jpg";
 import { Text } from "shared/ui";
-import Play from "shared/assets/icons/play-big.svg?react";
-// import Pause from "shared/assets/icons/pause-big.svg?react";
 import { useNavigate } from "react-router";
 import { IPlaylist } from "shared/api/playlist";
+import "./PlaylistPreview.scss";
+import { Pause, PlaceholderImage, Play } from "shared/assets";
+import { usePlaybackAdapter } from "entities/playback";
 
 interface IPlaylistPreview {
     playlist: IPlaylist;
 }
 
 export const PlaylistPreview: FC<IPlaylistPreview> = ({ playlist }) => {
-    const { name, images, tracks, description, id } = playlist;
-    const color= useColor(images[0]?.url || placeholderImage);
+    const { name, images, tracks, description, id, uri } = playlist;
+    const color= useColor(images[0]?.url || PlaceholderImage);
     const navigate = useNavigate();
+    const { adapter } = usePlaybackAdapter();
     
-
     return (
         <div className="playlist-preview playlist" onContextMenu={(e) => e.preventDefault()}>
             <div className="playlist-content" onClick={() => navigate(`/playlists/${id}`)}>
                 <div className="playlist-image-container">
-                    <img src={images[0]?.url || placeholderImage} className="playlist-image" />
+                    <img src={images[0]?.url || PlaceholderImage} className="playlist-image" />
                     <div style={{background: color}} className="playlist-image__back" />
                     <div style={{background: color}} className="playlist-image__back" />
                 </div>
@@ -34,9 +33,13 @@ export const PlaylistPreview: FC<IPlaylistPreview> = ({ playlist }) => {
                     {description}
                 </p>
             </div>
-            <button className="playlist-button">
-                <Play width={40} height={40} />
-                {/* <Pause width={40} height={40} /> */}
+            <button 
+                className="playlist-button" 
+                onClick={() => adapter.play({ context_uri: uri })}
+            >
+                {adapter.getContextURI() === uri ?
+                <Pause width={40} height={40} /> :
+                <Play width={40} height={40} />}
             </button>
         </div>
     )

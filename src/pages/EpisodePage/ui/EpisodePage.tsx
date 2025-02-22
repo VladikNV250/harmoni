@@ -5,7 +5,7 @@ import { calculateDuration, useColor } from "shared/lib";
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import { Description, Title, Loader } from "shared/ui";
 import { getDate } from "entities/episode";
-import { ControlPanel } from "features/controlPanel";
+import { PagePlaybackControl } from "entities/playback";
 import './EpisodePage.scss';
 
 const EpisodePage: FC = () => {
@@ -52,7 +52,10 @@ const EpisodePage: FC = () => {
                     {calculateDuration(episode?.duration_ms ?? 0)}
                 </Description>
             </div>
-            <ControlPanel addToPlaylist={false} />
+            <PagePlaybackControl 
+                contextUri={episode?.show.uri}
+                episodeUri={episode?.uri}
+            />
             <div className="episode-content">
                 <p 
                     className="episode-description" 

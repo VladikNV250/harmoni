@@ -1,25 +1,37 @@
 import { FC } from "react";
 import { Paragraph } from "shared/ui";
-import More from "shared/assets/icons/more-big.svg?react";
 import { ISimplifiedTrack, ITrack } from "shared/api/track";
-import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import { Link } from "react-router";
 import { IAlbum } from "shared/api/album";
-import "./TrackItem.scss";
 import { ArtistList } from "entities/artist";
+import { usePlaybackAdapter } from "entities/playback";
+import "./TrackItem.scss";
+import { More, PlaceholderImage } from "shared/assets";
 
 export interface ITrackItem {
     /** Track to render */
     readonly track: ITrack | ISimplifiedTrack;
     /** Provide album if pass ISimplifiedTrack where field album doesn't exist */
     readonly defaultAlbum?: IAlbum;
+    /** URI of context to play the song */
+    readonly contextUri?: string,
 }
 
-export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum }) => {
+export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum, contextUri }) => {
     const { name, artists, album } = track as ITrack;
+    const { adapter } = usePlaybackAdapter();
+
+    const handlePlay = async () => {
+        if (contextUri) {
+            adapter.play({
+                context_uri: contextUri,
+                offset: { uri: track.uri }
+            })
+        }
+    }
     
     return (
-        <div className="track-item item">
+        <div className="track-item item" onClick={handlePlay}>
             <img 
                 src={
                     album?.images[0]?.url ?? 

@@ -6,7 +6,7 @@ import PlaceholderImage from 'shared/assets/placeholder/placeholder.jpg';
 import Sort from "shared/assets/icons/sort-big.svg?react";
 import { Description, Input, Loader, Tabs, Title } from "shared/ui";
 import { EpisodeItem } from "entities/episode";
-import { ControlPanel } from "features/controlPanel";
+import { PagePlaybackControl } from "entities/playback";
 import { ISimplifiedEpisode } from "shared/types";
 import './ShowPage.scss';
 
@@ -46,6 +46,7 @@ const ShowPage: FC = () => {
             <EpisodeItem 
                 key={episode.id} 
                 episode={episode} 
+                showURI={show?.uri ?? ""}
             />
         )
     }
@@ -71,9 +72,8 @@ const ShowPage: FC = () => {
                     </Description>
                 </div>
             </div>
-            <ControlPanel 
+            <PagePlaybackControl 
                 className="show-control-panel"
-                addToPlaylist={false} 
             />
             <Tabs
                 tabs={tabs}

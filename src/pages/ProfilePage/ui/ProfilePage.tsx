@@ -1,15 +1,30 @@
-import { FC, useEffect } from "react";
+import { 
+    FC, 
+    useEffect 
+} from "react";
+import { 
+    useAppDispatch, 
+    useAppSelector 
+} from "shared/lib";
+import { 
+    getUserInfo, 
+    selectUser, 
+    selectUserError, 
+    selectUserLoading  
+} from "entities/user";
+import { 
+    Description, 
+    Loader, 
+    Paragraph, 
+    Subtitle, 
+    Title 
+} from "shared/ui";
+import { 
+    feedSlice, 
+    selectFeedSettings 
+} from "entities/feed";
 import "./ProfilePage.scss";
-import { useAppDispatch, useAppSelector } from "shared/lib";
-import { getUserInfo, selectUser, selectUserError, selectUserLoading,  } from "entities/user";
-import placeholderProfileImage from "shared/assets/placeholder/placeholder.jpg";
-import { Description, Loader, Paragraph, Subtitle, Text, Title } from "shared/ui";
-import Edit from "shared/assets/icons/edit-big.svg?react";
-import Share from "shared/assets/icons/share-big.svg?react";
-import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
-import AddFriend from "shared/assets/icons/add-friend-big.svg?react";
-// import Playing from "shared/assets/icons/playing-big.svg?react";
-import { feedSlice, selectFeedSettings } from "entities/feed";
+import { AddFriend, Edit, Logo, PlaceholderProfileImage, Share } from "shared/assets";
 
 const ProfilePage: FC = () => {
     const dispatch = useAppDispatch();
@@ -28,7 +43,7 @@ const ProfilePage: FC = () => {
             <Loader loading={loading} />
             {user &&
             <div className="user-info">
-                <img src={user.images[0]?.url ?? placeholderProfileImage} className="user-avatar" />
+                <img src={user.images[0]?.url ?? PlaceholderProfileImage} className="user-avatar" />
                 <div className="user-content">
                     <div className="user-header">
                         <Title className="user-name">{user.display_name ?? ""}</Title>

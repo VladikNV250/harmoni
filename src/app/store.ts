@@ -1,6 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { feedReducer } from "entities/feed";
 import { userReducer } from "entities/user";
+import { deviceReducer } from "features/device";
+import { queueReducer } from "features/queue";
+import { playerReducer } from "widgets/Player";
 import { 
     FLUSH,
     PAUSE,
@@ -16,6 +19,9 @@ import storage from 'redux-persist/lib/storage'
 const rootReducer = combineReducers({
     feed: feedReducer,    
     user: userReducer,
+    queue: queueReducer,
+    device: deviceReducer,
+    player: playerReducer,
 })
 
 const persistConfig = {
@@ -40,6 +46,7 @@ const store = configureStore({
                     REGISTER,
                 ],
             },
+            immutableCheck: false, //  REMOVE THIS LATER!!!
         }),
 })
 

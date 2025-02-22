@@ -3,11 +3,6 @@ import { BASIC_AUTH_URL, CLIENT_ID, REDIRECT_URI } from "shared/consts";
 
 class Token {
     private readonly apiTokenUrl: string = `${BASIC_AUTH_URL}/api/token`;
-    private scopes: string = "";
-
-    constructor() {
-        
-    }
 
     public get access_token() { return localStorage.getItem("access_token") || null };
     public get refresh_token() { return localStorage.getItem("refresh_token") || null };

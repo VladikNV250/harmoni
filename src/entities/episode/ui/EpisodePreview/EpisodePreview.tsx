@@ -1,26 +1,45 @@
 import { FC } from "react";
 import { Text } from "shared/ui";
-import placeholderImage from "shared/assets/placeholder/placeholder.jpg";
-import Play from "shared/assets/icons/play-big.svg?react";
 import { useNavigate } from "react-router";
 import { calculateDuration, useColor } from "shared/lib";
-import "./EpisodePreview.scss";
 import { IEpisode } from "shared/api/episode";
 import { getDate } from "entities/episode/lib/getDate";
+import { usePlaybackAdapter } from "entities/playback";
+import { Pause, PlaceholderImage, Play } from "shared/assets";
+import "./EpisodePreview.scss";
 
 interface IEpisodePreview {
     episode: IEpisode;
 }
 
 export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
-    const { name, duration_ms, release_date, release_date_precision, images, id } = episode;
+    const { 
+        name, 
+        duration_ms, 
+        release_date, 
+        release_date_precision, 
+        images, 
+        id, 
+        show, 
+        uri
+    } = episode;
     const navigate = useNavigate();
     const color = useColor(images[0]?.url);
+    const { adapter } = usePlaybackAdapter();
+
+    const handlePlay = () => {
+        adapter.play({ 
+            context_uri: show.uri, 
+            offset: { 
+                uri: uri 
+            } 
+        });
+    }
     
     return (
         <div className="episode-preview episode">
             <div className="episode-content" onClick={() => navigate(`/episodes/${id}`)}>
-                <img src={images[0]?.url || placeholderImage} className="episode-image" />
+                <img src={images[0]?.url || PlaceholderImage} className="episode-image" />
                 <div className="episode-body">
                     <div className="body-background" style={{background: color}} />
                     <Text className="episode-name">{name}</Text>
@@ -35,9 +54,10 @@ export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
                     </div>
                 </div>
             </div>
-            <button className="episode-button">
-                <Play width={40} height={40} />
-                {/* <Pause width={40} height={40} /> */}
+            <button className="episode-button" onClick={handlePlay}>
+                {adapter.getTrackURI() === uri ?
+                <Pause width={40} height={40} /> :
+                <Play width={40} height={40} />}
             </button>
         </div>
     )

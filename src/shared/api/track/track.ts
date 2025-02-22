@@ -1,5 +1,5 @@
 import { apiInstance } from "shared/api/base";
-import { ITrack } from "shared/types";
+import { ITrack } from "./types";
 
 const ENDPOINT = "/v1/tracks";
 

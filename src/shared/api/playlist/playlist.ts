@@ -1,5 +1,5 @@
 import { apiInstance } from "shared/api/base";
-import { IPlaylist } from "shared/types";
+import { IPlaylist } from "./types";
 
 const ENDPOINT = "/v1/playlists";
 

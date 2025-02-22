@@ -1,6 +1,5 @@
 import { apiInstance } from "shared/api/base";
-import { IEpisode } from "shared/types";
-import { ISeveralEpisodes } from "./types";
+import { IEpisode, ISeveralEpisodes } from "./types";
 
 const ENDPOINT = "/v1/episodes";
 

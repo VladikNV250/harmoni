@@ -5,10 +5,10 @@ import { displayDate, useColor } from "shared/lib";
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import { Description, Input, Loader, Title } from "shared/ui";
 import { TrackItem } from "entities/track";
-import { ControlPanel } from "features/controlPanel";
 import { ISimplifiedTrack } from "shared/api/track";
 import { ArtistList } from "entities/artist";
 import './AlbumPage.scss';
+import { PagePlaybackControl } from "entities/playback";
 
 const AlbumPage: FC = () => {
     const { id } = useParams();
@@ -35,6 +35,7 @@ const AlbumPage: FC = () => {
                 key={track.id} 
                 track={track} 
                 defaultAlbum={album}
+                contextUri={album.uri}
             />
         )
     }
@@ -66,7 +67,9 @@ const AlbumPage: FC = () => {
                     {displayDate(album?.release_date, album?.release_date_precision)}
                 </Description>
             </div>
-            <ControlPanel addToPlaylist={false} />
+            <PagePlaybackControl 
+                contextUri={album?.uri}
+            />
             <div className="album-items-container">
                 {renderTracks(album?.tracks.items ?? [])}
             </div>

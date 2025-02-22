@@ -32,6 +32,46 @@ class APIInstance {
         )
         return response.data;
     }
+
+    public async post<T>(
+        endpoint: string,
+        data: any,
+        options: AxiosRequestConfig = {}
+    ): Promise<T> {
+        await currentToken.updateToken();
+
+        return await this.axios.post(
+            endpoint,
+            data,
+            {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    "Authorization": "Bearer " + currentToken.access_token
+                }
+            }
+        )
+    }
+
+    public async put<T>(
+        endpoint: string,
+        data: any,
+        options: AxiosRequestConfig = {}
+    ): Promise<T> {
+        await currentToken.updateToken();
+
+        return await this.axios.put(
+            endpoint,
+            data,
+            {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    "Authorization": "Bearer " + currentToken.access_token
+                }
+            }
+        )
+    }
 }
 
 export const apiInstance = new APIInstance();

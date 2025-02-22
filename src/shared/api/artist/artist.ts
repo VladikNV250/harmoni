@@ -1,6 +1,5 @@
 import { apiInstance } from "shared/api/base";
-import { IArtist } from "shared/types";
-import { IArtistAlbums, IArtistTopTracks, ISeveralArtists } from "./types";
+import { IArtist, IArtistAlbums, IArtistTopTracks, ISeveralArtists } from "./types";
 
 const ENDPOINT = "/v1/artists"
 

@@ -1,7 +1,12 @@
 import { PlaceholderImage } from "shared/assets";
-import { IPlayback } from "../api/type";
-import { setRepeatMode, skipToNext, skipToPrevious, togglePlaybackShuffle } from "../api/playback";
-import { IPlayTrack, playTrack } from "shared/api/player";
+import { IPlayback, IPlayTrack } from "../api/type";
+import { 
+    playTrack,
+    setRepeatMode, 
+    skipToNext, 
+    skipToPrevious, 
+    togglePlaybackShuffle 
+} from "../api/playback";
 
 export interface IPlaybackAdapter {
     getAlbumName(): string;

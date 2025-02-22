@@ -7,8 +7,8 @@ import Sort from "shared/assets/icons/sort-big.svg?react";
 import { Description, Input, Loader, Tabs, Title } from "shared/ui";
 import { EpisodeItem } from "entities/episode";
 import { PagePlaybackControl } from "entities/playback";
-import { ISimplifiedEpisode } from "shared/types";
 import './ShowPage.scss';
+import { ISimplifiedEpisode } from "shared/api/episode";
 
 const ShowPage: FC = () => {
     const { id } = useParams();

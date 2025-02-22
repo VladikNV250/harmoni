@@ -1,6 +1,5 @@
 import { apiInstance } from "shared/api/base";
-import { IShow } from "shared/types";
-import { ISeveralShows } from "./types";
+import { ISeveralShows, IShow } from "./types";
 
 const ENDPOINT = "/v1/shows";
 

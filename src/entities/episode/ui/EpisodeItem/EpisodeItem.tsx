@@ -4,7 +4,6 @@ import { IEpisode, ISimplifiedEpisode } from "shared/api/episode";
 import { Description, Paragraph } from "shared/ui";
 import { getDate } from "entities/episode/lib/getDate";
 import { calculateDuration } from "shared/lib";
-import { playTrack } from "shared/api/player";
 import { 
     AddToQueue, 
     More, 
@@ -12,6 +11,7 @@ import {
     Play 
 } from "shared/assets";
 import "./EpisodeItem.scss";
+import { usePlaybackAdapter } from "entities/playback";
 
 interface IEpisodeItem {
     readonly episode: IEpisode | ISimplifiedEpisode;
@@ -29,10 +29,11 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
         images,
         uri,
     } = episode;
+    const { adapter } = usePlaybackAdapter();
     const navigate = useNavigate();
 
-    const handlePlay = async () => {
-        await playTrack({
+    const handlePlay = () => {
+        adapter.play({
             context_uri: showURI,
             offset: {
                 uri: uri

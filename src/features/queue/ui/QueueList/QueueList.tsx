@@ -5,7 +5,6 @@ import { Link } from "react-router";
 import { PlaceholderImage } from "shared/assets";
 import { useAppSelector } from "shared/lib";
 import { Loader, Paragraph } from "shared/ui";
-import { playTrack } from "shared/api/player";
 import { selectQueue, selectQueueLoading } from "features/queue/model/selectors";
 import { usePlaybackAdapter } from "entities/playback";
 import "./QueueList.scss";
@@ -19,8 +18,8 @@ export const QueueList: FC<IQueueList> = ({ activeTab }) => {
     const loading = useAppSelector(selectQueueLoading);
     const { adapter } = usePlaybackAdapter();
 
-    const handleClick = async (uri: string) => {
-        await playTrack({
+    const handleClick = (uri: string) => {
+        adapter.play({
             context_uri: adapter.getContextURI(),
             offset: { uri }
         });
@@ -34,7 +33,11 @@ export const QueueList: FC<IQueueList> = ({ activeTab }) => {
                 {queue?.queue.map((queueTrack, index) =>
                     queueTrack.type === "track" 
                     ? 
-                    <div className="queue-track" key={queueTrack.id + index} onClick={async () => await handleClick(queueTrack.uri)}>
+                    <div 
+                        key={queueTrack.id + index} 
+                        className="queue-track" 
+                        onClick={() => handleClick(queueTrack.uri)}
+                    >
                         <img 
                             src={queueTrack.album?.images[0]?.url ?? PlaceholderImage} 
                             className="item-image"    

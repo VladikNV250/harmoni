@@ -1,5 +1,5 @@
 import { apiInstance } from "shared/api/base";
-import { IPlayback } from "./type";
+import { IPlayback, IPlayTrack } from "./type";
 
 const ENDPOINT = "https://api.spotify.com/v1/me/player"
 
@@ -48,3 +48,16 @@ export const skipToPrevious = (device_id?: string): Promise<void> => {
     })
 }
 
+export const playTrack = ({context_uri, offset, position_ms, device_id} : IPlayTrack): Promise<void> => {
+    return apiInstance.put(ENDPOINT + "/play", 
+    {
+        context_uri,
+        offset: offset ?? null,
+        position_ms: position_ms ?? null,
+    }, 
+    {
+        params: {
+            device_id: device_id || null,
+        }
+    })
+}

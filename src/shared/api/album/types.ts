@@ -1,4 +1,4 @@
-import { IAlbum, ICopyright, IImage } from "shared/types";
+import { ICopyright, IImage } from "shared/types";
 import { ISimplifiedArtist } from "../artist/types";
 import { ISimplifiedTrack } from "../track/types";
 

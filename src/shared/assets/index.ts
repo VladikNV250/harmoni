@@ -19,8 +19,13 @@ import PauseSimple from "shared/assets/icons/pause-simple-big.svg?react";
 import Hide from "shared/assets/icons/hide-big.svg?react";
 import Device from "shared/assets/icons/device-big.svg?react";
 import Close from "shared/assets/icons/close-big.svg?react";
+import Edit from "shared/assets/icons/edit-big.svg?react";
+import Share from "shared/assets/icons/share-big.svg?react";
+import AddFriend from "shared/assets/icons/add-friend-big.svg?react";
 
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
+import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
+import PlaceholderProfileImage from "shared/assets/placeholder/placeholder.jpg";
 
 /** ICONS */
 export {
@@ -44,10 +49,15 @@ export {
     Like,
     PauseSimple,
     PlaySimple,
-    Close
+    Close,
+    AddFriend,
+    Edit,
+    Share
 }
 
 /** IMAGES */
 export {
+    PlaceholderProfileImage,
     PlaceholderImage,
+    Logo
 }

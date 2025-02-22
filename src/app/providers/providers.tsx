@@ -11,8 +11,12 @@ interface IProviders {
     children: JSX.Element;
 }
 
+type getOAuthTokenCallback = (token: string) => void
+
 export const Providers: FC<IProviders> = ({ children }) => {
-    const getOAuthToken = useCallback(callback => callback(currentToken.access_token), [])
+    const getOAuthToken = useCallback((callback: getOAuthTokenCallback) => {
+        callback(currentToken.access_token ?? "")
+    }, [])
 
     return (
         <Provider store={store}>

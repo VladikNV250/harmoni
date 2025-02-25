@@ -28,7 +28,8 @@ import { IShow } from "shared/api/show";
 import { useAppDispatch, useAppSelector } from "shared/lib";
 import { STANDARD_FEEDS } from "shared/consts";
 import "react-alice-carousel/lib/scss/alice-carousel.scss"
-import "./Catalogue.scss";
+import styles from "./style.module.scss";
+import "./aliceCarousel.scss";
 
 
 interface ICatalogue {
@@ -72,7 +73,7 @@ export const Catalogue: FC<ICatalogue> = ({ type = "all" }) => {
         const responsive = {
             0: { items: items.length }
         };
-    
+            
         return (
             <AliceCarousel 
                 autoWidth
@@ -82,18 +83,20 @@ export const Catalogue: FC<ICatalogue> = ({ type = "all" }) => {
                 paddingRight={(items.length - 1) * 9}
                 responsive={responsive}
             >
-                {items.map((item: IPlaylist | IArtist | IEpisode | IShow | IAlbum, index: number) => 
-                    item.type === "playlist" ?
-                        <PlaylistPreview key={index} playlist={item} /> :
-                    item.type === "album" ?
-                        <AlbumPreview key={index} album={item} /> :
-                    item.type === "artist" ?
-                        <ArtistPreview key={index} artist={item} /> :
-                    item.type === "show" ?
-                        <ShowPreview key={index} show={item} /> :
-                    item.type === "episode" && 
-                        <EpisodePreview key={index} episode={item} />
-                )}
+                {items
+                    .filter(item => item)
+                    .map((item: IPlaylist | IArtist | IEpisode | IShow | IAlbum, index: number) => 
+                        item.type === "playlist" ?
+                            <PlaylistPreview key={index} playlist={item} /> :
+                        item.type === "album" ?
+                            <AlbumPreview key={index} album={item} /> :
+                        item.type === "artist" ?
+                            <ArtistPreview key={index} artist={item} /> :
+                        item.type === "show" ?
+                            <ShowPreview key={index} show={item} /> :
+                        item.type === "episode" && 
+                            <EpisodePreview key={index} episode={item} />
+                    )}
             </AliceCarousel>
         )
     }
@@ -103,7 +106,13 @@ export const Catalogue: FC<ICatalogue> = ({ type = "all" }) => {
     }) => {
         return Object.keys(feeds)?.map(feedName => 
             (feeds[feedName].items.length > 0 && !feeds[feedName].hidden.isHidden) &&
-            <div className="catalogue" key={feedName} style={{order: feeds[feedName].order}}>
+            <div 
+                key={feedName} 
+                className={styles["catalogue"]} 
+                style={{
+                    order: feeds[feedName].order
+                }}
+            >
                 <FeedHeader name={feedName} />
                 {renderFeedItems(feeds[feedName].items)}
             </div>
@@ -111,7 +120,7 @@ export const Catalogue: FC<ICatalogue> = ({ type = "all" }) => {
     }
     
     return (
-        <div className="catalogues-container">
+        <div className={styles["catalogues-container"]}>
             {Object.keys(filteredFeeds).length > 0 
             ? renderFeeds(filteredFeeds)
             : renderFeeds(feeds)

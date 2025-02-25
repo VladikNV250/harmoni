@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import { ChangeEvent, CSSProperties, FC, useEffect, useState } from "react"
-import "./volumebar.scss";
 import { useDebounce } from "shared/lib";
+import styles from "./style.module.scss";
+
 
 interface IVolumeBar {
     /** Additional classes */
@@ -28,7 +29,6 @@ export const VolumeBar: FC<IVolumeBar> = ({ className, player }) => {
 
     useEffect(() => {
         if (player !== null) {
-            console.log(debouncedValue);
             player.setVolume((debouncedValue as number) / 100)
         }
     }, [debouncedValue, player])
@@ -36,7 +36,7 @@ export const VolumeBar: FC<IVolumeBar> = ({ className, player }) => {
     return (
         <input 
             type="range" 
-            className={clsx("volume-bar", className)} 
+            className={clsx(styles["volume-bar"], className)} 
             min={0} max={100} 
             value={value}
             onChange={handleChange} 

@@ -1,6 +1,6 @@
 import { FC } from "react";
-import "./typography.scss"
 import clsx from "clsx";
+import styles from './style.module.scss';
 
 interface ISubtitle {
     /** Text */
@@ -11,7 +11,7 @@ interface ISubtitle {
 
 export const Subtitle: FC<ISubtitle> = ({ children, className }) => {
     return (
-        <h4 className={clsx("subtitle", className)}>
+        <h4 className={clsx(styles["subtitle"], className)}>
             {children}
         </h4>
     )

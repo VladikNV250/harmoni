@@ -7,8 +7,9 @@ import Sort from "shared/assets/icons/sort-big.svg?react";
 import { Description, Input, Loader, Tabs, Title } from "shared/ui";
 import { EpisodeItem } from "entities/episode";
 import { PagePlaybackControl } from "entities/playback";
-import './ShowPage.scss';
 import { ISimplifiedEpisode } from "shared/api/episode";
+import styles from "./style.module.scss";
+
 
 const ShowPage: FC = () => {
     const { id } = useParams();
@@ -52,42 +53,48 @@ const ShowPage: FC = () => {
     }
 
     return (
-        <div className="show-page" style={{'--color': color} as CSSProperties}>
+        <div 
+            className={styles["show"]} 
+            style={{'--color': color} as CSSProperties}
+        >
             <Loader loading={loading} />
-            <header className="show-header">
-                <Input placeholder="Search episode" className="header-input" />
-                <button className="header-button">
+            <header className={styles["show-header"]}>
+                <Input 
+                    placeholder="Search episode" 
+                    className={styles["header-input"]} 
+                />
+                <button className={styles["header-button"]}>
                     <Sort width={40} height={40} />
                 </button>   
             </header>
-            <div className="show-image-container">
+            <div className={styles["show-image-container"]}>
                 <img 
                     src={show?.images[0].url || PlaceholderImage} 
-                    className="show-image" 
+                    className={styles["show-image"]} 
                 />
-                <div className="show-body">
-                    <Title className="show-name">{show?.name ?? ""}</Title>
-                    <Description className="show-author">
+                <div className={styles["show-body"]}>
+                    <Title className={styles["show-name"]}>{show?.name ?? ""}</Title>
+                    <Description>
                         {show?.publisher ?? ""}
                     </Description>
                 </div>
             </div>
             <PagePlaybackControl 
-                className="show-control-panel"
+                className={styles["show-control-panel"]}
             />
             <Tabs
                 tabs={tabs}
                 currTab={currentTab}
                 setTab={setCurrentTab}
-                className="show-tabs"
+                className={styles["show-tabs"]}
             />
             {currentTab === "Episodes" &&
-            <div className="show-items-container">
+            <div className={styles["show-items-container"]}>
             {renderEpisodes(show?.episodes.items ?? [])}
             </div>}
             {currentTab === "About" &&
-            <div className="show-description-container">
-                <Description className="show-description">
+            <div className={styles["show-description-container"]}>
+                <Description className={styles["show-description"]}>
                     {show?.description ?? ""}
                 </Description>
             </div>}

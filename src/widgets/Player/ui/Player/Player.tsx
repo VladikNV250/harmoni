@@ -13,7 +13,6 @@ import { getAvailableDevices } from "features/device";
 import { MinimizedPlayer } from "../MinimizedPlayer/MinimizedPlayer";
 import { usePlaybackAdapter } from "entities/playback";
 import { selectPlayerFullsreenMode } from "widgets/Player/model/selectors";
-import "./Player.scss";
 
 export const Player: FC = () => {    
     const { theme } = useTheme();

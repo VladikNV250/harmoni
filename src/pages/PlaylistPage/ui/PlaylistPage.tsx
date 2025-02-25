@@ -8,7 +8,7 @@ import { calculateDuration, useColor } from "shared/lib";
 import { TrackItem } from "entities/track";
 import { EpisodeItem } from "entities/episode";
 import { PagePlaybackControl } from "entities/playback";
-import './PlaylistPage.scss';
+import styles from "./style.module.scss";
 
 
 const PlaylistPage: FC = () => {
@@ -58,37 +58,40 @@ const PlaylistPage: FC = () => {
     }
 
     return (
-        <div className="playlist-page" style={{'--color': color} as CSSProperties}>
+        <div className={styles["playlist"]} style={{'--color': color} as CSSProperties}>
             <Loader loading={loading} />
-            <header className="playlist-header">
-                <Input placeholder="Search playlist" className="header-input" />
-                <button className="header-button">
+            <header className={styles["playlist-header"]}>
+                <Input 
+                    placeholder="Search playlist" 
+                    className={styles["header-input"]} 
+                />
+                <button className={styles["header-button"]}>
                     <Sort width={40} height={40} />
                 </button>   
             </header>
-            <div className="playlist-image-container">
+            <div className={styles["playlist-image-container"]}>
                 <img 
                     src={playlist?.images[0].url || PlaceholderImage} 
-                    className="playlist-image" 
+                    className={styles["playlist-image"]} 
                 />
             </div>
-            <Title className="playlist-name">{playlist?.name ?? ""}</Title>
-            <div className="playlist-description-container">
-                <Description className="playlist-description">By</Description>
-                <Link to={`/profile/${playlist?.owner.id}`} className="playlist-owner">
+            <Title className={styles["playlist-name"]}>{playlist?.name ?? ""}</Title>
+            <div className={styles["playlist-description-container"]}>
+                <Description className={styles["playlist-description"]}>By</Description>
+                <Link to={`/profile/${playlist?.owner.id}`} className={styles["playlist-owner"]}>
                     {playlist?.owner.display_name ?? ""}
                 </Link>
                 <p className="dot">&#183;</p>
-                <Description className="playlist-description">
+                <Description className={styles["playlist-description"]}>
                     {`${playlist?.tracks.total} Songs`}
                 </Description>
                 <p className="dot">&#183;</p>
-                <Description className="playlist-description">
+                <Description className={styles["playlist-description"]}>
                     {calculateTracksDuration(playlist?.tracks.items)}
                 </Description>
             </div>
             <PagePlaybackControl contextUri={playlist?.uri} />
-            <div className="playlist-items-container">
+            <div className={styles["playlist-items-container"]}>
                 {renderPlaylistTracks(playlist?.tracks.items ?? [])}
             </div>
         </div>

@@ -1,9 +1,0 @@
-.catalogues-container { 
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-.catalogue {
-    overflow: hidden;    
-    .alice-carousel__stage-item:not(:last-child) { margin-right: 9px; }
-}

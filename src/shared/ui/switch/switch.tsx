@@ -1,5 +1,6 @@
 import { FC } from "react";
-import "./switch.scss";
+import styles from "./style.module.scss";
+
 
 interface ISwitch {
     /** Show state of Switch (ON or OFF) */
@@ -18,7 +19,7 @@ export const Switch: FC<ISwitch> = ({ active = false, setActive, disabled }) => 
 
     return (
         <label 
-            className="switch" 
+            className={styles["switch"]} 
             onClick={!disabled ? handleChange : () => {}}>
             <input 
                 type="checkbox" 
@@ -26,7 +27,7 @@ export const Switch: FC<ISwitch> = ({ active = false, setActive, disabled }) => 
                 onClick={(e) => e.stopPropagation()} 
                 readOnly
             />
-            <div className="slider"/>
+            <div className={styles["slider"]} />
         </label>
     )
 }

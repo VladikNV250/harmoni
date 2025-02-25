@@ -1,6 +1,7 @@
 import { FC } from "react";
-import "./typography.scss"
 import clsx from "clsx";
+import styles from "./style.module.scss";
+
 
 interface ITitle {
     /** Text */
@@ -11,7 +12,7 @@ interface ITitle {
 
 export const Title: FC<ITitle> = ({ children, className }) => {
     return (
-        <h3 className={clsx("title", className)}>
+        <h3 className={clsx(styles["title"], className)}>
             {children}
         </h3>
     )

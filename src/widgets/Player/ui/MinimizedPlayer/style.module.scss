@@ -1,0 +1,134 @@
+.minimized-player {
+    width: 100%;
+    position: fixed;
+    bottom: 96px;
+    left: 0;
+    padding: 0 8px;
+
+    &-options {
+        width: 100%;
+        margin-bottom: 5px;
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: repeat(auto-fill, 1fr);
+        grid-auto-flow: column;
+        gap: 5px;
+
+        > .option-button {
+            border-radius: 10px;
+            width: 100%;
+            padding: 8px 0;
+            position: relative;
+            color: var(--fg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;  
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+
+            &::before {
+                content: "";
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0.4;
+                background: var(--color);
+                z-index: -1;                
+            }
+
+            &:hover {
+                color: var(--fg-primary);
+                &::before { opacity: 1; }
+            }
+        }
+    }
+    
+
+    &-track {
+        cursor: pointer;
+        user-select: none;
+        border-radius: 10px;
+        background: var(--color);
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        align-items: center;
+        position: relative;
+        padding: 8px 10px 10px 8px;
+
+        .track {
+            &-image {
+                width: 43px;
+                height: 43px;
+                border-radius: 3px;
+                margin-right: 8px;
+            }
+            
+            &-body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                padding-right: 25px;
+            }
+            
+            &-name {
+                position: relative;
+                display: inline-block;
+                color: var(--fg-primary);
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+
+                &::before {
+                    content: "";
+                    height: 100%;
+                    width: 100px;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    background: linear-gradient(270deg, var(--color) 0%, rgba(0,0,0,0) 100%);
+                }
+            }
+            
+            &-artist {
+                color: var(--fg-secondary);
+                display: -webkit-box;
+                line-clamp: 1;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            &-button {
+                display: flex;
+                color: var(--fg-secondary);
+                
+                &:disabled { opacity: 0.5; }
+                &:hover { color: var(--fg-primary); }
+            }
+            
+            &-progress-bar {
+                height: 2px;
+                width: 0%;
+                background: var(--fg-primary);
+                border-radius: 2px;
+
+                &-container {
+                    width: calc(100% - 18px); // 8 and 10 are padding .now-playing-track
+                    background: rgba(219, 219, 219, 0.21);
+                    height: 2px;
+                    border-radius: 2px;
+                    overflow: hidden;
+                    position: absolute;
+                    bottom: 2px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+            }
+        }
+    }   
+}

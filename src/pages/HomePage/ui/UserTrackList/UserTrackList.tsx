@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "shared/lib";
 import { getUserTopTracks, selectFeedSettings, selectFeedUserTracks } from "entities/feed";
 import { Pause, Play } from "shared/assets";
 import { usePlaybackAdapter } from "entities/playback";
-import "./UserTrackList.scss";
+import styles from "./style.module.scss";
 
 export const UserTrackList: FC = () => {
     const navigate = useNavigate();
@@ -33,18 +33,31 @@ export const UserTrackList: FC = () => {
 
     const renderUserTracks = (items: ITrack[]) => {
         return items.map(({album, name, artists, id, uri}) => 
-            <div className="usertrack-card" key={id}>
-                <div className="card-content" onClick={() => navigate(`/albums/${album.id}`)}>
-                    <img src={album.images[0].url || PlaceholderImage} className="card-image" />
-                    <div className="card-body">
-                        <Description className="card-title">{name}</Description>
-                        <Description className="card-artist">{artists.map(artist => artist.name).join(", ")}</Description>
+            <div className={styles["usertrack-card"]} key={id}>
+                <div 
+                    className={styles["card-content"]} 
+                    onClick={() => navigate(`/albums/${album.id}`)}
+                >
+                    <img 
+                        src={album.images[0].url || PlaceholderImage} 
+                        className={styles["card-image"]} 
+                    />
+                    <div className={styles["card-body"]}>
+                        <Description className={styles["card-title"]}>
+                            {name}
+                        </Description>
+                        <Description className={styles["card-artist"]}>
+                            {artists.map(artist => artist.name).join(", ")}
+                        </Description>
                     </div>
                 </div>
-                <button className="card-button" onClick={() => handlePlay(album.uri, uri)}>
-                    { adapter.getTrackName() === name ?
-                      <Pause width={40} height={40} /> :
-                      <Play width={40} height={40} />}
+                <button 
+                    className={styles["card-button"]} 
+                    onClick={() => handlePlay(album.uri, uri)}
+                >
+                    {adapter.getTrackName() === name ?
+                    <Pause width={40} height={40} /> :
+                    <Play width={40} height={40} />}
                 </button>
             </div>
         )
@@ -52,7 +65,7 @@ export const UserTrackList: FC = () => {
 
     return (
         (userTracks.items.length > 0 && userTracks.showForUser) &&
-        <div className="usertracks-container">
+        <div className={styles["usertracks-container"]}>
             {renderUserTracks(userTracks.items)}
         </div>
     )

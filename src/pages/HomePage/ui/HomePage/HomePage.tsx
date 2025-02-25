@@ -8,8 +8,8 @@ import { useAppSelector } from "shared/lib";
 import { selectFeedLoading, TFeedFilter } from "entities/feed";
 import { Catalogue } from "../Catalogue/Catalogue";
 import { UserTrackList } from "../UserTrackList/UserTrackList";
-import "./HomePage.scss";
 import { Loader } from "shared/ui";
+import styles from "./style.module.scss";
 
 const HomePage: FC = () => {
     const { theme } = useTheme();
@@ -18,12 +18,17 @@ const HomePage: FC = () => {
     const loading = useAppSelector(selectFeedLoading);
     
     return (
-        <div className="home">
+        <div className={styles["home"]}>
             <Loader loading={loading} />
             <AdjustContextMenu isOpen={isOpen} setIsOpen={setIsOpen} />
-            <div className="filter-bar">
-                <div className={clsx("tags-container", theme)}>
-                    <div className="tags-slider">
+            <div className={styles["filter-bar"]}>
+                <div 
+                    className={clsx(
+                        styles["tags-container"], 
+                        theme && styles[theme]
+                    )}
+                >
+                    <div className={styles["tags-slider"]}>
                         <TagItem 
                             tag="Music"
                             active={catalogueType === "music"}
@@ -36,8 +41,11 @@ const HomePage: FC = () => {
                         />
                     </div>
                 </div>
-                <button className="button-adjust" onClick={() => setIsOpen(true)}>
-                    <Adjust width={40} height={40} className="icon" />
+                <button 
+                    className={styles["button-adjust"]} 
+                    onClick={() => setIsOpen(true)}
+                >
+                    <Adjust width={40} height={40} className={styles["icon"]} />
                 </button>                
             </div>
             <UserTrackList />

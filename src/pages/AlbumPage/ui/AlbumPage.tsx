@@ -7,8 +7,8 @@ import { Description, Input, Loader, Title } from "shared/ui";
 import { TrackItem } from "entities/track";
 import { ISimplifiedTrack } from "shared/api/track";
 import { ArtistList } from "entities/artist";
-import './AlbumPage.scss';
 import { PagePlaybackControl } from "entities/playback";
+import styles from "./style.module.scss";
 
 const AlbumPage: FC = () => {
     const { id } = useParams();
@@ -41,36 +41,38 @@ const AlbumPage: FC = () => {
     }
 
     return (
-        <div className="album-page" style={{'--color': color} as CSSProperties}>
+        <div 
+            className={styles["album"]} 
+            style={{'--color': color} as CSSProperties}>
             <Loader loading={loading} />
-            <header className="album-header">
-                <Input placeholder="Find in album" />
+            <header className={styles["album-header"]}>
+                <Input placeholder={"Find in album"} />
             </header>
-            <div className="album-image-container">
+            <div className={styles["album-image-container"]}>
                 <img 
                     src={album?.images[0].url || PlaceholderImage} 
-                    className="album-image" 
+                    className={styles["album-image"]} 
                 />
             </div>
-            <Title className="album-name">{album?.name ?? ""}</Title>
-            <div className="album-info-container">
+            <Title className={styles["album-name"]}>{album?.name ?? ""}</Title>
+            <div className={styles["album-info-container"]}>
                 <ArtistList 
                     artists={album?.artists} 
-                    className="album-artist"
+                    className={styles["album-artist"]}
                 />
-                <p className="dot">&#183;</p>
-                <Description className="album-type">
+                <p className={styles["dot"]}>&#183;</p>
+                <Description className={styles["album-type"]}>
                     {album?.album_type ?? ""}
                 </Description>
-                <p className="dot">&#183;</p>
-                <Description className="album-date">
+                <p className={styles["dot"]}>&#183;</p>
+                <Description>
                     {displayDate(album?.release_date, album?.release_date_precision)}
                 </Description>
             </div>
             <PagePlaybackControl 
                 contextUri={album?.uri}
             />
-            <div className="album-items-container">
+            <div className={styles["album-items-container"]}>
                 {renderTracks(album?.tracks.items ?? [])}
             </div>
         </div>

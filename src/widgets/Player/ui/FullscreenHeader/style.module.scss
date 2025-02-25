@@ -1,0 +1,45 @@
+.fullscreen-header {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 40px 1fr 40px;
+    margin-bottom: 2.13vh; /* (18 * 100%)/844 */
+
+    &-container {
+        position: relative;
+        justify-self: center;
+        display: grid;
+        grid-template-areas: "overlay";
+        justify-items: center;
+    }
+
+    &-body {
+        grid-area: overlay;
+        display: flex;
+        align-items: center;
+        color: var(--fg-secondary);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.1s ease-in-out;
+
+        &.active {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+
+    &-album,
+    &-track-name {
+        color: var(--fg-primary);
+        display: -webkit-box;
+        line-clamp: 1;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    &-button {
+        display: flex;
+        color: var(--fg-secondary);
+    }
+}
+

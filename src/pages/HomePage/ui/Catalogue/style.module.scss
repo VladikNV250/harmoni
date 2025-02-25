@@ -1,0 +1,8 @@
+.catalogues-container { 
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.catalogue {
+    overflow: hidden;    
+}

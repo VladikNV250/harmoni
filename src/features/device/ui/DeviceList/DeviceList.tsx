@@ -4,9 +4,10 @@ import { Device, Playing } from "shared/assets";
 import { useAppDispatch, useAppSelector } from "shared/lib";
 import { Description, Loader } from "shared/ui";
 import { getAvailableDevices } from "features/device/model/deviceThunk";
-import "./DeviceList.scss";
 import { selectDevices, selectDevicesLoading } from "features/device/model/selectors";
 import { transferPlayback } from "entities/playback";
+import styles from "./style.module.scss";
+
 
 interface IDeviceList {
     readonly activeTab: "track" | "devices" | "queue",
@@ -25,16 +26,24 @@ export const DeviceList: FC<IDeviceList> = ({ activeTab, chooseTab }) => {
     }
 
     return (
-        <div className={clsx("fullscreen-devices", activeTab === "devices" && "fullscreen-devices__active")}>
+        <div 
+            className={clsx(
+                styles["fullscreen-devices"], 
+                activeTab === "devices" && styles["active"]
+            )}
+        >
             <Loader loading={loading} />
             {devices.map(({id, name, is_active}, index) =>
                 <div 
                     key={id ?? index} 
-                    className={clsx("fullscreen-device", is_active && "active")}
                     onClick={() => handleTransferDevice(id)}
+                    className={clsx(
+                        styles["fullscreen-device"], 
+                        is_active && styles["active"]
+                    )}
                 >
-                    <Device width={40} height={40} className="device-icon" />
-                    <Description className="device-name">
+                    <Device width={40} height={40} className={styles["device-icon"]} />
+                    <Description className={styles["device-name"]}>
                         {name}                                        
                     </Description>
                     {is_active &&

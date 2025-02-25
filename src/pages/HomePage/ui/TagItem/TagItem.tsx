@@ -1,8 +1,8 @@
 import { FC } from "react";
-import "./TagItem.scss";
 import { Text } from "shared/ui";
 import { TFeedFilter } from "entities/feed";
 import clsx from "clsx";
+import styles from "./style.module.scss";
 
 interface ITagItem {
     readonly tag: string,
@@ -18,7 +18,13 @@ export const TagItem: FC<ITagItem> = ({ tag, active, setType }) => {
     }
 
     return (
-        <div className={clsx("tag", active && "active")} onClick={handleClick}>
+        <div 
+            onClick={handleClick}
+            className={clsx(
+                styles["tag"], 
+                active && styles["active"]
+            )} 
+        >
             <Text>
                 {tag}
             </Text>

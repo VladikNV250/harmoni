@@ -5,16 +5,17 @@ import {
 } from "react"
 import clsx from "clsx"
 import { useAppSelector } from "shared/lib"
-import { MoreMenu } from "../MoreMenu/MoreMenu"
 import { useMenu } from "widgets/Player/lib/menu/useMenu"
+import { MoreMenu } from "../MoreMenu/MoreMenu"
+import { PlayerPlaybackControl } from "../PlayerPlaybackControl/PlayerPlaybackControl"
 import { FullscreenHeader } from "../FullscreenHeader/FullscreenHeader"
+import { ForPremiumMessage } from "../ForPremiumMessage/ForPremiumMessage"
 import { FullscreenTrack } from "../FullscreenTrack/FullscrenTrack"
 import { QueueList } from "features/queue"
 import { DeviceList } from "features/device"
-import { ForPremiumMessage } from "../ForPremiumMessage/ForPremiumMessage"
-import { PlayerPlaybackControl } from "entities/playback"
-import "./FullscreenPlayer.scss";
 import { selectPlayerFullsreenMode } from "widgets/Player/model/selectors"
+import styles from "./style.module.scss";
+
 
 interface IFullscreenPlayer {
     readonly color: string,
@@ -36,18 +37,21 @@ export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, activeTab, choo
 
     return (
         <div 
-            className={clsx("fullscreen-player", fullscreen && "active")} 
+            className={clsx(
+                styles["fullscreen-player"], 
+                fullscreen && styles["active"]
+            )} 
             style={{"--color": color} as CSSProperties}
         >
             <MoreMenu 
                 menus={menus}
                 openMenu={openMenu}
             />
-            <div className="fullscreen-container">
+            <div className={styles["fullscreen-player-container"]}>
                 <FullscreenHeader 
                     activeTab={activeTab}
                 />
-                <div className="fullscreen-content">
+                <div className={styles["fullscreen-player-content"]}>
                     <FullscreenTrack
                         activeTab={activeTab} 
                     />

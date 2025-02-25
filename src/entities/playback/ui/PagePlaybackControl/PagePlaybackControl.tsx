@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import "./PagePlaybackControl.scss";
 import clsx from "clsx";
 import { 
     AddToPlaylist, 
@@ -10,6 +9,8 @@ import {
     Shuffle 
 } from "shared/assets";
 import { usePlaybackAdapter } from "entities/playback/lib/usePlaybackAdapter";
+import styles from "./style.module.scss";
+
 
 interface IPagePlaybackControl {
     /** Additional classes */
@@ -60,27 +61,27 @@ export const PagePlaybackControl: FC<IPagePlaybackControl> = ({ className, conte
     }
 
     return (
-        <div className={clsx("control-panel", className)}>
-            <div className="control-panel-button-container">
-                <button className="control-panel-button">
+        <div className={clsx(styles["control-panel"], className)}>
+            <div className={styles["control-panel-button-container"]}>
+                <button className={styles["control-panel-button"]}>
                     <AddToPlaylist width={40} height={40} />
                 </button>
-                <button className="control-panel-button">
+                <button className={styles["control-panel-button"]}>
                     <AddToQueue width={40} height={40} />
                 </button>
-                <button className="control-panel-button">
+                <button className={styles["control-panel-button"]}>
                     <More width={40} height={40} />
                 </button>
             </div>
-            <div className="control-panel-button-container">
+            <div className={styles["control-panel-button-container"]}>
                 <button 
-                    className="control-panel-button" 
+                    className={styles["control-panel-button"]} 
                     onClick={toggleShuffle}
                 >
                     <Shuffle width={40} height={40} />
                 </button>
                 <button 
-                    className="control-panel-button" 
+                    className={styles["control-panel-button"]} 
                     onClick={handlePlay}
                 >
                     {adapter.getContextURI() === contextUri ?

@@ -7,7 +7,8 @@ import { useAppSelector } from "shared/lib";
 import { Loader, Paragraph } from "shared/ui";
 import { selectQueue, selectQueueLoading } from "features/queue/model/selectors";
 import { usePlaybackAdapter } from "entities/playback";
-import "./QueueList.scss";
+import styles from "./style.module.scss";
+
 
 interface IQueueList {
     readonly activeTab: "track" | "devices" | "queue",
@@ -26,47 +27,54 @@ export const QueueList: FC<IQueueList> = ({ activeTab }) => {
     }
 
     return (
-        <div className={clsx("fullscreen-queue", activeTab === "queue" && "fullscreen-queue__active")}>
-            <Paragraph className="queue-title">Next up:</Paragraph>
+        <div 
+            className={clsx(
+                styles["fullscreen-queue"], 
+                activeTab === "queue" && styles["active"]
+            )}
+        >
+            <Paragraph className={styles["fullscreen-queue-title"]}>
+                Next up:
+            </Paragraph>
             <Loader loading={loading} />
-            <div className="queue-tracks">
+            <div className={styles["fullscreen-queue-tracks"]}>
                 {queue?.queue.map((queueTrack, index) =>
                     queueTrack.type === "track" 
                     ? 
                     <div 
                         key={queueTrack.id + index} 
-                        className="queue-track" 
+                        className={styles["fullscreen-queue-track"]} 
                         onClick={() => handleClick(queueTrack.uri)}
                     >
                         <img 
                             src={queueTrack.album?.images[0]?.url ?? PlaceholderImage} 
-                            className="item-image"    
+                            className={styles["track-image"]}    
                         />
-                        <div className="item-content">
+                        <div className={styles["track-content"]}>
                             <Link to={`/albums/${queueTrack.album?.id ?? ""}`}>
-                                <Paragraph className="item-name">
+                                <Paragraph className={styles["track-name"]}>
                                     {queueTrack.name ?? ""}
                                 </Paragraph>
                             </Link>
-                            <div className="item-artist-container">
+                            <div className={styles["track-artist-container"]}>
                                 <ArtistList artists={queueTrack.artists} />
                             </div>
                         </div>
                     </div>
                     :
-                    <div className="queue-track" key={queueTrack.id}>
+                    <div className={styles["fullscreen-queue-track"]} key={queueTrack.id}>
                         <img 
                             src={queueTrack.show?.images[0]?.url ?? PlaceholderImage} 
-                            className="item-image"    
+                            className={styles["track-image"]}    
                         />
-                        <div className="item-content">
+                        <div className={styles["track-content"]}>
                             <Link to={`/shows/${queueTrack.show?.id ?? ""}`}>
-                                <Paragraph className="item-name">
+                                <Paragraph className={styles["track-name"]}>
                                     {queueTrack.name ?? ""}
                                 </Paragraph>
                             </Link>
-                            <div className="item-artist-container">
-                                <Paragraph className="item-publisher">
+                            <div className={styles["track-artist-container"]}>
+                                <Paragraph className={styles["track-publisher"]}>
                                     {queueTrack.show.publisher ?? ""}
                                 </Paragraph>
                             </div>

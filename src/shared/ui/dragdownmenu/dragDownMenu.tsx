@@ -1,7 +1,8 @@
 import { FC } from "react";
 import { Modal } from "../modal/modal";
-import "./dragDownMenu.scss";
 import clsx from "clsx";
+import styles from "./style.module.scss";
+
 
 interface IDragDownMenu {
     readonly children: JSX.Element,
@@ -13,8 +14,13 @@ interface IDragDownMenu {
 export const DragDownMenu: FC<IDragDownMenu> = ({ children, className, isOpen, setIsOpen }) => {
     return (
         <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-            <div className={clsx("dragdown-menu", isOpen && "opened", className)}>
-                <div className="drag-handle" />
+            <div 
+                className={clsx(
+                    styles["dragdown-menu"], 
+                    isOpen && styles["opened"], className
+                )}
+            >
+                <div className={styles["drag-handle"]} />
                 {children}
             </div>
         </Modal>

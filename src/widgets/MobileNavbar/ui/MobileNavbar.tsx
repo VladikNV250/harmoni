@@ -4,30 +4,40 @@ import { FC } from "react";
 import { NavLink } from "react-router";
 import { NAVIGATION_LINKS } from "shared/consts";
 import { INavLinkType } from "shared/types";
-import "./MobileNavbar.scss";
 import { Text } from "shared/ui";
+import styles from "./style.module.scss";
+
 
 export const MobileNavbar: FC = () => {
     const { theme } = useTheme();
 
     const renderNavLinks = (navLinks: INavLinkType[]) => {
         return navLinks.map(({ title, href, Icon, ActiveIcon }) => (
-            <li key={href} className="list-item">
+            <li key={href} className={styles["list-item"]}>
                 <NavLink
                     to={`/${href}`}
-                    className={
-                        ({isActive}) => "item-link" + (isActive ? "__active" : "")}>
-                    <Icon width={40} height={40} className="item-icon" />
-                    <ActiveIcon width={40} height={40} className="item-active-icon" />
-                    <Text className="item-title">{title}</Text>
+                    className={({isActive}) => 
+                        `${styles["item-link"]} ${isActive ? styles["active"] : ""}`
+                    }
+                >
+                    <Icon width={40} height={40} className={styles["item-icon"]} />
+                    <ActiveIcon width={40} height={40} className={styles["item-active-icon"]} />
+                    <Text className={styles["item-title"]}>
+                        {title}
+                    </Text>
                 </NavLink>
             </li>
         ))
     }
 
     return (
-        <nav className={clsx("mobile-navbar", theme)}>
-            <ul className="navbar-list">
+        <nav 
+            className={clsx(
+                styles["mobile-navbar"], 
+                theme && styles[theme]
+            )}
+        >
+            <ul className={styles["navbar-list"]}>
                 {renderNavLinks(NAVIGATION_LINKS)}
             </ul>
         </nav>

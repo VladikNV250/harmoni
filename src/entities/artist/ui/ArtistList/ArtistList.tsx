@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { FC } from "react";
 import { Link } from "react-router";
 import { IArtist, ISimplifiedArtist } from "shared/api/artist";
-import "./ArtistList.scss";
+import styles from "./style.module.scss";
 
 interface IArtistList {
     /** Artists array */
@@ -16,7 +16,7 @@ export const ArtistList: FC<IArtistList> = ({ artists = [], className }) => {
         <Link 
             key={artist.id} 
             to={`/artists/${artist.id}`} 
-            className={clsx("item-link-artist", className)}
+            className={clsx(styles["item-link-artist"], className)}
         >
             {artist.name + (index !== artists.length - 1 ? "," : "")}
         </Link>

@@ -1,7 +1,14 @@
-import clsx from "clsx";
-import { ChangeEvent, CSSProperties, FC, useEffect, useState } from "react"
-import "./seekbar.scss";
+import { 
+    ChangeEvent, 
+    CSSProperties, 
+    FC, 
+    useEffect, 
+    useState 
+} from "react"
 import { useDebounce } from "shared/lib";
+import clsx from "clsx";
+import styles from "./style.module.scss";
+
 
 interface ISeekBar {
     /** Additional classes */
@@ -35,7 +42,7 @@ export const SeekBar: FC<ISeekBar> = ({ trackDuration, progress, className, play
     return (
         <input 
             type="range" 
-            className={clsx("seek-bar", className)} 
+            className={clsx(styles["seek-bar"], className)} 
             min={0} max={Math.floor(trackDuration / 1000)} 
             value={Math.floor(progress / 1000)}
             onChange={handleChange} 

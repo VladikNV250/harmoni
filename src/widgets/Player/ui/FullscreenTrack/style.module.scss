@@ -1,0 +1,74 @@
+.fullscreen-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: all 0.1s ease-in-out;
+    visibility: hidden;
+
+    &.active {
+        overflow-y: auto;
+        scrollbar-width: 0;
+        &::-webkit-scrollbar { display: none; }
+        visibility: visible;
+        height: 100%;
+        opacity: 1;
+    }
+
+    &-image {
+        aspect-ratio: 1 / 1;
+        width: 100%;
+        border-radius: 5px;
+
+        &-container {
+            margin-bottom: 2.36vh; /* (20 * 100%)/844 */
+        }
+
+        @media (max-height: 700px) {
+            width: 75%;
+            &-container {
+                display: flex;
+                justify-content: center;
+            }
+        }
+
+        @media (max-height: 500px) {
+            width: 50%;
+        }
+    }
+
+    &-name {
+        display: inline-block;
+        color: var(--fg-primary);
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        position: relative;
+
+        &-container {
+            display: grid;
+            align-items: center;
+            grid-template-columns: 1fr auto;
+            grid-auto-flow: column;
+            grid-auto-columns: auto;
+            color: var(--fg-secondary);
+        }
+    }
+
+    &-artist {
+        margin-top: -2px;
+        color: var(--fg-secondary);
+        display: -webkit-box;
+        line-clamp: 1;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    &-button {
+        display: flex;
+        color: var(--fg-secondary);
+    }
+}
+

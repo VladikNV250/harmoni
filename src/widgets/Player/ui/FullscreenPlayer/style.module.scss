@@ -1,0 +1,58 @@
+.fullscreen-player {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-main);
+    z-index: 10;
+    padding: 0 18px 1.77vh; /* (15 * 100%)/844 where 60px is a padding on display height 844px */
+    animation: slide-down 0.2s ease-in-out forwards;
+
+    &.active {
+        top: 0;
+        opacity: 0;
+        animation: fade-in 0.2s ease-in-out 0.3s forwards;
+    }
+
+    &::before {
+        content: "";
+        width: 100%;
+        height: 220%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background: linear-gradient(180deg, var(--color) 0%, var(--bg-main) 100%);
+    }
+    
+    &-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    &-content {
+        position: relative;
+        margin-bottom: 5.9vh; /* (50 * 100%)/844 */
+        height: 54vh;
+        overflow-y: hidden;
+    }
+}
+
+@keyframes fade-in {
+    from { 
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-down {
+    from {
+        top: 0;
+    } to {
+        top: 100%;
+    }
+}

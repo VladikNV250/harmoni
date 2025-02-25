@@ -4,7 +4,7 @@ import AddIcon from "shared/assets/icons/add-sample-big.svg?react"
 import { useTheme } from "entities/theme";
 import { FeedList, feedSlice, selectFeedUserTracks } from "entities/feed";
 import { useAppDispatch, useAppSelector } from "shared/lib";
-import "./AdjustContextMenu.scss";
+import styles from "./style.module.scss";
 
 interface IAdjustContextMenu {
     readonly isOpen?: boolean;
@@ -19,19 +19,19 @@ export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setI
 
     return (
         <DragDownMenu isOpen={isOpen} setIsOpen={setIsOpen} className={theme}>
-            <div className="menu-content" onClick={(e) => e.stopPropagation()}>
-                <Paragraph className="menu-title">Customize Feed</Paragraph>
-                <div className="horizontal-line" />
-                <div className="scroll-container">
+            <div className={styles["menu-container"]} onClick={(e) => e.stopPropagation()}>
+                <Paragraph className={styles["menu-title"]}>Customize Feed</Paragraph>
+                <div className={styles["menu-line"]} />
+                <div className={styles["menu-scroll-container"]}>
                     <button 
-                        className="button-select_from_library" 
+                        className={styles["menu-button"]} 
                         >
-                        <AddIcon width={40} height={40} className="button-icon" />
+                        <AddIcon width={40} height={40} className={styles["button-icon"]} />
                         Select from Library
                     </button>
                     <FeedList />
-                    <div className="allow-usertracks-container">
-                        <Description className="allow-usertracks-text">
+                    <div className={styles["menu-content"]}>
+                        <Description className={styles["menu-text"]}>
                             Allow Displaying User Tracks
                         </Description>
                         <Switch 
@@ -41,7 +41,6 @@ export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setI
                         />
                     </div>
                 </div>
-                
             </div>
         </DragDownMenu>
     )

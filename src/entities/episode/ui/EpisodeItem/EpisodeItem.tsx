@@ -10,8 +10,9 @@ import {
     PlaceholderImage, 
     Play 
 } from "shared/assets";
-import "./EpisodeItem.scss";
 import { usePlaybackAdapter } from "entities/playback";
+import styles from "./style.module.scss";
+
 
 interface IEpisodeItem {
     readonly episode: IEpisode | ISimplifiedEpisode;
@@ -42,41 +43,44 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
     }
 
     return (
-        <div className="episode-item item">
-            <div className="item-image-container" onClick={() => navigate(`/episodes/${id}`)}>
+        <div className={styles["episode"]}>
+            <div 
+                className={styles["episode-image-container"]} 
+                onClick={() => navigate(`/episodes/${id}`)}
+            >
                 <img 
                     src={images[0]?.url || PlaceholderImage} 
-                    className="item-image"    
+                    className={styles["episode-image"]}    
                 />
-                <div className="item-body">
-                    <Paragraph className="item-name">
+                <div className={styles["episode-body"]}>
+                    <Paragraph className={styles["episode-name"]}>
                         {name ?? ""}
                     </Paragraph>
-                    <Description className="item-author">
+                    <Description className={styles["episode-author"]}>
                         {description ?? ""}
                     </Description>
                 </div>
             </div>
-            <div className="item-content">
-                <Description className="item-date">
+            <div className={styles["episode-content"]}>
+                <Description>
                     {getDate(release_date, release_date_precision)}
                 </Description>
-                <p className="dot">&#183;</p>
-                <Description className="item-duration">
+                <p>&#183;</p>
+                <Description>
                     {calculateDuration(duration_ms)}
                 </Description>
             </div>
-            <div className="item-control-panel control-panel">
-                <div className="control-panel-button-container">
-                    <button className="control-panel-button">
+            <div className={`${styles["episode-control-panel"]}`}>
+                <div className={styles["button-container"]}>
+                    <button className={styles["button"]}>
                         <AddToQueue width={40} height={40} />
                     </button>
-                    <button className="control-panel-button">
+                    <button className={styles["button"]}>
                         <More width={40} height={40} />
                     </button>
                 </div>
-                <div className="control-panel-button-container">
-                    <button className="control-panel-button" onClick={handlePlay}>
+                <div className={styles["button-container"]}>
+                    <button className={styles["button"]} onClick={handlePlay}>
                         <Play width={40} height={40} />
                     </button>
                 </div>

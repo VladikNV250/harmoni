@@ -1,17 +1,18 @@
 import { FC } from "react";
-import PinIcon from "shared/assets/icons/pin-big.svg?react";
-// import MoveIcon from "shared/assets/icons/move-big.svg?react";
-import UpIcon from "shared/assets/icons/up-big.svg?react";
-import DownIcon from "shared/assets/icons/down-big.svg?react";
-import ShowIcon from "shared/assets/icons/show-big.svg?react";
-import HideIcon from "shared/assets/icons/show-big__filled.svg?react";
 import { Description } from "shared/ui";
 import clsx from "clsx";
-import "./FeedList.scss";
 import { useAppDispatch, useAppSelector } from "shared/lib";
 import { selectFeeds } from "entities/feed/model/selectors";
 import { IFeed } from "entities/feed/model/types";
 import { feedSlice } from "entities/feed/model/feedSlice";
+import { 
+    UpIcon, 
+    DownIcon, 
+    PinIcon, 
+    ShowIcon, 
+    ShowFilledIcon, 
+} from "shared/assets";
+import styles from "./style.module.scss";
 
 export const FeedList: FC = () => {
     const feeds = useAppSelector(selectFeeds);
@@ -26,34 +27,47 @@ export const FeedList: FC = () => {
             return (
                 <li 
                     key={index} 
-                    className={clsx("item-feed", (feed.hidden.isHidden || feed.items.length === 0) && "hidden")}
-                    style={{order: feed.order}}>
+                    className={clsx(
+                        styles["item-feed"], 
+                        (feed.hidden.isHidden || feed.items.length === 0) && styles["hidden"]
+                    )}
+                    style={{order: feed.order}}
+                >
                     <button 
-                        className="item-button" 
+                        className={styles["item-button"]} 
                         onClick={() => dispatch(pinFeed(feedName))}
                         >
                         <PinIcon
                             width={40} height={40}
-                            className={clsx("icon", feed.order < 0 && "active")}
+                            className={clsx(
+                                styles["icon"], 
+                                feed.order < 0 && styles["active"]
+                            )}
                         />
                     </button>
-                    <Description className="item-name">
+                    <Description className={styles["item-name"]}>
                         {feedName}
                     </Description>
-                    <button className="item-button" onClick={() => dispatch(moveUpFeed(feedName))} >
+                    <button 
+                        className={styles["item-button"]} 
+                        onClick={() => dispatch(moveUpFeed(feedName))} 
+                    >
                         <UpIcon width={40} height={40} />
                     </button>
-                    <button className="item-button" onClick={() => dispatch(moveDownFeed(feedName))} >
+                    <button 
+                        className={styles["item-button"]} 
+                        onClick={() => dispatch(moveDownFeed(feedName))} 
+                    >
                         <DownIcon width={40} height={40} />
                     </button>
                     <button 
-                        className="item-button"
+                        className={styles["item-button"]}
                         onClick={() => dispatch(hideFeed(feedName))}
                         disabled={feed.items.length === 0 || feed.hidden.locked}
-                        >
+                    >
                         {(!feed.hidden.isHidden && feed.items.length > 0)
                             ? <ShowIcon width={40} height={40} />
-                            : <HideIcon width={40} height={40} />}
+                            : <ShowFilledIcon width={40} height={40} />}
                     </button>
                 </li>
             )
@@ -61,7 +75,7 @@ export const FeedList: FC = () => {
     }
 
     return (
-        <ul className="feed-list">
+        <ul className={styles["feed-list"]}>
             {renderFeedItems(feeds)}
         </ul>
     )

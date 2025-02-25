@@ -5,7 +5,8 @@ import { useColor } from "shared/lib";
 import { IShow } from "shared/api/show";
 import { usePlaybackAdapter } from "entities/playback";
 import { Pause, PlaceholderImage, Play } from "shared/assets";
-import "./ShowPreview.scss";
+import styles from './style.module.scss';
+
 
 interface IShowPreview {
     show: IShow;
@@ -18,18 +19,28 @@ export const ShowPreview: FC<IShowPreview> = ({ show }) => {
     const { adapter } = usePlaybackAdapter();
     
     return (
-        <div className="show-preview show">
-            <div className="show-content" onClick={() => navigate(`/shows/${id}`)}>
-                <img src={images[0]?.url || PlaceholderImage} className="show-image" />
-                <div className="show-body">
-                    <div className="body-background" style={{background: color}} />
-                    <div className="body-border" style={{ background: color }} />
-                    <Text className="show-name">{name}</Text>
-                    <p className="show-author">{publisher}</p>
+        <div className={styles["show"]}>
+            <div 
+                className={styles["show-content"]} 
+                onClick={() => navigate(`/shows/${id}`)}
+            >
+                <img 
+                    src={images[0]?.url || PlaceholderImage} 
+                    className={styles["show-image"]} 
+                />
+                <div className={styles["show-body"]}>
+                    <div className={styles["body-background"]} style={{background: color}} />
+                    <div className={styles["body-border"]} style={{ background: color }} />
+                    <Text className={styles["show-name"]}>
+                        {name}
+                    </Text>
+                    <p className={styles["show-author"]}>
+                        {publisher}
+                    </p>
                 </div>
             </div>
             <button 
-                className="show-button" 
+                className={styles["show-button"]} 
                 onClick={() => adapter.play({ context_uri: uri })}
             >
                 {adapter.getContextURI() === uri ?

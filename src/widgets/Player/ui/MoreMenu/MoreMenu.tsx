@@ -7,7 +7,8 @@ import { addItemToQueue } from "features/queue";
 import { getAvailableDevices } from "features/device";
 import { usePlaybackAdapter } from "entities/playback";
 import { playerSlice } from "widgets/Player/model/playerSlice";
-import "./MoreMenu.scss";
+import styles from "./style.module.scss";
+
 
 interface IMoreMenu {
     readonly menus: { [key: string]: boolean },
@@ -37,7 +38,7 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
             <Link 
                 key={artist.id} 
                 to={`/artists/${artist.id}`}
-                className="menu-link"
+                className={styles["menu-link"]}
                 onClick={() => {
                     openMenu("moreMenu", false)
                     dispatch(toggleFullscreenMode())
@@ -50,24 +51,27 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
 
     return (
         <DragDownMenu isOpen={menus.moreMenu} setIsOpen={(state: boolean) => openMenu("moreMenu", state)}>
-            <div className="menu-content">
-                <div className="dragdown-menu-artists-wrapper" onClick={e => e.stopPropagation()}>
+            <div className={styles["menu-content"]}>
+                <div 
+                    className={styles["menu-artists-wrapper"]} 
+                    onClick={e => e.stopPropagation()}
+                >
                     <DragDownMenu 
-                        className="dragdown-menu-artists" 
+                        className={styles["menu-artists"]} 
                         isOpen={menus.artistMenu} 
                         setIsOpen={(state: boolean) => openMenu("artistMenu", state)}
                     >
-                        <div className="menu-artists">
+                        <div className={styles["menu-artists-content"]}>
                             {renderArtists(adapter.getArtists())}
                         </div>
                     </DragDownMenu>
                 </div>
-                <button className="menu-button">
+                <button className={styles["menu-button"]}>
                     <AddToPlaylist width={40} height={40} />
                     <Paragraph>Add to playlist</Paragraph>
                 </button>
                 <button 
-                    className="menu-button" 
+                    className={styles["menu-button"]} 
                     onClick={async () => await addItemToQueueHandle(adapter.getTrackURI())}
                 >
                     <AddToQueue width={40} height={40} />
@@ -75,7 +79,7 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
                 </button>
                 <Link 
                     to={adapter.getAlbumLink()} 
-                    className="menu-link"
+                    className={styles["menu-link"]}
                     onClick={() => dispatch(toggleFullscreenMode())}
                 >
                     <Album width={40} height={40} />
@@ -84,7 +88,7 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
                 {adapter.getArtists().length > 1 
                 ?
                     <button 
-                        className="menu-button"
+                        className={styles["menu-button"]}
                         onClick={handleOpenArtistMenu}
                     >
                         <ArtistIcon width={40} height={40} />
@@ -93,14 +97,13 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
                 :
                     <Link 
                         to={`/artists/${adapter.getArtists()?.[0]?.id}`}
-                        className="menu-link"
+                        className={styles["menu-link"]}
                         onClick={() => dispatch(toggleFullscreenMode())}
                     >
                         <ArtistIcon width={40} height={40} />
                         <Paragraph>Go to artist</Paragraph>
                     </Link>
                 }
-                
             </div>
         </DragDownMenu>
     )

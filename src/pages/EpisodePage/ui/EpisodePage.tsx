@@ -6,7 +6,7 @@ import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import { Description, Title, Loader } from "shared/ui";
 import { getDate } from "entities/episode";
 import { PagePlaybackControl } from "entities/playback";
-import './EpisodePage.scss';
+import styles from "./style.module.scss";
 
 const EpisodePage: FC = () => {
     const { id } = useParams();
@@ -28,27 +28,32 @@ const EpisodePage: FC = () => {
     }, [id])
 
     return (
-        <div className="episode-page" style={{'--color': color} as CSSProperties}>
+        <div 
+            className={styles["episode"]} 
+            style={{'--color': color} as CSSProperties}
+        >
             <Loader loading={loading} />
-            <div className="episode-image-container">
+            <div className={styles["episode-image-container"]}>
                 <img 
                     src={episode?.images[0].url || PlaceholderImage} 
-                    className="episode-image" 
+                    className={styles["episode-image"]} 
                 />
             </div>
-            <Title className="episode-name">{episode?.name ?? ""}</Title>
+            <Title className={styles["episode-name"]}>
+                {episode?.name ?? ""}
+            </Title>
             <Link 
                 to={`/shows/${episode?.show.id}`} 
-                className="episode-author"
+                className={styles["episode-author"]}
             >
                 {episode?.show.publisher ?? ""}
             </Link>
-            <div className="episode-info-container">
-                <Description className="episode-date">
+            <div className={styles["episode-info-container"]}>
+                <Description>
                     {getDate(episode?.release_date, episode?.release_date_precision)}
                 </Description>
-                <p className="dot">&#183;</p>
-                <Description className="episode-duration">
+                <p>&#183;</p>
+                <Description>
                     {calculateDuration(episode?.duration_ms ?? 0)}
                 </Description>
             </div>
@@ -56,9 +61,9 @@ const EpisodePage: FC = () => {
                 contextUri={episode?.show.uri}
                 episodeUri={episode?.uri}
             />
-            <div className="episode-content">
+            <div className={styles["episode-content"]}>
                 <p 
-                    className="episode-description" 
+                    className={styles["episode-description"]} 
                     dangerouslySetInnerHTML={{
                         __html: episode?.html_description ?? ""
                     }} 

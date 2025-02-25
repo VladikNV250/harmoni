@@ -1,7 +1,8 @@
 import { FC } from "react"
 import { Description } from "../typography/description";
 import clsx from "clsx";
-import "./tabs.scss"
+import styles from "./style.module.scss";
+
 
 interface ITabs {
     /** All tabs */
@@ -20,10 +21,13 @@ export const Tabs: FC<ITabs> = ({ tabs, currTab, setTab, className }) => {
         return tabs.map((tab, index) => 
             <div 
                 key={index}
-                className={clsx("tab", tab === currTab && "active")}
                 onClick={() => setTab?.(tab)}
+                className={clsx(
+                    styles["tab"], 
+                    tab === currTab && styles["active"]
+                )}
             > 
-                <Description className="tab-name">
+                <Description className={styles["tab-name"]}>
                     {tab}
                 </Description>
             </div>
@@ -31,7 +35,7 @@ export const Tabs: FC<ITabs> = ({ tabs, currTab, setTab, className }) => {
     }
     
     return (
-        <div className={clsx("tab-list", className)}>
+        <div className={clsx(styles["tab-list"], className)}>
             {renderTabs(tabs)}
         </div>
         

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { FC } from "react";
-import "./modal.scss";
+import styles from "./style.module.scss";
 
 interface IModal {
     readonly children: JSX.Element,
@@ -12,8 +12,11 @@ interface IModal {
 export const Modal: FC<IModal> = ({ children, className, isOpen, setIsOpen }) => {
     return (
         <div 
-            className={clsx("modal", isOpen && "open", className)} 
-            onClick={() => setIsOpen?.(false)}>
+            onClick={() => setIsOpen?.(false)}
+            className={clsx(
+                styles["modal"], 
+                isOpen && styles["open"], className
+            )}> 
             {children}
         </div>
     )

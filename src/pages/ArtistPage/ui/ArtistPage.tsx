@@ -9,7 +9,7 @@ import { ISimplifiedAlbum } from "shared/api/album";
 import { AlbumPreview } from "entities/album";
 import { TrackItem } from "entities/track";
 import { PagePlaybackControl } from "entities/playback";
-import './ArtistPage.scss';
+import styles from "./style.module.scss";
 
 const ArtistPage: FC = () => {
     const { id } = useParams();
@@ -100,49 +100,49 @@ const ArtistPage: FC = () => {
     }
 
     return (
-        <div className="artist-page" style={{'--color': color} as CSSProperties}>
+        <div 
+            className={styles["artist"]} 
+            style={{'--color': color} as CSSProperties}>
             <Loader loading={loading} />
-            <div className="artist-image-container">
+            <div className={styles["artist-image-container"]}>
                 <img 
                     src={artist?.images[0].url || PlaceholderImage} 
-                    className="artist-image" 
+                    className={styles["artist-image"]} 
                 />
-                <div className="artist-body">
-                    <Title className="artist-name">{artist?.name ?? ""}</Title>
-                    <Description className="artist-total">
+                <div className={styles["artist-body"]}>
+                    <Title className={styles["artist-name"]}>
+                        {artist?.name ?? ""}
+                    </Title>
+                    <Description className={styles["artist-total"]}>
                         {displayFollowers(artist?.followers.total)}
                     </Description>
                 </div>
             </div>
             <PagePlaybackControl 
-                className="artist-control-panel" 
+                className={styles["artist-control-panel"]} 
                 contextUri={artist?.uri}
             />
             <Tabs 
                 tabs={tabs}
                 currTab={currentTab}
                 setTab={setCurrentTab}
-                className="artist-tabs"
+                className={styles["artist-tabs"]}
             />
-            <div className="artist-content">
-                
+            <div className={styles["artist-content"]}>
                 {currentTab === "Top Tracks" &&
-                <div className="artist-items-container">
+                <div className={styles["artist-items-container"]}>
                     {renderTracks(tracks ?? [])}
                 </div>}
-                
                 {currentTab === "Albums" &&
-                <div className="artist-albums-container">
+                <div className={styles["artist-albums-container"]}>
                     {renderAlbums(albums.album ?? [])}
                 </div>}
-
                 {currentTab === "Singles" &&
-                <div className="artist-albums-container">
+                <div className={styles["artist-albums-container"]}>
                     {renderAlbums(albums.single ?? [])}
-                </div>
-                }
+                </div>}
                 {currentTab === "Compilations and Appears On" &&
-                <div className="artist-albums-container">
+                <div className={styles["artist-albums-container"]}>
                     {renderAlbums(albums.compilation ?? [])}
                 </div>}
             </div>

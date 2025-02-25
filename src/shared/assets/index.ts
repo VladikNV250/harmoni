@@ -22,6 +22,13 @@ import Close from "shared/assets/icons/close-big.svg?react";
 import Edit from "shared/assets/icons/edit-big.svg?react";
 import Share from "shared/assets/icons/share-big.svg?react";
 import AddFriend from "shared/assets/icons/add-friend-big.svg?react";
+import PinIcon from "shared/assets/icons/pin-big.svg?react";
+import MoveIcon from "shared/assets/icons/move-big.svg?react";
+import UpIcon from "shared/assets/icons/up-big.svg?react";
+import DownIcon from "shared/assets/icons/down-big.svg?react";
+import ShowIcon from "shared/assets/icons/show-big.svg?react";
+import ShowFilledIcon from "shared/assets/icons/show-big__filled.svg?react";
+
 
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
@@ -52,7 +59,13 @@ export {
     Close,
     AddFriend,
     Edit,
-    Share
+    Share,
+    UpIcon,
+    DownIcon,
+    MoveIcon,
+    PinIcon,
+    ShowIcon,
+    ShowFilledIcon,
 }
 
 /** IMAGES */

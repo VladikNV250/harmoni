@@ -9,7 +9,8 @@ import { useAppDispatch } from "shared/lib";
 import { Text } from "shared/ui";
 import { playerSlice } from "widgets/Player/model/playerSlice";
 import { usePlaybackAdapter } from "entities/playback";
-import "./FullscreenHeader.scss";
+import styles from "./style.module.scss";
+
 
 interface IFullscreenHeader {
     readonly activeTab: "track" | "devices" | "queue"
@@ -21,23 +22,33 @@ export const FullscreenHeader: FC<IFullscreenHeader> = ({ activeTab }) => {
     const { adapter } = usePlaybackAdapter();
 
     return (
-        <header className="fullscreen-header">
+        <header className={styles["fullscreen-header"]}>
             <button 
-                className="fullscreen-button" 
+                className={styles["fullscreen-header-button"]} 
                 onClick={() => dispatch(toggleFullscreenMode())}
             >
                 <Down width={40} height={40} />
             </button>
-            <div className="fullscreen-header-container">
-                <div className={clsx("fullscreen-header-body", activeTab === "track" && "active")}>
+            <div className={styles["fullscreen-header-container"]}>
+                <div 
+                    className={clsx(
+                        styles["fullscreen-header-body"], 
+                        activeTab === "track" && styles["active"]
+                    )}
+                >
                     <Album width={24} height={24} />
-                    <Text className="fullscreen-album">
+                    <Text className={styles["fullscreen-header-album"]}>
                         {adapter.getAlbumName()} 
                     </Text>
                 </div>
-                <div className={clsx("fullscreen-header-body", activeTab !== "track" && "active")}>
+                <div 
+                    className={clsx(
+                        styles["fullscreen-header-body"], 
+                        activeTab !== "track" && styles["active"]
+                    )}
+                >
                     <Playing width={24} height={24} style={{color: `var(--primary)`}} />
-                    <Text className="fullscreen-track-name">
+                    <Text className={styles["fullscreen-header-track-name"]}>
                         {adapter.getTrackName()}
                     </Text>
                 </div>

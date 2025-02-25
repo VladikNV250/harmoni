@@ -1,5 +1,5 @@
 import { FC } from "react";
-import "./SearchPage.scss";
+// import styles from "./style.module.scss";
 
 const SearchPage: FC = () => {
     return (

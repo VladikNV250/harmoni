@@ -1,6 +1,7 @@
 import { FC } from "react";
-import "./typography.scss"
 import clsx from "clsx";
+import styles from "./style.module.scss";
+
 
 interface IDescription {
     /** Text */
@@ -11,7 +12,7 @@ interface IDescription {
 
 export const Description: FC<IDescription> = ({ children, className }) => {
     return (
-        <span className={clsx("description", className)}>
+        <span className={clsx(styles["description"], className)}>
             {children}
         </span>
     )

@@ -17,7 +17,8 @@ import {
 import { Description } from "shared/ui";
 import { playerSlice } from "widgets/Player/model/playerSlice";
 import { usePlaybackAdapter } from "entities/playback";
-import "./MinimizedPlayer.scss";
+import styles from "./style.module.scss";
+
 
 interface IMinimizedPlayer {
     readonly color: string,
@@ -41,36 +42,38 @@ export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, chooseTab }) => {
 
     return (
         <div 
-            className="minimized-player"
+            className={styles["minimized-player"]}
             onMouseLeave={endPress}            
             style={{"--color": color} as CSSProperties}>
             {isPressed && 
-            <div className="minimized-player-options" onClick={endPress}>
-                <button className="option-button">
+            <div className={styles["minimized-player-options"]} onClick={endPress}>
+                <button className={styles["option-button"]}>
                     <Hide width={40} height={40} />
                 </button>
-                <button className="option-button">
+                <button className={styles["option-button"]}>
                     <Like width={40} height={40} />
                 </button>
-            </div>
-            }
+            </div>}
             <div 
-                className="minimized-player-track"
+                className={styles["minimized-player-track"]}
                 onClick={handleClick}
                 onMouseDown={startPress}
                 onMouseUp={clearPressTime}
                 onTouchStart={startPress}
                 onTouchEnd={clearPressTime}>
-                <img src={adapter.getTrackImage()} className="track-image" />
-                <div className="track-body">
-                    <Description className="track-name">
+                <img 
+                    src={adapter.getTrackImage()} 
+                    className={styles["track-image"]} 
+                />
+                <div className={styles["track-body"]}>
+                    <Description className={styles["track-name"]}>
                         {adapter.getTrackName()}
                     </Description>
-                    <Description className="track-artist">
+                    <Description className={styles["track-artist"]}>
                         {adapter.getArtists().map(artist => artist.name).join(", ")}
                     </Description>
                 </div>
-                <button className="track-button" onClick={(e) => {
+                <button className={styles["track-button"]} onClick={(e) => {
                     e.stopPropagation(); 
                     dispatch(toggleFullscreenMode()); 
                     chooseTab("devices")
@@ -78,7 +81,7 @@ export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, chooseTab }) => {
                     <Device width={40} height={40} />
                 </button>
                 <button 
-                    className="track-button" 
+                    className={styles["track-button"]} 
                     onClick={handlePlay}
                     disabled={adapter.getCurrentDevice() !== "Harmoni App Player"}
                 >
@@ -86,9 +89,9 @@ export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, chooseTab }) => {
                     ? <PauseSimple width={40} height={40} />
                     : <PlaySimple width={40} height={40} />}
                 </button>
-                <div className="track-progress-bar-container">
+                <div className={styles["track-progress-bar-container"]}>
                     <div 
-                        className="track-progress-bar" 
+                        className={styles["track-progress-bar"]} 
                         style={{
                             width: `${adapter.getProcessInPercent()}%`
                         }} 

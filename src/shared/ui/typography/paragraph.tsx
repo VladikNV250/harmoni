@@ -1,6 +1,7 @@
 import { FC } from "react";
-import "./typography.scss"
 import clsx from "clsx";
+import styles from "./style.module.scss";
+
 
 interface IParagraph {
     /** Text */
@@ -11,7 +12,7 @@ interface IParagraph {
 
 export const Paragraph: FC<IParagraph> = ({ children, className }) => {
     return (
-        <p className={clsx("paragraph", className)}>
+        <p className={clsx(styles["paragraph"], className)}>
             {children}
         </p>
     )

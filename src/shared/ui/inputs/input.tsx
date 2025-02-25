@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import { ChangeEvent, FC, InputHTMLAttributes, useState } from "react";
 import Search from "shared/assets/icons/search-big.svg?react";
-import "./input.scss";
+import styles from "./style.module.scss";
+
 
 interface IInput extends InputHTMLAttributes<HTMLInputElement> {
     /** Additional styles. */
@@ -22,15 +23,15 @@ export const Input: FC<IInput> = (props) => {
     }
     
     return (
-        <div className={clsx("input-container", className)}>
+        <div className={clsx(styles["input-container"], className)}>
             <input 
                 type="text" 
-                className="input"
+                className={styles["input"]}
                 value={value ?? inputData}
                 placeholder={placeholder}
                 onChange={onChange ?? onChangeInputData}
             />
-            <Search width={35} height={35} className="input-icon" />
+            <Search width={35} height={35} className={styles["input-icon"]} />
         </div>
         
     )

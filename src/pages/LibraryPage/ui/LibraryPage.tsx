@@ -1,9 +1,9 @@
 import { FC } from "react";
-import "./LibraryPage.scss";
+import styles from "./style.module.scss";
 
 const LibraryPage: FC = () => {
     return (
-        <div className="library">
+        <div className={styles["library"]}>
             
         </div>
     )

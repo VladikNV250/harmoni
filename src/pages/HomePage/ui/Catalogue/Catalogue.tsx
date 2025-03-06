@@ -29,7 +29,6 @@ import { useAppDispatch, useAppSelector } from "shared/lib";
 import { STANDARD_FEEDS } from "shared/consts";
 import "react-alice-carousel/lib/scss/alice-carousel.scss"
 import styles from "./style.module.scss";
-import "./aliceCarousel.scss";
 
 
 interface ICatalogue {

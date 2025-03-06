@@ -51,7 +51,7 @@ const ProfilePage: FC = () => {
             <div className={styles["user-info"]}>
                 <img 
                     src={user.images[0]?.url ?? PlaceholderProfileImage} 
-                    className="user-avatar" 
+                    className={styles["user-avatar"]} 
                 />
                 <div className={styles["user-content"]}>
                     <div className={styles["user-header"]}>

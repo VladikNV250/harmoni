@@ -10,7 +10,8 @@ export { DragDownMenu } from "./dragdownmenu/dragDownMenu"
 
 export { Switch } from "./switch/switch";
 
-export { Input } from "./inputs/input";
+export { SearchInput } from "./inputs/searchinput/searchinput";
+export { Input } from "./inputs/input/input";
 
 export { Loader } from './loaders/loader';
 
@@ -18,3 +19,6 @@ export { Tabs } from "./tabs/tabs";
 
 export { SeekBar } from "./progressbars/seekbar/seekbar";
 export { VolumeBar } from "./progressbars/volumebar/volumebar";
+
+export { FilledButton } from "./buttons/filledButton/filledButton";
+export { TextButton } from "./buttons/textButton/textButton";

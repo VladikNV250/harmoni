@@ -72,6 +72,24 @@ class APIInstance {
             }
         )
     }
+
+    public async delete<T>(
+        endpoint: string,
+        options: AxiosRequestConfig = {}
+    ): Promise<T> {
+        await currentToken.updateToken();
+
+        return await this.axios.delete(
+            endpoint,
+            {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    "Authorization": "Bearer " + currentToken.access_token
+                }
+            }
+        )
+    }
 }
 
 export const apiInstance = new APIInstance();

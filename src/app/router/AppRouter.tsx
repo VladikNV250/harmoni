@@ -7,18 +7,19 @@ import { LibraryPage } from "pages/LibraryPage";
 import { LoginPage } from "pages/LoginPage";
 import { ProfilePage } from "pages/ProfilePage";
 import { SearchPage } from "pages/SearchPage";
+import { PlaylistPage } from "pages/PlaylistPage";
+import { AlbumPage } from "pages/AlbumPage";
+import { ArtistPage } from "pages/ArtistPage";
+import { ShowPage } from "pages/ShowPage";
+import { EpisodePage } from "pages/EpisodePage";
+import { ProtectedRoute } from "./ProtectedRoute";
 import { FC } from "react";
 import { 
     BrowserRouter,
     Route, 
     Routes
 } from "react-router";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { PlaylistPage } from "pages/PlaylistPage";
-import { AlbumPage } from "pages/AlbumPage";
-import { ArtistPage } from "pages/ArtistPage";
-import { ShowPage } from "pages/ShowPage";
-import { EpisodePage } from "pages/EpisodePage";
+import { FolderPage } from "pages/FolderPage";
 
 export const AppRouter: FC = () => {
     const { theme } = useTheme();
@@ -65,11 +66,14 @@ export const AppRouter: FC = () => {
                             path="episodes/:id"
                             element={<ProtectedRoute><EpisodePage /></ProtectedRoute>}
                         /> 
+                        <Route 
+                            path="folders/:id"
+                            element={<ProtectedRoute><FolderPage /></ProtectedRoute>}
+                        />
                         <Route
                             path="callback"
                             element={<Callback />}
                         />
-
                     </Route>
                     <Route  
                         path="/login"

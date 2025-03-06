@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Description, DragDownMenu, Paragraph, Switch } from "shared/ui"
-import AddIcon from "shared/assets/icons/add-sample-big.svg?react"
+import { AddSimple } from "shared/assets";
 import { useTheme } from "entities/theme";
 import { FeedList, feedSlice, selectFeedUserTracks } from "entities/feed";
 import { useAppDispatch, useAppSelector } from "shared/lib";
@@ -26,7 +26,7 @@ export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setI
                     <button 
                         className={styles["menu-button"]} 
                         >
-                        <AddIcon width={40} height={40} className={styles["button-icon"]} />
+                        <AddSimple width={40} height={40} className={styles["button-icon"]} />
                         Select from Library
                     </button>
                     <FeedList />

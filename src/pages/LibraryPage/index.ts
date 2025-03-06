@@ -1,1 +1,1 @@
-export { LazyLibraryPage as LibraryPage } from "./ui/lazy";
+export { LazyLibraryPage as LibraryPage } from "./ui/LibraryPage/lazy";

@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { useTheme } from "entities/theme";
 import { TagItem } from "../TagItem/TagItem";
 import { AdjustContextMenu } from "../AdjustContextMenu/AdjustContextMenu";
-import Adjust from "shared/assets/icons/adjust-big.svg?react";
+import { Adjust } from "shared/assets";
 import clsx from "clsx";
 import { useAppSelector } from "shared/lib";
 import { selectFeedLoading, TFeedFilter } from "entities/feed";

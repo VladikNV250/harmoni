@@ -1,0 +1,39 @@
+.library-header {
+        position: relative;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 12px 15px 6px;
+        z-index: 10;
+        background: var(--bg-main);
+
+    &-container {
+        display: flex;
+        align-items: center;
+        
+        &__one {
+            @extend .library-header-container;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        &__two {
+            @extend .library-header-container;
+            gap: 16px;
+        }
+    }
+
+    &-input {
+        width: 84%; // 306 * 100 / 363
+    }
+
+    &-button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--fg-secondary);
+        transition: all .1s ease-in-out;
+
+        &:hover { color: var(--fg-primary); }
+    }
+}

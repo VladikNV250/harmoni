@@ -81,3 +81,6 @@ button {
 a {
   text-decoration: none;
 }
+
+/** Gap between elements in AliceCarousel  */
+.alice-carousel__stage-item:not(:last-child) { margin-right: 9px; }

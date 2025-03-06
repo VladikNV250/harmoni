@@ -1,0 +1,1 @@
+export { LazyFolderPage as FolderPage } from "./ui/FolderPage/lazy";

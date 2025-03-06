@@ -1,11 +1,31 @@
 export type {
-    ISavedAlbum,
     IUserTopItems,
-    IUserSavedAlbums,
+    ISavedAlbum,
+    ISavedShow,
+    ISavedTracks
 } from './types';
 
 export {
-    fetchUserSavedAlbums,
-    fetchUserTopArtists,
     fetchUserTopTracks,
+    fetchUserTopArtists,
+    fetchLibraryAlbums,
+    fetchLibraryArtists,
+    fetchLibraryPlaylists,
+    fetchLibraryShows,
+    fetchLikedTracks,
+    checkFollowedArtists,
+    checkFollowedUsers,
+    checkLikedTracks,
+    checkSavedAlbums,
+    checkSavedShows,
+    followArtists,
+    followUsers,
+    removeAlbumsFromLibrary,
+    removeShowsFromLibrary,
+    removeTrackFromLibrary,
+    saveAlbumsToLibrary,
+    saveShowsToLibrary,
+    saveTrackToLibrary,
+    unfollowArtists,
+    unfollowUsers,
 } from "./user"

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { FC } from "react";
 import { 
     Album, 
-    Down, 
+    DownIcon, 
     Playing 
 } from "shared/assets";
 import { useAppDispatch } from "shared/lib";
@@ -27,7 +27,7 @@ export const FullscreenHeader: FC<IFullscreenHeader> = ({ activeTab }) => {
                 className={styles["fullscreen-header-button"]} 
                 onClick={() => dispatch(toggleFullscreenMode())}
             >
-                <Down width={40} height={40} />
+                <DownIcon width={40} height={40} />
             </button>
             <div className={styles["fullscreen-header-container"]}>
                 <div 

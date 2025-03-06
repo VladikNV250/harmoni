@@ -49,7 +49,7 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                 onClick={() => navigate(`/episodes/${id}`)}
             >
                 <img 
-                    src={images[0]?.url || PlaceholderImage} 
+                    src={images?.[0]?.url || PlaceholderImage} 
                     className={styles["episode-image"]}    
                 />
                 <div className={styles["episode-body"]}>

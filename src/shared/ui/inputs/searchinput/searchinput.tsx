@@ -4,12 +4,12 @@ import Search from "shared/assets/icons/search-big.svg?react";
 import styles from "./style.module.scss";
 
 
-interface IInput extends InputHTMLAttributes<HTMLInputElement> {
+interface ISearchInput extends InputHTMLAttributes<HTMLInputElement> {
     /** Additional styles. */
     readonly className?: string,
 }
 
-export const Input: FC<IInput> = (props) => {
+export const SearchInput: FC<ISearchInput> = (props) => {
     const {
         value,
         onChange,

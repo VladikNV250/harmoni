@@ -1,1 +1,1 @@
-export { LazyPlaylistPage as PlaylistPage } from "./ui/lazy";
+export { LazyPlaylistPage as PlaylistPage } from "./ui/PlaylistPage/lazy";

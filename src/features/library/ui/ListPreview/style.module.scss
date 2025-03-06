@@ -1,0 +1,28 @@
+.item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+
+    &-image {
+        aspect-ratio: 1 / 1;
+        width: 61px;
+        margin-right: 20px;
+    }
+
+    &-button {
+        color: var(--fg-secondary);
+        display: flex;
+        margin-right: 10px;
+    }
+
+    &-name {
+        color: var(--fg-primary);
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+}

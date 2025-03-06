@@ -1,0 +1,8 @@
+.button-text {
+    color: var(--fg-primary);
+    border-radius: 20px;
+    background: transparent;
+    padding: 6px 24px;
+
+    :hover { transform: scale(1.05); }
+}

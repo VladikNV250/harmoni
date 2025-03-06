@@ -1,0 +1,11 @@
+.library {
+    &-groups {
+        padding: 115px 15px 0;
+    }
+
+    &-empty {
+        margin-top: 64px;
+        color: var(--fg-primary);
+        text-align: center;
+    }
+}

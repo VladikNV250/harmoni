@@ -4,7 +4,7 @@ import { fetchShow, IShow } from "shared/api/show";
 import { useColor } from "shared/lib";
 import PlaceholderImage from 'shared/assets/placeholder/placeholder.jpg';
 import Sort from "shared/assets/icons/sort-big.svg?react";
-import { Description, Input, Loader, Tabs, Title } from "shared/ui";
+import { Description, Loader, SearchInput, Tabs, Title } from "shared/ui";
 import { EpisodeItem } from "entities/episode";
 import { PagePlaybackControl } from "entities/playback";
 import { ISimplifiedEpisode } from "shared/api/episode";
@@ -59,7 +59,7 @@ const ShowPage: FC = () => {
         >
             <Loader loading={loading} />
             <header className={styles["show-header"]}>
-                <Input 
+                <SearchInput 
                     placeholder="Search episode" 
                     className={styles["header-input"]} 
                 />
@@ -81,6 +81,7 @@ const ShowPage: FC = () => {
             </div>
             <PagePlaybackControl 
                 className={styles["show-control-panel"]}
+                contextUri={show?.uri}
             />
             <Tabs
                 tabs={tabs}

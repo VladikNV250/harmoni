@@ -4,6 +4,7 @@ import { userReducer } from "entities/user";
 import { deviceReducer } from "features/device";
 import { queueReducer } from "features/queue";
 import { playerReducer } from "widgets/Player";
+import { libraryReducer } from "features/library";
 import { 
     FLUSH,
     PAUSE,
@@ -22,12 +23,13 @@ const rootReducer = combineReducers({
     queue: queueReducer,
     device: deviceReducer,
     player: playerReducer,
+    library: libraryReducer,
 })
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ["feed"],
+    whitelist: ["feed", "library"],
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

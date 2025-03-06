@@ -2,26 +2,28 @@ import { CSSProperties, FC, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { fetchPlaylist, IPlaylist } from "shared/api/playlist";
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
-import { Description, Input, Loader, Title } from "shared/ui";
-import Sort from "shared/assets/icons/sort-big.svg?react";
+import { Description, Loader, SearchInput, Title } from "shared/ui";
 import { calculateDuration, useColor } from "shared/lib";
 import { TrackItem } from "entities/track";
 import { EpisodeItem } from "entities/episode";
 import { PagePlaybackControl } from "entities/playback";
 import styles from "./style.module.scss";
+import { Sort } from "shared/assets";
 
 
 const PlaylistPage: FC = () => {
     const { id } = useParams();
     const [playlist, setPlaylist] = useState<IPlaylist | null>(null);
     const [loading, setLoading] = useState(false);
-    const color = useColor(playlist?.images[0]?.url ?? PlaceholderImage);
+    const color = useColor(playlist?.images?.[0]?.url ?? PlaceholderImage);
 
     useEffect(() => {
         (async () => {
             try {
                 setLoading(true);
-                if (id) setPlaylist(await fetchPlaylist(id));
+                if (id) {
+                    setPlaylist(await fetchPlaylist(id));
+                }
             } catch (e) {
                 console.error(e);
             } finally {
@@ -51,7 +53,7 @@ const PlaylistPage: FC = () => {
                 <EpisodeItem 
                     key={track.id} 
                     episode={track} 
-                    showURI={track.show.uri} 
+                    showURI={track?.show?.uri ?? ""} 
                 /> 
             : null
         )
@@ -61,7 +63,7 @@ const PlaylistPage: FC = () => {
         <div className={styles["playlist"]} style={{'--color': color} as CSSProperties}>
             <Loader loading={loading} />
             <header className={styles["playlist-header"]}>
-                <Input 
+                <SearchInput 
                     placeholder="Search playlist" 
                     className={styles["header-input"]} 
                 />
@@ -71,7 +73,7 @@ const PlaylistPage: FC = () => {
             </header>
             <div className={styles["playlist-image-container"]}>
                 <img 
-                    src={playlist?.images[0].url || PlaceholderImage} 
+                    src={playlist?.images?.[0].url || PlaceholderImage} 
                     className={styles["playlist-image"]} 
                 />
             </div>
@@ -81,16 +83,24 @@ const PlaylistPage: FC = () => {
                 <Link to={`/profile/${playlist?.owner.id}`} className={styles["playlist-owner"]}>
                     {playlist?.owner.display_name ?? ""}
                 </Link>
-                <p className="dot">&#183;</p>
-                <Description className={styles["playlist-description"]}>
-                    {`${playlist?.tracks.total} Songs`}
-                </Description>
-                <p className="dot">&#183;</p>
-                <Description className={styles["playlist-description"]}>
-                    {calculateTracksDuration(playlist?.tracks.items)}
-                </Description>
+                {(playlist?.tracks.total ?? 0) > 0
+                ?
+                <>
+                    <p className="dot">&#183;</p>
+                    <Description className={styles["playlist-description"]}>
+                        {`${playlist?.tracks.total} Songs`}
+                    </Description>
+                    <p className="dot">&#183;</p>
+                    <Description className={styles["playlist-description"]}>
+                        {calculateTracksDuration(playlist?.tracks.items)}
+                    </Description>
+                </>
+                : null
+                }
             </div>
-            <PagePlaybackControl contextUri={playlist?.uri} />
+            <PagePlaybackControl 
+                contextUri={playlist?.uri} 
+            />
             <div className={styles["playlist-items-container"]}>
                 {renderPlaylistTracks(playlist?.tracks.items ?? [])}
             </div>

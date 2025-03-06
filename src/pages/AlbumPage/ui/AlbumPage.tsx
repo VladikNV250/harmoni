@@ -3,7 +3,7 @@ import { fetchAlbum, IAlbum } from "shared/api/album";
 import { useParams } from "react-router";
 import { displayDate, useColor } from "shared/lib";
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
-import { Description, Input, Loader, Title } from "shared/ui";
+import { Description, Loader, SearchInput, Title } from "shared/ui";
 import { TrackItem } from "entities/track";
 import { ISimplifiedTrack } from "shared/api/track";
 import { ArtistList } from "entities/artist";
@@ -45,8 +45,9 @@ const AlbumPage: FC = () => {
             className={styles["album"]} 
             style={{'--color': color} as CSSProperties}>
             <Loader loading={loading} />
+            
             <header className={styles["album-header"]}>
-                <Input placeholder={"Find in album"} />
+                <SearchInput placeholder={"Find in album"} />
             </header>
             <div className={styles["album-image-container"]}>
                 <img 

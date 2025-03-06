@@ -40,7 +40,7 @@ export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, chooseTab }) => {
         adapter.resume();
     }
 
-    return (
+    if (adapter.checkPlayback()) return (
         <div 
             className={styles["minimized-player"]}
             onMouseLeave={endPress}            

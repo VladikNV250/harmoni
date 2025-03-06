@@ -9,6 +9,7 @@ import {
 } from "../api/playback";
 
 export interface IPlaybackAdapter {
+    checkPlayback(): boolean;
     getAlbumName(): string;
     getAlbumLink(): string;  
     getArtists(): {readonly name: string, readonly id: string}[];
@@ -37,6 +38,10 @@ export class SdkPlaybackAdapter implements IPlaybackAdapter {
         private sdkPlayback: Spotify.PlaybackState | null,
         private player: Spotify.Player | null,
     ) {}
+
+    checkPlayback(): boolean {
+        return Boolean(this.sdkPlayback);
+    }
 
     getAlbumName(): string {
         return this.sdkPlayback?.track_window.current_track.album.name ?? "";
@@ -162,6 +167,10 @@ export class ApiPlaybackAdapter implements IPlaybackAdapter {
     constructor (
         private apiPlayback: IPlayback | null,
     ) {}
+
+    checkPlayback(): boolean {
+        return Boolean(this.apiPlayback);        
+    }
 
     getAlbumName(): string {
         switch (this.apiPlayback?.item?.type) {

@@ -1,5 +1,6 @@
 export type {
-    IShow
+    IShow,
+    ISimplifiedShow
 } from "./types";
 
 export {

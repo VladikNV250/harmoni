@@ -35,7 +35,7 @@ interface ICatalogue {
     readonly type?: TFeedFilter;
 }
 
-export const Catalogue: FC<ICatalogue> = ({ type = "all" }) => {
+export const Catalogue: FC<ICatalogue> = ({ type = "All" }) => {
     const feeds = useAppSelector(selectFeeds);
     const { filteredFeeds }  = useFilterFeeds(feeds, type);
     const { updateAfterEveryReload } = useAppSelector(selectFeedSettings);

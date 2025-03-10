@@ -5,6 +5,7 @@ import { deviceReducer } from "features/device";
 import { queueReducer } from "features/queue";
 import { playerReducer } from "widgets/Player";
 import { libraryReducer } from "features/library";
+import { searchReducer } from "features/search";
 import { 
     FLUSH,
     PAUSE,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
     device: deviceReducer,
     player: playerReducer,
     library: libraryReducer,
+    search: searchReducer,
 })
 
 const persistConfig = {

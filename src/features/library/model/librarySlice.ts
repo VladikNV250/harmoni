@@ -7,14 +7,6 @@ import {
     getLibraryPlaylists, 
     getLibraryShows, 
     getLikedTracks, 
-    // removeAlbums, 
-    // removeArtists, 
-    // removePlaylist, 
-    // removeShows, 
-    // saveAlbums,
-    // saveArtists,
-    // savePlaylist,
-    // saveShows
 } from "./libraryThunk"
 import { IFolder } from "entities/folder"
 import { IPlaylist } from "shared/api/playlist"
@@ -24,6 +16,7 @@ const initialState: ILibraryState = {
     artists:   [],
     playlists: [],
     shows:     [],
+    tracks:    [],
     folders:   [],
     
     loading:   false,
@@ -119,9 +112,10 @@ export const librarySlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(getLikedTracks.fulfilled, (state, ) => {
+            .addCase(getLikedTracks.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                state.tracks = action.payload;
                 // state.playlists.push(LikedPlaylist);                
             })
             .addCase(getLikedTracks.rejected, (state, action) => {

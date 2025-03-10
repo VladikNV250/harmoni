@@ -165,7 +165,7 @@ export const fetchLikedTracks = (): Promise<ILikedTracks> => {
     return apiInstance.get(ENDPOINT + "/tracks");
 } 
 
-export const saveTrackToLibrary = (trackIds: string[]): Promise<void> => {
+export const saveTracksToLibrary = (trackIds: string[]): Promise<void> => {
     return apiInstance.put(ENDPOINT + "/tracks", {}, {
         params: {
             ids: trackIds.join(',') || null
@@ -173,7 +173,7 @@ export const saveTrackToLibrary = (trackIds: string[]): Promise<void> => {
     })
 }
 
-export const removeTrackFromLibrary = (trackIds: string[]): Promise<void> => {
+export const removeTracksFromLibrary = (trackIds: string[]): Promise<void> => {
     return apiInstance.delete(ENDPOINT + "/tracks", {
         params: {
             ids: trackIds.join(',') || null

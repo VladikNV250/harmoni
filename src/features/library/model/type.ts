@@ -1,7 +1,7 @@
 import { IFolder } from "entities/folder";
 import { IArtist } from "shared/api/artist";
 import { ISimplifiedPlaylist } from "shared/api/playlist";
-import { ISavedAlbum, ISavedShow } from "shared/api/user";
+import { ISavedAlbum, ISavedShow, ISavedTracks } from "shared/api/user";
 import { RejectedDataType } from "shared/types";
 
 export interface ILibraryState {
@@ -9,6 +9,7 @@ export interface ILibraryState {
     playlists: ISimplifiedPlaylist[],
     shows: ISavedShow[],
     artists: IArtist[],
+    tracks: ISavedTracks[]
     folders: IFolder[],
     
     loading: boolean,

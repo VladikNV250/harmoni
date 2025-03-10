@@ -20,6 +20,7 @@ import {
     Routes
 } from "react-router";
 import { FolderPage } from "pages/FolderPage";
+import { NotFoundPage } from "pages/NotFoundPage";
 
 export const AppRouter: FC = () => {
     const { theme } = useTheme();
@@ -70,6 +71,10 @@ export const AppRouter: FC = () => {
                             path="folders/:id"
                             element={<ProtectedRoute><FolderPage /></ProtectedRoute>}
                         />
+                        <Route 
+                            path="categories/:id"
+                            element={<ProtectedRoute><NotFoundPage /></ProtectedRoute>}
+                        />
                         <Route
                             path="callback"
                             element={<Callback />}
@@ -78,6 +83,10 @@ export const AppRouter: FC = () => {
                     <Route  
                         path="/login"
                         element={<LoginPage />}
+                    />
+                    <Route
+                        path="/*"
+                        element={<NotFoundPage />}
                     />
                 </Routes>
             </BrowserRouter>            

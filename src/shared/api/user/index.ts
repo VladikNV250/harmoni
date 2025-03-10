@@ -22,10 +22,10 @@ export {
     followUsers,
     removeAlbumsFromLibrary,
     removeShowsFromLibrary,
-    removeTrackFromLibrary,
+    removeTracksFromLibrary,
     saveAlbumsToLibrary,
     saveShowsToLibrary,
-    saveTrackToLibrary,
+    saveTracksToLibrary,
     unfollowArtists,
     unfollowUsers,
 } from "./user"

@@ -9,7 +9,7 @@
     box-shadow: inset 0px -1px 0px -0.125px var(--fg-secondary);
     overflow-y: visible;
     overflow-x: auto;
-    scrollbar-width: 0;
+    scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
 
     .tab {

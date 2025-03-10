@@ -37,4 +37,4 @@ export interface IFeed {
     order: number, // negative order means feed is pinned, positive is unpinned    
 }
 
-export type TFeedFilter = "all" | "music" | "podcasts"
+export type TFeedFilter = "All" | "Music" | "Podcasts"

@@ -5,15 +5,17 @@ import styles from "./style.module.scss";
 
 interface ILoader {
     readonly loading: boolean,
+    readonly className?: string,
 }
 
-export const Loader: FC<ILoader> = ({ loading }) => {
+export const Loader: FC<ILoader> = ({ loading, className }) => {
     return (
         loading &&
         <div 
             className={clsx(
                 styles["loader-modal"], 
-                styles["open"]
+                styles["open"],
+                className
             )}
         >
             <div className={styles["loader-container"]}>

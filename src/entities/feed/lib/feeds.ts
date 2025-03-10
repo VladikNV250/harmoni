@@ -9,7 +9,7 @@ export const useFilterFeeds = (
 
     useEffect(() => {
         switch (type) {
-            case "music":
+            case "Music":
                 setFilteredFeeds(Object.fromEntries(
                     Object.entries(feeds).filter(
                         ([, feed]) => 
@@ -19,7 +19,7 @@ export const useFilterFeeds = (
                     )
                 ))
                 break;
-            case "podcasts":
+            case "Podcasts":
                 setFilteredFeeds(Object.fromEntries(
                     Object.entries(feeds).filter(
                         ([, feed]) => 

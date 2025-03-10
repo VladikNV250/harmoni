@@ -1,20 +1,18 @@
 import { FC, useState } from "react";
 import { useTheme } from "entities/theme";
-import { TagItem } from "../TagItem/TagItem";
 import { AdjustContextMenu } from "../AdjustContextMenu/AdjustContextMenu";
 import { Adjust } from "shared/assets";
-import clsx from "clsx";
-import { useAppSelector } from "shared/lib";
+import { useAppSelector, useTabs } from "shared/lib";
 import { selectFeedLoading, TFeedFilter } from "entities/feed";
 import { Catalogue } from "../Catalogue/Catalogue";
 import { UserTrackList } from "../UserTrackList/UserTrackList";
-import { Loader } from "shared/ui";
+import { CategoryTabs, Loader } from "shared/ui";
 import styles from "./style.module.scss";
 
 const HomePage: FC = () => {
     const { theme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
-    const [catalogueType, setCatalogueType] = useState<TFeedFilter>("all");
+    const { activeTab, chooseTab } = useTabs<TFeedFilter, "All">("All");
     const loading = useAppSelector(selectFeedLoading);
     
     return (
@@ -22,25 +20,12 @@ const HomePage: FC = () => {
             <Loader loading={loading} />
             <AdjustContextMenu isOpen={isOpen} setIsOpen={setIsOpen} />
             <div className={styles["filter-bar"]}>
-                <div 
-                    className={clsx(
-                        styles["tags-container"], 
-                        theme && styles[theme]
-                    )}
-                >
-                    <div className={styles["tags-slider"]}>
-                        <TagItem 
-                            tag="Music"
-                            active={catalogueType === "music"}
-                            setType={(type: TFeedFilter = "music") => setCatalogueType(type)}
-                        />
-                        <TagItem 
-                            tag="Podcasts"
-                            active={catalogueType === "podcasts"}
-                            setType={(type: TFeedFilter = "podcasts") => setCatalogueType(type)} 
-                        />
-                    </div>
-                </div>
+                <CategoryTabs<TFeedFilter> 
+                    tabs={["All", "Music", "Podcasts"]}
+                    activeTab={activeTab}
+                    chooseTab={chooseTab}
+                    className={theme}
+                />
                 <button 
                     className={styles["button-adjust"]} 
                     onClick={() => setIsOpen(true)}
@@ -49,7 +34,7 @@ const HomePage: FC = () => {
                 </button>                
             </div>
             <UserTrackList />
-            <Catalogue type={catalogueType} />
+            <Catalogue type={activeTab} />
         </div>
     )
 }

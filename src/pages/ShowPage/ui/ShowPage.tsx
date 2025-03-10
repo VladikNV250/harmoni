@@ -1,10 +1,10 @@
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { fetchShow, IShow } from "shared/api/show";
-import { useColor } from "shared/lib";
+import { useColor, useTabs } from "shared/lib";
 import PlaceholderImage from 'shared/assets/placeholder/placeholder.jpg';
-import Sort from "shared/assets/icons/sort-big.svg?react";
-import { Description, Loader, SearchInput, Tabs, Title } from "shared/ui";
+import { Sort } from "shared/assets";
+import { Description, Loader, NavigationTabs, SearchInput, Title } from "shared/ui";
 import { EpisodeItem } from "entities/episode";
 import { PagePlaybackControl } from "entities/playback";
 import { ISimplifiedEpisode } from "shared/api/episode";
@@ -15,7 +15,7 @@ const ShowPage: FC = () => {
     const { id } = useParams();
     const [show, setShow] = useState<IShow | null>(null);
     const [tabs, setTabs] = useState<string[]>([]);
-    const [currentTab, setCurrentTab] = useState("Episodes");
+    const { activeTab, chooseTab } = useTabs<string, "Episodes">("Episodes")
     const [loading, setLoading] = useState(false);
     const color = useColor(show?.images[0]?.url ?? PlaceholderImage);
 
@@ -83,17 +83,17 @@ const ShowPage: FC = () => {
                 className={styles["show-control-panel"]}
                 contextUri={show?.uri}
             />
-            <Tabs
+            <NavigationTabs<string>
                 tabs={tabs}
-                currTab={currentTab}
-                setTab={setCurrentTab}
+                activeTab={activeTab}
+                chooseTab={chooseTab}
                 className={styles["show-tabs"]}
             />
-            {currentTab === "Episodes" &&
+            {activeTab === "Episodes" &&
             <div className={styles["show-items-container"]}>
             {renderEpisodes(show?.episodes.items ?? [])}
             </div>}
-            {currentTab === "About" &&
+            {activeTab === "About" &&
             <div className={styles["show-description-container"]}>
                 <Description className={styles["show-description"]}>
                     {show?.description ?? ""}

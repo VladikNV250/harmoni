@@ -40,6 +40,7 @@ import Sort from "shared/assets/icons/sort-big.svg?react";
 import AddToLibrary from "shared/assets/icons/add-to-library-big.svg?react";
 import CheckFilled from "shared/assets/icons/check-big__filled.svg?react";
 import RemoveIcon from "shared/assets/icons/remove-big.svg?react";
+import AddIcon from "shared/assets/icons/add-big.svg?react";
 
 
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
@@ -92,6 +93,7 @@ export {
     Sort,
     CheckFilled,
     RemoveIcon,
+    AddIcon,
 }
 
 /** IMAGES */

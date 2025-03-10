@@ -1,9 +1,9 @@
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { fetchArtist, fetchArtistAlbums, fetchArtistTopTracks, IArtist } from "shared/api/artist";
 import { useParams } from "react-router";
-import { useColor } from "shared/lib";
+import { useColor, useTabs } from "shared/lib";
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
-import { Description, Loader, Tabs, Title } from "shared/ui";
+import { Description, Loader, NavigationTabs, Title } from "shared/ui";
 import { ITrack } from "shared/api/track";
 import { ISimplifiedAlbum } from "shared/api/album";
 import { AlbumPreview } from "entities/album";
@@ -22,7 +22,7 @@ const ArtistPage: FC = () => {
     });
     const [loading, setLoading] = useState(false);
     const [tabs, setTabs] = useState<string[]>([]);
-    const [currentTab, setCurrentTab] = useState("Top Tracks");
+    const { activeTab, chooseTab } = useTabs<string, "Top Tracks">("Top Tracks");
     const color = useColor(artist?.images[0]?.url ?? PlaceholderImage);
 
     useEffect(() => {
@@ -122,26 +122,26 @@ const ArtistPage: FC = () => {
                 className={styles["artist-control-panel"]} 
                 contextUri={artist?.uri}
             />
-            <Tabs 
+            <NavigationTabs
                 tabs={tabs}
-                currTab={currentTab}
-                setTab={setCurrentTab}
+                activeTab={activeTab}
+                chooseTab={chooseTab}
                 className={styles["artist-tabs"]}
             />
             <div className={styles["artist-content"]}>
-                {currentTab === "Top Tracks" &&
+                {activeTab === "Top Tracks" &&
                 <div className={styles["artist-items-container"]}>
                     {renderTracks(tracks ?? [])}
                 </div>}
-                {currentTab === "Albums" &&
+                {activeTab === "Albums" &&
                 <div className={styles["artist-albums-container"]}>
                     {renderAlbums(albums.album ?? [])}
                 </div>}
-                {currentTab === "Singles" &&
+                {activeTab === "Singles" &&
                 <div className={styles["artist-albums-container"]}>
                     {renderAlbums(albums.single ?? [])}
                 </div>}
-                {currentTab === "Compilations and Appears On" &&
+                {activeTab === "Compilations and Appears On" &&
                 <div className={styles["artist-albums-container"]}>
                     {renderAlbums(albums.compilation ?? [])}
                 </div>}

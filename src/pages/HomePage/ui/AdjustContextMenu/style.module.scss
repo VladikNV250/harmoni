@@ -20,7 +20,7 @@
     &-scroll-container {
         max-height: 46vh;
         overflow-y: auto;
-        scrollbar-width: 0;
+        scrollbar-width: none;
         &::-webkit-scrollbar { display: none; }
     }
     

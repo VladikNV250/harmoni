@@ -15,10 +15,12 @@ export { Input } from "./inputs/input/input";
 
 export { Loader } from './loaders/loader';
 
-export { Tabs } from "./tabs/tabs";
+export { NavigationTabs } from "./tabs/navigationTabs/navigationTabs";
+export { CategoryTabs } from "./tabs/categoryTabs/categoryTabs";
 
 export { SeekBar } from "./progressbars/seekbar/seekbar";
 export { VolumeBar } from "./progressbars/volumebar/volumebar";
 
 export { FilledButton } from "./buttons/filledButton/filledButton";
 export { TextButton } from "./buttons/textButton/textButton";
+export { OutlinedButton } from "./buttons/outlinedButton/outlinedButton";

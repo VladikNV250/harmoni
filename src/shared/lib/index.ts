@@ -8,3 +8,5 @@ export { calculateDuration } from "./date-time/calculateDuration";
 export { useDebounce } from "./debounce/useDebounce";
 
 export { usePress } from "./press/usePress";
+
+export { useTabs } from "./tabs/useTabs";

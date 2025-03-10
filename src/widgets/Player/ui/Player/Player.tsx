@@ -2,10 +2,10 @@ import { FC, useEffect } from "react";
 import { 
     useAppDispatch, 
     useAppSelector, 
-    useColor 
+    useColor, 
+    useTabs
 } from "shared/lib";
 import { useTheme } from "entities/theme";
-import { useTabs } from "widgets/Player/lib/tabs/useTabs";
 import { FullscreenPlayer } from "../FullscreenPlayer/FullscreenPlayer";
 import { PlayerCurtain } from "../PlayerCurtain/PlayerCurtain";
 import { getUserQueue } from "features/queue";

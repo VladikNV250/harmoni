@@ -1,13 +1,14 @@
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { fetchShow, IShow } from "shared/api/show";
-import { useColor, useTabs } from "shared/lib";
-import PlaceholderImage from 'shared/assets/placeholder/placeholder.jpg';
-import { Sort } from "shared/assets";
+import { useAppDispatch, useAppSelector, useColor, useTabs } from "shared/lib";
+import { PlaceholderImage, Sort } from "shared/assets";
 import { Description, Loader, NavigationTabs, SearchInput, Title } from "shared/ui";
 import { EpisodeItem } from "entities/episode";
-import { PagePlaybackControl } from "entities/playback";
+import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
 import { ISimplifiedEpisode } from "shared/api/episode";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
 import styles from "./style.module.scss";
 
 
@@ -16,13 +17,24 @@ const ShowPage: FC = () => {
     const [show, setShow] = useState<IShow | null>(null);
     const [tabs, setTabs] = useState<string[]>([]);
     const { activeTab, chooseTab } = useTabs<string, "Episodes">("Episodes")
-    const [loading, setLoading] = useState(false);
+    const [showLoading, setShowLoading] = useState(false);
     const color = useColor(show?.images[0]?.url ?? PlaceholderImage);
+    const { setApiPlayback } = usePlaybackAdapter();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
+    const userLoading = useAppSelector(selectUserLoading);
+    
+    useEffect(() => {
+        if (user === null) {
+            dispatch(getUserInfo());
+        }
+    }, [dispatch, user])
+    
 
     useEffect(() => {
         (async () => {
             try {
-                setLoading(true);
+                setShowLoading(true);
                 if (id) {
                     const show: IShow = await fetchShow(id);
                     
@@ -34,13 +46,14 @@ const ShowPage: FC = () => {
                     setShow(show);
                 } 
 
+                setApiPlayback?.(await fetchPlaybackState());
             } catch (e) {
                 console.error(e);
             } finally {
-                setLoading(false);
+                setShowLoading(false);
             }
         })()
-    }, [id]);
+    }, [id, setApiPlayback]);
 
     const renderEpisodes = (episodes: ISimplifiedEpisode[]) => {
         return episodes.length > 0 && episodes.map(episode =>
@@ -57,7 +70,7 @@ const ShowPage: FC = () => {
             className={styles["show"]} 
             style={{'--color': color} as CSSProperties}
         >
-            <Loader loading={loading} />
+            <Loader loading={showLoading || userLoading} />
             <header className={styles["show-header"]}>
                 <SearchInput 
                     placeholder="Search episode" 

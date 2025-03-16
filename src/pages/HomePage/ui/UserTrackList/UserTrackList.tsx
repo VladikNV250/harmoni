@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "shared/lib";
 import { getUserTopTracks, selectFeedSettings, selectFeedUserTracks } from "entities/feed";
 import { Pause, Play } from "shared/assets";
 import { usePlaybackAdapter } from "entities/playback";
+import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
 export const UserTrackList: FC = () => {
@@ -22,13 +23,20 @@ export const UserTrackList: FC = () => {
         }
     }, [dispatch])
 
-    const handlePlay = (context_uri: string, track_uri: string) => {
-        adapter.play({
-            context_uri,
-            offset: {
-                uri: track_uri,
-            }
-        })
+    const handlePlay = async (context_uri: string, track_uri: string) => {
+        try {
+            await adapter.play({
+                context_uri,
+                offset: {
+                    uri: track_uri,
+                }
+            })
+        } catch (e) {
+            toast.error("Something went wrong. Player may not be available at this time.")
+            console.error("PLAY", e);
+        }
+
+        
     }
 
     const renderUserTracks = (items: ITrack[]) => {
@@ -53,7 +61,7 @@ export const UserTrackList: FC = () => {
                 </div>
                 <button 
                     className={styles["card-button"]} 
-                    onClick={() => handlePlay(album.uri, uri)}
+                    onClick={async () => await handlePlay(album.uri, uri)}
                 >
                     {adapter.getTrackName() === name ?
                     <Pause width={40} height={40} /> :

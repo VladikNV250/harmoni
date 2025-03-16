@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { IPlaylist, ISimplifiedPlaylist } from "shared/api/playlist";
 import { Pause, PlaceholderImage, Play } from "shared/assets";
 import { usePlaybackAdapter } from "entities/playback";
+import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
 
@@ -17,6 +18,15 @@ export const PlaylistPreview: FC<IPlaylistPreview> = ({ playlist }) => {
     const color= useColor(images?.[0]?.url || PlaceholderImage);
     const navigate = useNavigate();
     const { adapter } = usePlaybackAdapter();
+
+    const handlePlay = async () => {
+        try {
+            await adapter.play({ context_uri: uri });
+        } catch (e) {
+            toast.error("Something went wrong. Player may not be available at this time.")
+            console.error("PLAY", e);
+        }
+    }
     
     return (
         <div 
@@ -45,7 +55,7 @@ export const PlaylistPreview: FC<IPlaylistPreview> = ({ playlist }) => {
             </div>
             <button 
                 className={styles["playlist-button"]} 
-                onClick={() => adapter.play({ context_uri: uri })}
+                onClick={async () => await handlePlay()}
             >
                 {adapter.getContextURI() === uri ?
                 <Pause width={40} height={40} /> :

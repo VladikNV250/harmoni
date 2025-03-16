@@ -12,6 +12,7 @@ import {
 } from "shared/assets";
 import { usePlaybackAdapter } from "entities/playback";
 import styles from "./style.module.scss";
+import { toast } from "react-toastify";
 
 
 interface IEpisodeItem {
@@ -33,13 +34,19 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
     const { adapter } = usePlaybackAdapter();
     const navigate = useNavigate();
 
-    const handlePlay = () => {
-        adapter.play({
-            context_uri: showURI,
-            offset: {
-                uri: uri
-            }
-        })
+    const handlePlay = async () => {
+        try {
+            await adapter.play({
+                context_uri: showURI,
+                offset: {
+                    uri: uri
+                }
+            })
+        } catch (e) {
+            toast.error("Something went wrong. Player may not be available at this time.")
+            console.error("PLAY", e);
+        }
+        
     }
 
     return (
@@ -80,7 +87,10 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                     </button>
                 </div>
                 <div className={styles["button-container"]}>
-                    <button className={styles["button"]} onClick={handlePlay}>
+                    <button 
+                        className={styles["button"]} 
+                        onClick={async () => await handlePlay()}
+                    >
                         <Play width={40} height={40} />
                     </button>
                 </div>

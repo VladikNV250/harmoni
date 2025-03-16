@@ -62,7 +62,7 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
     const handleCreatePlaylist = useCallback(async () => {
         if (!user) return;
             
-        const playlist = (await dispatch(createPlaylistThunk({
+        const playlist = await dispatch(createPlaylistThunk({
             userId: user.id, 
             body: {
                 name: `Playlist#${playlists.length + 1}`,
@@ -70,7 +70,7 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
                 description: "",
                 public: true,
             }
-        }))).unwrap();
+        })).unwrap();
 
         navigate(`/playlists/${playlist.id}`)
     }, [dispatch, navigate, playlists.length, user])

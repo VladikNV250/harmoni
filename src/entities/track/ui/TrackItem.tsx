@@ -6,6 +6,7 @@ import { IAlbum } from "shared/api/album";
 import { ArtistList } from "entities/artist";
 import { usePlaybackAdapter } from "entities/playback";
 import { More, PlaceholderImage } from "shared/assets";
+import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
 
@@ -23,16 +24,23 @@ export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum, contextUri }) =
     const { adapter } = usePlaybackAdapter();
 
     const handlePlay = async () => {
-        if (contextUri) {
-            adapter.play({
-                context_uri: contextUri,
-                offset: { uri: track.uri }
-            })
+        try {
+            if (contextUri) {
+                await adapter.play({
+                    context_uri: contextUri,
+                    offset: { uri: track.uri }
+                })
+            }
+        } catch (e) {
+            toast.error("Something went wrong. Player may not be available at this time.")
+            console.error("PLAY", e);
         }
     }
     
     return (
-        <div className={styles["track"]} onClick={handlePlay}>
+        <div 
+            className={styles["track"]} 
+            onClick={async () => await handlePlay()}>
             <img 
                 src={
                     album?.images[0]?.url ?? 

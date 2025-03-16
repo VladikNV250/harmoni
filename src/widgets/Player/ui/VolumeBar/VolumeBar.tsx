@@ -1,17 +1,23 @@
 import clsx from "clsx";
-import { ChangeEvent, CSSProperties, FC, useEffect, useState } from "react"
+import { 
+    ChangeEvent, 
+    CSSProperties, 
+    FC, 
+    useEffect, 
+    useState 
+} from "react"
 import { useDebounce } from "shared/lib";
+import { usePlaybackAdapter } from "entities/playback";
 import styles from "./style.module.scss";
 
 
 interface IVolumeBar {
     /** Additional classes */
     readonly className?: string,
-    /** Spotify Player from Web Playback SDK */
-    readonly player: Spotify.Player | null;
 }
 
-export const VolumeBar: FC<IVolumeBar> = ({ className, player }) => {
+export const VolumeBar: FC<IVolumeBar> = ({ className }) => {
+    const { adapter, apiPlayback, sdkPlayback } = usePlaybackAdapter();
     const [value, setValue] = useState(100);
     const debouncedValue = useDebounce(value, 150);
 
@@ -22,16 +28,15 @@ export const VolumeBar: FC<IVolumeBar> = ({ className, player }) => {
 
     useEffect(() => {
         (async () => {
-            if (player !== null)
-                setValue(await player?.getVolume())
+            if (apiPlayback && (sdkPlayback === null || sdkPlayback.track_window.current_track === null)) {
+                setValue(await adapter.getVolume());
+            }
         })()
     }, [])
 
     useEffect(() => {
-        if (player !== null) {
-            player.setVolume((debouncedValue as number) / 100)
-        }
-    }, [debouncedValue, player])
+        adapter.setVolume(debouncedValue as number);
+    }, [debouncedValue])
 
     return (
         <input 

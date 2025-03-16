@@ -27,7 +27,15 @@ export const PlaybackProvider: FC<IPlaybackProvider> = ({ children }) => {
     }, [])
 
     return (
-        <PlaybackContext.Provider value={{ adapter: playbackAdapter, player }}>
+        <PlaybackContext.Provider 
+            value={{ 
+                adapter: playbackAdapter, 
+                player,
+                apiPlayback,
+                setApiPlayback,
+                sdkPlayback,
+            }}
+        >
             {children}
         </PlaybackContext.Provider>
     );

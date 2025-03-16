@@ -13,6 +13,7 @@ import AddToPlaylist from "shared/assets/icons/add-to-playlist-big.svg?react";
 import AddToQueue from "shared/assets/icons/add-to-queue-big.svg?react";
 import ArtistIcon from "shared/assets/icons/artist-big.svg?react";
 import Like from "shared/assets/icons/like-big.svg?react";
+import LikeFilled from "shared/assets/icons/like-big__filled.svg?react";
 import PlaySimple from "shared/assets/icons/play-simple-big.svg?react";
 import PauseSimple from "shared/assets/icons/pause-simple-big.svg?react";
 import Hide from "shared/assets/icons/hide-big.svg?react";
@@ -70,6 +71,7 @@ export {
     Device,
     Hide,
     Like,
+    LikeFilled,
     PauseSimple,
     PlaySimple,
     Close,

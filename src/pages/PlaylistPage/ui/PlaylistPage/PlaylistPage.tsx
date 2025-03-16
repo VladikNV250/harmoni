@@ -1,36 +1,49 @@
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { fetchPlaylist, IPlaylist } from "shared/api/playlist";
-import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import { Description, Loader, SearchInput, Title } from "shared/ui";
-import { calculateDuration, useColor } from "shared/lib";
+import { calculateDuration, useAppDispatch, useAppSelector, useColor } from "shared/lib";
 import { TrackItem } from "entities/track";
 import { EpisodeItem } from "entities/episode";
-import { PagePlaybackControl } from "entities/playback";
+import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
+import { PlaceholderImage, Sort } from "shared/assets";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
 import styles from "./style.module.scss";
-import { Sort } from "shared/assets";
 
 
 const PlaylistPage: FC = () => {
     const { id } = useParams();
     const [playlist, setPlaylist] = useState<IPlaylist | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [playlistLoading, setPlaylistLoading] = useState(false);
     const color = useColor(playlist?.images?.[0]?.url ?? PlaceholderImage);
+    const { setApiPlayback } = usePlaybackAdapter();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
+    const userLoading = useAppSelector(selectUserLoading);
+
+    useEffect(() => {
+        if (user === null) {
+            dispatch(getUserInfo());
+        }
+    }, [dispatch, user])
+
 
     useEffect(() => {
         (async () => {
             try {
-                setLoading(true);
+                setPlaylistLoading(true);
                 if (id) {
                     setPlaylist(await fetchPlaylist(id));
                 }
+                setApiPlayback?.(await fetchPlaybackState());
             } catch (e) {
                 console.error(e);
             } finally {
-                setLoading(false);
+                setPlaylistLoading(false);
             }
         })()
-    }, [id])
+    }, [id, setApiPlayback])
 
     const calculateTracksDuration = (tracks?: IPlaylist["tracks"]["items"]): string => {
         let total_duration = 0;
@@ -61,7 +74,7 @@ const PlaylistPage: FC = () => {
 
     return (
         <div className={styles["playlist"]} style={{'--color': color} as CSSProperties}>
-            <Loader loading={loading} />
+            <Loader loading={userLoading || playlistLoading} />
             <header className={styles["playlist-header"]}>
                 <SearchInput 
                     placeholder="Search playlist" 

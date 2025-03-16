@@ -13,19 +13,23 @@ import { getAvailableDevices } from "features/device";
 import { MinimizedPlayer } from "../MinimizedPlayer/MinimizedPlayer";
 import { usePlaybackAdapter } from "entities/playback";
 import { selectPlayerFullsreenMode } from "widgets/Player/model/selectors";
+import { getUserInfo } from "entities/user";
+import { useIsLikedTrack } from "widgets/Player/lib/track/useIsLikedTrack";
 
 export const Player: FC = () => {    
     const { theme } = useTheme();
-    const { activeTab, chooseTab } = useTabs<"devices" | "queue", "track">("track");    
+    const { activeTab, chooseTab } = useTabs<"devices" | "queue", "track">("track"); 
     const dispatch = useAppDispatch();
     const fullscreen = useAppSelector(selectPlayerFullsreenMode);
     const { adapter } = usePlaybackAdapter();
     const color = useColor(adapter.getTrackImage(), true, theme ?? "none");
+    const { isLiked, setIsLiked } = useIsLikedTrack(adapter); 
 
     useEffect(() => {
         dispatch(getUserQueue());
         dispatch(getAvailableDevices());
-    }, [dispatch])
+        dispatch(getUserInfo());
+    }, [dispatch]);
 
     useEffect(() => {
         switch (activeTab) {
@@ -39,19 +43,24 @@ export const Player: FC = () => {
                 // dispatch(getPlaybackState());
                 break;
         }
-    }, [activeTab, dispatch, fullscreen])
+    }, [activeTab, dispatch, fullscreen]);
 
-    if (adapter) return (
+
+    return (
         <>
             <PlayerCurtain />
             <FullscreenPlayer 
                 color={color}
                 activeTab={activeTab}
                 chooseTab={chooseTab}
+                isLiked={isLiked}
+                setIsLiked={setIsLiked}
             />
             <MinimizedPlayer 
                 color={color}
                 chooseTab={chooseTab}
+                isLiked={isLiked}
+                setIsLiked={setIsLiked}
             />
         </>
     )

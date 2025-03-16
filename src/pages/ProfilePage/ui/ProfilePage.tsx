@@ -30,7 +30,10 @@ import {
     PlaceholderProfileImage, 
     Share 
 } from "shared/assets";
+import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
 import styles from "./style.module.scss";
+
 
 const ProfilePage: FC = () => {
     const dispatch = useAppDispatch();
@@ -39,10 +42,14 @@ const ProfilePage: FC = () => {
     const error = useAppSelector(selectUserError);
     const feedSettings = useAppSelector(selectFeedSettings);
     const { setUpdateAfterEveryReload } = feedSlice.actions;
+    const { setApiPlayback } = usePlaybackAdapter();
 
     useEffect(() => {
         dispatch(getUserInfo());
-    }, [dispatch])
+        (async () => {
+            setApiPlayback?.(await fetchPlaybackState());
+        })()
+    }, [dispatch, setApiPlayback])
 
     return (
         <div className={styles["profile"]}>

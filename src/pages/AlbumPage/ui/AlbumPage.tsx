@@ -1,33 +1,46 @@
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { fetchAlbum, IAlbum } from "shared/api/album";
 import { useParams } from "react-router";
-import { displayDate, useColor } from "shared/lib";
-import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
+import { displayDate, useAppDispatch, useAppSelector, useColor } from "shared/lib";
 import { Description, Loader, SearchInput, Title } from "shared/ui";
 import { TrackItem } from "entities/track";
 import { ISimplifiedTrack } from "shared/api/track";
 import { ArtistList } from "entities/artist";
-import { PagePlaybackControl } from "entities/playback";
+import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
+import { PlaceholderImage } from "shared/assets";
 import styles from "./style.module.scss";
 
 const AlbumPage: FC = () => {
     const { id } = useParams();
     const [album, setAlbum] = useState<IAlbum | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [albumLoading, setAlbumLoading] = useState(false);
     const color = useColor(album?.images[0]?.url ?? PlaceholderImage);
+    const { setApiPlayback } = usePlaybackAdapter();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
+    const userLoading = useAppSelector(selectUserLoading);
 
     useEffect(() => {
         (async () => {
             try {
-                setLoading(true);
+                setAlbumLoading(true);
                 if (id) setAlbum(await fetchAlbum(id));
+                setApiPlayback?.(await fetchPlaybackState());
             } catch (e) {
                 console.error(e);
             } finally {
-                setLoading(false);
+                setAlbumLoading(false);
             }
         })()
-    }, [id])
+    }, [id, setApiPlayback])
+
+    useEffect(() => {
+        if (user === null) {
+            dispatch(getUserInfo());
+        }
+    }, [dispatch, user])
 
     const renderTracks = (tracks: ISimplifiedTrack[]) => {
         return (tracks.length > 0 && album) && tracks.map(track =>
@@ -44,8 +57,7 @@ const AlbumPage: FC = () => {
         <div 
             className={styles["album"]} 
             style={{'--color': color} as CSSProperties}>
-            <Loader loading={loading} />
-            
+            <Loader loading={albumLoading || userLoading} />
             <header className={styles["album-header"]}>
                 <SearchInput placeholder={"Find in album"} />
             </header>

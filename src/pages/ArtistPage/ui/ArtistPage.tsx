@@ -1,14 +1,16 @@
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { fetchArtist, fetchArtistAlbums, fetchArtistTopTracks, IArtist } from "shared/api/artist";
 import { useParams } from "react-router";
-import { useColor, useTabs } from "shared/lib";
-import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
+import { useAppDispatch, useAppSelector, useColor, useTabs } from "shared/lib";
 import { Description, Loader, NavigationTabs, Title } from "shared/ui";
 import { ITrack } from "shared/api/track";
 import { ISimplifiedAlbum } from "shared/api/album";
 import { AlbumPreview } from "entities/album";
 import { TrackItem } from "entities/track";
-import { PagePlaybackControl } from "entities/playback";
+import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
+import { PlaceholderProfileImage } from "shared/assets";
 import styles from "./style.module.scss";
 
 const ArtistPage: FC = () => {
@@ -20,18 +22,30 @@ const ArtistPage: FC = () => {
         "single": [],
         "compilation": [],
     });
-    const [loading, setLoading] = useState(false);
+    const [artistLoading, setArtistLoading] = useState(false);
     const [tabs, setTabs] = useState<string[]>([]);
     const { activeTab, chooseTab } = useTabs<string, "Top Tracks">("Top Tracks");
-    const color = useColor(artist?.images[0]?.url ?? PlaceholderImage);
+    const color = useColor(artist?.images[0]?.url ?? PlaceholderProfileImage);
+    const { setApiPlayback } = usePlaybackAdapter();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
+    const userLoading = useAppSelector(selectUserLoading);
+
+    useEffect(() => {
+        if (user === null) {
+            dispatch(getUserInfo());
+        }
+    }, [dispatch, user])
 
     useEffect(() => {
         (async () => {
             try {
-                setLoading(true);
+                setArtistLoading(true);
                 if (id) {
                     setArtist(await fetchArtist(id));
-                    
+                    setApiPlayback?.(await fetchPlaybackState());
+
+
                     const tracks = (await fetchArtistTopTracks(id)).tracks;
                     const albums = (await fetchArtistAlbums(id, {include_groups: "album"})).items;
                     const singles = (await fetchArtistAlbums(id, {include_groups: "single"})).items;
@@ -66,7 +80,7 @@ const ArtistPage: FC = () => {
             } catch (e) {
                 console.error(e);
             } finally {
-                setLoading(false);
+                setArtistLoading(false);
             }
         })()
 
@@ -103,10 +117,10 @@ const ArtistPage: FC = () => {
         <div 
             className={styles["artist"]} 
             style={{'--color': color} as CSSProperties}>
-            <Loader loading={loading} />
+            <Loader loading={artistLoading || userLoading} />
             <div className={styles["artist-image-container"]}>
                 <img 
-                    src={artist?.images[0].url || PlaceholderImage} 
+                    src={artist?.images[0].url || PlaceholderProfileImage} 
                     className={styles["artist-image"]} 
                 />
                 <div className={styles["artist-body"]}>

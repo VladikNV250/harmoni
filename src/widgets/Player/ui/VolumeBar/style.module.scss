@@ -6,12 +6,23 @@
     &:focus {
         outline: none;
     }
+
+    &::-moz-range-track,
     &::-webkit-slider-runnable-track {
         background: linear-gradient(90deg, var(--primary) var(--value), rgba(219, 219, 219, 0.21) var(--value));
         height: 6px;
         width: 100%;
         border-radius: 3px;
     }
+
+    &::-moz-range-thumb {
+        height: 15px;
+        width: 15px;
+        background: var(--fg-primary);
+        border: none;
+        border-radius: 50%;
+    }
+
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 15px;

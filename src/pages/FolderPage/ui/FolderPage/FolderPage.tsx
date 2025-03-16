@@ -24,9 +24,11 @@ import { useAppDispatch, useAppSelector } from "shared/lib";
 import { IPlaylist } from "shared/api/playlist";
 import { PlaylistPreview } from "entities/playlist";
 import { EditMenu } from "../EditMenu/EditMenu";
-import styles from "./style.module.scss";
 import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
 import { DeleteMenu } from "../DeleteMenu/DeleteMenu";
+import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import styles from "./style.module.scss";
 
 const FolderPage: FC = () => {
     const { id } = useParams();
@@ -43,6 +45,7 @@ const FolderPage: FC = () => {
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const userLoading = useAppSelector(selectUserLoading);
     const { viewMode, switchMode } = useView();
+    const { setApiPlayback } = usePlaybackAdapter();
 
     useEffect(() => {
         const findedFolder = folders.find(item => item.id === id);
@@ -57,7 +60,11 @@ const FolderPage: FC = () => {
     useEffect(() => {
         dispatch(getUserInfo());
         dispatch(getLibraryPlaylists());
-    }, [dispatch])
+
+        (async () => {
+            setApiPlayback?.(await fetchPlaybackState());
+        })()
+    }, [dispatch, setApiPlayback]);
 
     const renderItems = (items: IPlaylist[]) => {
         switch (viewMode) {

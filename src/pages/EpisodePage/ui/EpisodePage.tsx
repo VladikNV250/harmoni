@@ -1,28 +1,41 @@
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { fetchEpisode, IEpisode } from "shared/api/episode";
-import { calculateDuration, useColor } from "shared/lib";
-import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
+import { calculateDuration, useAppDispatch, useAppSelector, useColor } from "shared/lib";
 import { Description, Title, Loader } from "shared/ui";
 import { getDate } from "entities/episode";
-import { PagePlaybackControl } from "entities/playback";
+import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
+import { PlaceholderImage } from "shared/assets";
 import styles from "./style.module.scss";
 
 const EpisodePage: FC = () => {
     const { id } = useParams();
     const [episode, setEpisode] = useState<IEpisode | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [episodeLoading, setEpisodeLoading] = useState(false);
     const color = useColor(episode?.images[0]?.url ?? PlaceholderImage);
+    const { setApiPlayback } = usePlaybackAdapter();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
+    const userLoading = useAppSelector(selectUserLoading);
+
+    useEffect(() => {
+        if (user === null) {
+            dispatch(getUserInfo());
+        }
+    }, [dispatch, user])
 
     useEffect(() => {
         (async () => {
             try {
-                setLoading(true);
+                setEpisodeLoading(true);
                 if (id) setEpisode(await fetchEpisode(id));
+                setApiPlayback?.(await fetchPlaybackState());
             } catch (e) {
                 console.error(e);
             } finally {
-                setLoading(false);
+                setEpisodeLoading(false);
             }
         })()
     }, [id])
@@ -32,7 +45,7 @@ const EpisodePage: FC = () => {
             className={styles["episode"]} 
             style={{'--color': color} as CSSProperties}
         >
-            <Loader loading={loading} />
+            <Loader loading={episodeLoading || userLoading} />
             <div className={styles["episode-image-container"]}>
                 <img 
                     src={episode?.images[0].url || PlaceholderImage} 

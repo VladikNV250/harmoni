@@ -22,6 +22,7 @@
 
     &-artists {
         background: var(--bg-main);
+        z-index: 11;
 
         &-content {
             padding: 10px;
@@ -30,4 +31,39 @@
             }
         }
     }    
+
+    &-playlists {
+        z-index: 11;
+
+        &-body {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        &-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            overflow-y: auto;
+            max-height: 300px;
+            scrollbar-width: none;    
+        }
+
+        &-button {
+            width: 100%;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            color: var(--fg-primary);
+            
+            .button-image {
+                width: 51px;
+                height: 51px;
+                border-radius: 3px;
+            }
+        }
+    }
 }

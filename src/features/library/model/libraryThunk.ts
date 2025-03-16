@@ -130,7 +130,7 @@ export const createPlaylistThunk = createAsyncThunk<
 >("library/createPlaylistThunk", async ({userId, body}, thunkAPI) => {
     try {
         const response = await createPlaylist(userId, body);
-        return response;
+        return response.data;
     } catch (e: unknown) {
         const knownError = e as ErrorType;
 
@@ -139,7 +139,7 @@ export const createPlaylistThunk = createAsyncThunk<
             status: knownError.response?.status,
         })
     }
-})
+});
 
 // export const saveAlbums = createAsyncThunk<
 //     string[],

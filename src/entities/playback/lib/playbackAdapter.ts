@@ -1,7 +1,10 @@
 import { PlaceholderImage } from "shared/assets";
 import { IPlayback, IPlayTrack } from "../api/type";
 import { 
+    pauseTrack,
     playTrack,
+    seekToPosition,
+    setPlaybackVolume,
     setRepeatMode, 
     skipToNext, 
     skipToPrevious, 
@@ -16,6 +19,7 @@ export interface IPlaybackAdapter {
     getIsPlaying(): boolean;
     getRepeatMode(): "off" | "context" | "track";
     getShuffle(): boolean;
+    getTrackID(): string;
     getTrackURI(): string;
     getTrackName(): string;   
     getTrackImage(): string;
@@ -25,12 +29,15 @@ export interface IPlaybackAdapter {
     getContextURI(): string;
     getProcessInPercent(): number;
     getLeftTime(): number;
-    play(params: IPlayTrack): void;
-    resume(): void;
+    getVolume(): Promise<number> | number;
+    play(params: IPlayTrack): Promise<void>;
+    resume(): Promise<boolean>;
     nextTrack(): void;
     previousTrack(): void;
-    toggleShuffle(state?: boolean): void;
-    setRepeatMode(): void;
+    seek(position: number): void;
+    toggleShuffle(state?: boolean): boolean;
+    setRepeatMode(): "off" | "context" | "track";
+    setVolume(percent: number): void;
 }
 
 export class SdkPlaybackAdapter implements IPlaybackAdapter {
@@ -88,6 +95,10 @@ export class SdkPlaybackAdapter implements IPlaybackAdapter {
         return this.sdkPlayback?.shuffle ?? false;
     }   
 
+    getTrackID(): string {
+        return this.sdkPlayback?.track_window.current_track.id ?? ""
+    }
+
     getTrackURI(): string {
         return this.sdkPlayback?.track_window.current_track.uri ?? "";
     }
@@ -130,13 +141,24 @@ export class SdkPlaybackAdapter implements IPlaybackAdapter {
         return duration - position;
     }
 
-    play(params: IPlayTrack): void {
-        playTrack(params);
+    async getVolume(): Promise<number> {
+        if (this.player) {
+            const volume = await this.player.getVolume();
+            return volume;
+        } else {
+            return 0;
+        }
     }
 
-    resume(): void {
-        if (this.sdkPlayback?.paused) this.player?.resume();
-        else this.player?.pause();
+    async play(params: IPlayTrack): Promise<void> {
+        await playTrack(params);
+    }
+
+    async resume(): Promise<boolean> {
+        if (this.sdkPlayback?.paused) await this.player?.resume();
+        else await this.player?.pause();
+
+        return this.sdkPlayback?.paused ?? false;
     }
 
     nextTrack(): void {
@@ -147,11 +169,16 @@ export class SdkPlaybackAdapter implements IPlaybackAdapter {
         this.player?.previousTrack();
     }
 
-    toggleShuffle(state?: boolean) {
-        togglePlaybackShuffle(state ?? !this.sdkPlayback?.shuffle);
+    seek(position: number): void {
+        this.player?.seek(position);
     }
 
-    setRepeatMode(): void {
+    toggleShuffle(state?: boolean): boolean {
+        togglePlaybackShuffle(state ?? !this.sdkPlayback?.shuffle);
+        return state ?? !this.sdkPlayback?.shuffle;
+    }
+
+    setRepeatMode(): "off" | "context" | "track" {
         let newMode: "off" | "context" | "track" = "off";
         switch (this.sdkPlayback?.repeat_mode) {
             case 0: newMode = "context"; break; 
@@ -160,6 +187,14 @@ export class SdkPlaybackAdapter implements IPlaybackAdapter {
             default: newMode = "off"; break;
         }
         setRepeatMode(newMode);
+
+        return newMode;
+    }
+
+    setVolume(percent: number): void {
+        if (this.player) {
+            this.player.setVolume(percent / 100);
+        }
     }
 }
 
@@ -216,6 +251,10 @@ export class ApiPlaybackAdapter implements IPlaybackAdapter {
         return this.apiPlayback?.shuffle_state ?? false;
     }
 
+    getTrackID(): string {
+        return this.apiPlayback?.item?.id ?? "";
+    }
+
     getTrackURI(): string {
         return this.apiPlayback?.item?.uri ?? "";
     }
@@ -262,20 +301,33 @@ export class ApiPlaybackAdapter implements IPlaybackAdapter {
         return duration - position;
     }
 
-    play(params: IPlayTrack): void {
-        playTrack(params);
+    getVolume(): Promise<number> | number {
+        return this.apiPlayback?.device.volume_percent ?? 0;
     }
 
-    resume(): void {
+    async play(params: IPlayTrack): Promise<void> {
+        await playTrack(params);
+    }
+
+    async resume(): Promise<boolean> {
+        const isPlaying = this.apiPlayback?.is_playing ?? false;
         const contextUri = this.apiPlayback?.context?.uri ?? "";
         const trackUri = this.apiPlayback?.item?.uri ?? "";
 
-        playTrack({
-            context_uri: contextUri ?? "",
-            offset: {
-                uri: trackUri,
-            }
-        })
+        // const contextType = contextUri.split(":")[1]; // spotify:artist:219103iasd -> artist
+
+        if (isPlaying) {
+            await pauseTrack()
+        } else {
+            await playTrack({
+                context_uri: contextUri,
+                offset: {
+                    uri: trackUri,
+                },
+            })
+        }
+        
+        return !isPlaying;
     }
 
     nextTrack(): void {
@@ -286,11 +338,17 @@ export class ApiPlaybackAdapter implements IPlaybackAdapter {
         skipToPrevious();
     }
 
-    toggleShuffle(state?: boolean): void {
-        togglePlaybackShuffle(state ?? !this.apiPlayback?.shuffle_state)
+    seek(position: number): void {
+        seekToPosition(position);
     }
 
-    setRepeatMode(): void {
+    toggleShuffle(state?: boolean): boolean {
+        togglePlaybackShuffle(state ?? !this.apiPlayback?.shuffle_state);
+
+        return state ?? !this.apiPlayback?.shuffle_state;
+    }
+
+    setRepeatMode(): "off" | "context" | "track" {
         let newMode: "track" | "context" | "off" = "off";
         switch (this.apiPlayback?.repeat_state) {
             case "off": 
@@ -305,6 +363,12 @@ export class ApiPlaybackAdapter implements IPlaybackAdapter {
             default: newMode = "off";
         }
         setRepeatMode(newMode);
+
+        return newMode;
+    }
+
+    setVolume(percent: number): void {
+        setPlaybackVolume(percent);
     }
 }
 
@@ -316,8 +380,10 @@ export class PlaybackAdapterFactory {
     ) {
         if (sdkPlayback && sdkPlayback.track_window.current_track) {
             return new SdkPlaybackAdapter(sdkPlayback, player);
-        } else {
+        } else if (apiPlayback && apiPlayback.item) {
             return new ApiPlaybackAdapter(apiPlayback);
+        } else {
+            return new ApiPlaybackAdapter(null);
         }
     }
 }

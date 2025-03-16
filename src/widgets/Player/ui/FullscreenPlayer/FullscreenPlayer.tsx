@@ -21,9 +21,11 @@ interface IFullscreenPlayer {
     readonly color: string,
     readonly activeTab: "track" | "devices" | "queue",
     readonly chooseTab: (tab: "devices" | "queue" | "track") => void,
+    readonly isLiked: boolean,
+    readonly setIsLiked: (state: boolean) => void;
 }
 
-export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, activeTab, chooseTab }) => {
+export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, activeTab, chooseTab, isLiked, setIsLiked }) => {
     const { menus, openMenu } = useMenu({ 
         moreMenu: false, 
         volumeBar: false, 
@@ -54,6 +56,8 @@ export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, activeTab, choo
                 <div className={styles["fullscreen-player-content"]}>
                     <FullscreenTrack
                         activeTab={activeTab} 
+                        isLiked={isLiked}
+                        setIsLiked={setIsLiked}
                     />
                     <QueueList 
                         activeTab={activeTab} 

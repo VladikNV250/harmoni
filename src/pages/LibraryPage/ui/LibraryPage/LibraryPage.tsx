@@ -24,9 +24,11 @@ import {
     getUserInfo, 
     selectUserLoading 
 } from "entities/user";
-import styles from "./style.module.scss";
 import { LibraryGroupList } from "../LibraryGroupList/LibraryGroupList";
 import { LibraryHeader } from "../LibraryHeader/LibraryHeader";
+import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import styles from "./style.module.scss";
 
 
 
@@ -36,7 +38,8 @@ const LibraryPage: FC = () => {
     const [value, setValue] = useState("");
     const debouncedValue = useDebounce(value, 300);
     const libraryLoading = useAppSelector(selectLibraryLoading);
-    const userLoading = useAppSelector(selectUserLoading);        
+    const userLoading = useAppSelector(selectUserLoading);     
+    const { setApiPlayback } = usePlaybackAdapter();  
 
     useEffect(() => {
         dispatch(getLikedTracks());
@@ -45,7 +48,11 @@ const LibraryPage: FC = () => {
         dispatch(getLibraryShows());
         dispatch(getLibraryArtists());
         dispatch(getUserInfo());
-    }, [dispatch]);
+
+        (async () => {
+            setApiPlayback?.(await fetchPlaybackState());
+        })()
+    }, [dispatch, setApiPlayback]);
 
 
     return (

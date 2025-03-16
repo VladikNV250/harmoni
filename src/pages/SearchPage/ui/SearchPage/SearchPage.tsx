@@ -32,6 +32,13 @@ import {
     getLikedTracks, 
     selectLibraryLoading
 } from "features/library";
+import { 
+    getUserInfo, 
+    selectUser, 
+    selectUserLoading 
+} from "entities/user";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { usePlaybackAdapter } from "entities/playback";
 import styles from "./style.module.scss";
 
 
@@ -42,10 +49,22 @@ const SearchPage: FC = () => {
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const [value, setValue] = useState("");
     const debouncedValue = useDebounce(value, 300);
+    const { setApiPlayback } = usePlaybackAdapter();
+    const user = useAppSelector(selectUser);
+    const userLoading = useAppSelector(selectUserLoading);
     
     useEffect(() => {
-        dispatch(getSeveralBrowseCategories())
-    }, [dispatch])
+        if (user === null) {
+            dispatch(getUserInfo());
+        }
+    }, [dispatch, user])
+
+    useEffect(() => {
+        dispatch(getSeveralBrowseCategories());
+        (async () => {
+            setApiPlayback?.(await fetchPlaybackState());
+        })()
+    }, [dispatch, setApiPlayback])
 
     useEffect(() => {
         if (debouncedValue !== "") {
@@ -86,7 +105,7 @@ const SearchPage: FC = () => {
                 />
             </header>
             <Loader 
-                loading={searchLoading || libraryLoading} 
+                loading={searchLoading || libraryLoading || userLoading} 
                 className={styles["search-loader"]} 
             />
             {

@@ -7,6 +7,7 @@ import { getDate } from "entities/episode/lib/getDate";
 import { usePlaybackAdapter } from "entities/playback";
 import { Pause, PlaceholderImage, Play } from "shared/assets";
 import styles from "./style.module.scss";
+import { toast } from "react-toastify";
 
 
 interface IEpisodePreview {
@@ -28,13 +29,20 @@ export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
     const color = useColor(images[0]?.url);
     const { adapter } = usePlaybackAdapter();
 
-    const handlePlay = () => {
-        adapter.play({ 
-            context_uri: show.uri, 
-            offset: { 
-                uri: uri 
-            } 
-        });
+    const handlePlay = async () => {
+        try {
+            await adapter.play({ 
+                context_uri: show.uri, 
+                offset: { 
+                    uri: uri 
+                } 
+            });
+        } catch (e) {
+            toast.error("Something went wrong. Player may not be available at this time.")
+            console.error("PLAY", e);
+        }
+        
+        
     }
     
     return (
@@ -68,7 +76,7 @@ export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
             </div>
             <button 
                 className={styles["episode-button"]} 
-                onClick={handlePlay}
+                onClick={async () => await handlePlay()}
             >
                 {adapter.getTrackURI() === uri ?
                 <Pause width={40} height={40} /> :

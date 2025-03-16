@@ -6,12 +6,23 @@
     &:focus {
         outline: none;
     }
+
+    &::-moz-range-track,
     &::-webkit-slider-runnable-track {
         background: linear-gradient(90deg, var(--fg-primary) var(--value), rgba(219, 219, 219, 0.21) var(--value));
         height: 3px;
         width: 100%;
         border-radius: 3px;
     }
+
+    &::-moz-range-thumb {
+        height: 10px;
+        width: 10px;
+        background: var(--fg-primary);
+        border: none;
+        border-radius: 50%;
+    }
+
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 10px;
@@ -20,5 +31,9 @@
         border: none;
         border-radius: 50%;
         margin-top: -3.5px; /** (track height / 2) - (thumb height / 2) */
+    }
+
+    &.disabled {
+        opacity: 0.5;
     }
 }

@@ -5,6 +5,7 @@ import { displayDate, useColor } from "shared/lib";
 import { IAlbum, ISimplifiedAlbum } from "shared/api/album";
 import { usePlaybackAdapter } from "entities/playback";
 import { Pause, PlaceholderImage, Play } from "shared/assets";
+import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
 interface IAlbumPreview {
@@ -19,6 +20,15 @@ export const AlbumPreview: FC<IAlbumPreview> = ({ album, description = "artists"
     const navigate = useNavigate();
     const color = useColor(images[0]?.url);
     const { adapter } = usePlaybackAdapter();
+
+    const handlePlay = async () => {
+        try {
+            await adapter.play({ context_uri: uri })
+        } catch (e) {
+            toast.error("Something went wrong. Player may not be available at this time.")
+            console.error("PLAY", e);
+        }
+    }
     
     return (
         <div className={styles["album"]}>
@@ -46,7 +56,7 @@ export const AlbumPreview: FC<IAlbumPreview> = ({ album, description = "artists"
             </div>
             <button 
                 className={styles["album-button"]} 
-                onClick={() => adapter.play({ context_uri: uri })}
+                onClick={async () => await handlePlay()}
             >
                 {adapter.getContextURI() === uri ?
                 <Pause width={40} height={40} /> :

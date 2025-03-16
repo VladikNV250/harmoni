@@ -1,5 +1,5 @@
 import { apiInstance } from "shared/api/base";
-import { IPlaylist } from "./types";
+import { IPlaylist, IPlaylistItems } from "./types";
 
 const ENDPOINT = "/v1/playlists";
 
@@ -59,6 +59,28 @@ export const addCustomPlaylistCoverImage = (playlistId: string, image: string): 
     )
 }
 
+export const fetchPlaylistItems = (
+    playlistId: string,
+    params?: {
+        market?: string, 
+        fields?: string, 
+        limit?: number, 
+        offset?: number, 
+        additionalTypes?: string
+    }
+): Promise<IPlaylistItems> => {
+    return apiInstance.get(ENDPOINT + `/${playlistId}/tracks`, {
+        params: {
+            playlist_id: playlistId,
+            market: params?.market || null,
+            fields: params?.fields || null,
+            limit: params?.limit || null,
+            offset: params?.offset || null,
+            additional_types: params?.additionalTypes || null,
+        }
+    })
+}
+
 export const addItemsToPlaylist = (playlistId: string, trackUris: string[], position: number = 0): Promise<void> => {
     return apiInstance.post(
         ENDPOINT + `/${playlistId}/tracks`,
@@ -94,7 +116,7 @@ export const createPlaylist = (
         collaborative?: boolean,
         description?: string,
     } 
-): Promise<IPlaylist> => {
+): Promise<{data: IPlaylist}> => {
     const USERS_ENDPOINT = "https://api.spotify.com/v1/users";
 
     return apiInstance.post(

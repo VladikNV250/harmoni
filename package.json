@@ -20,6 +20,7 @@
     "react-redux": "^9.2.0",
     "react-router": "^7.1.2",
     "react-spotify-web-playback-sdk": "^3.0.2",
+    "react-toastify": "^11.0.5",
     "redux-persist": "^6.0.0",
     "rgbaster": "^2.1.1"
   },

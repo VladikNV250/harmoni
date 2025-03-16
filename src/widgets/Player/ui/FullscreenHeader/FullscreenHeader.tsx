@@ -29,6 +29,8 @@ export const FullscreenHeader: FC<IFullscreenHeader> = ({ activeTab }) => {
             >
                 <DownIcon width={40} height={40} />
             </button>
+            {adapter.checkPlayback()
+            ?
             <div className={styles["fullscreen-header-container"]}>
                 <div 
                     className={clsx(
@@ -53,6 +55,7 @@ export const FullscreenHeader: FC<IFullscreenHeader> = ({ activeTab }) => {
                     </Text>
                 </div>
             </div>
+            : null}
         </header>
     )
 }

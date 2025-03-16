@@ -1,23 +1,42 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTheme } from "entities/theme";
 import { AdjustContextMenu } from "../AdjustContextMenu/AdjustContextMenu";
 import { Adjust } from "shared/assets";
-import { useAppSelector, useTabs } from "shared/lib";
+import { useAppDispatch, useAppSelector, useTabs } from "shared/lib";
 import { selectFeedLoading, TFeedFilter } from "entities/feed";
 import { Catalogue } from "../Catalogue/Catalogue";
 import { UserTrackList } from "../UserTrackList/UserTrackList";
 import { CategoryTabs, Loader } from "shared/ui";
+import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
 import styles from "./style.module.scss";
 
 const HomePage: FC = () => {
     const { theme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
     const { activeTab, chooseTab } = useTabs<TFeedFilter, "All">("All");
-    const loading = useAppSelector(selectFeedLoading);
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
+    const userLoading = useAppSelector(selectUserLoading);
+    const feedLoading = useAppSelector(selectFeedLoading);
+    const { setApiPlayback } = usePlaybackAdapter();
+
+    useEffect(() => {
+        if (user === null) {
+            dispatch(getUserInfo());
+        }
+    }, [dispatch, user])
+
+    useEffect(() => {
+        (async () => {
+            setApiPlayback?.(await fetchPlaybackState());
+        })()
+    }, [setApiPlayback])
     
     return (
         <div className={styles["home"]}>
-            <Loader loading={loading} />
+            <Loader loading={feedLoading || userLoading} />
             <AdjustContextMenu isOpen={isOpen} setIsOpen={setIsOpen} />
             <div className={styles["filter-bar"]}>
                 <CategoryTabs<TFeedFilter> 

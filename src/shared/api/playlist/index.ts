@@ -11,6 +11,7 @@ export {
     followPlaylist,
     unfollowPlaylist,
     addCustomPlaylistCoverImage,
+    fetchPlaylistItems,
     addItemsToPlaylist,
     changePlaylistDetails,
     createPlaylist,

@@ -20,11 +20,27 @@
             padding: 8px 0;
             position: relative;
             color: var(--fg-secondary);
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
             align-items: center;
-            justify-content: center;  
+            justify-items: center;
             backdrop-filter: blur(20px);
             overflow: hidden;
+
+            .icon-like,
+            .icon-like__filled {
+                grid-area: 1 / 1;
+                transition: transform .125s ease-in-out;
+            }
+
+            .icon-like { transform: scale(1); }
+            .icon-like__filled { transform: scale(0); }
+
+            &.liked {
+                .icon-like { transform: scale(0); }
+                .icon-like__filled { transform: scale(1); }
+            }
 
             &::before {
                 content: "";

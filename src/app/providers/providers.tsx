@@ -6,12 +6,13 @@ import { Provider } from "react-redux";
 import { WebPlaybackSDK } from "react-spotify-web-playback-sdk";
 import { PersistGate } from "redux-persist/integration/react";
 import { currentToken } from "shared/api/authorization";
+import { INITIAL_VOLUME, PLAYBACK_NAME } from "shared/consts";
 
 interface IProviders {
     children: JSX.Element;
 }
 
-type getOAuthTokenCallback = (token: string) => void
+type getOAuthTokenCallback = (token: string) => void;
 
 export const Providers: FC<IProviders> = ({ children }) => {
     const getOAuthToken = useCallback((callback: getOAuthTokenCallback) => {
@@ -23,9 +24,9 @@ export const Providers: FC<IProviders> = ({ children }) => {
             <PersistGate loading={null} persistor={persistor}>
                 <ThemeProvider>
                     <WebPlaybackSDK
-                        initialDeviceName="Harmoni App Player"
+                        initialDeviceName={PLAYBACK_NAME}
                         getOAuthToken={getOAuthToken}
-                        initialVolume={0.5}
+                        initialVolume={INITIAL_VOLUME}
                         connectOnInitialized={true}>
                         <PlaybackProvider>
                             {children}

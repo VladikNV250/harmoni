@@ -10,3 +10,5 @@ export { useDebounce } from "./debounce/useDebounce";
 export { usePress } from "./press/usePress";
 
 export { useTabs } from "./tabs/useTabs";
+
+export { useControlPanel } from "./controlpanel/useControlPanel";

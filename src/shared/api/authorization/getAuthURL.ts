@@ -10,7 +10,7 @@ export const getAuthURL = async (): Promise<string> => {
     const AUTH_URL = new URL(`${BASIC_AUTH_URL}/authorize`);
 
     let scopes = "";
-    // scopes += "ugc-image-upload "; // Add Custom Playlist Cover Image
+    scopes += "ugc-image-upload "; // Add Custom Playlist Cover Image
     scopes += "user-read-playback-state "; // Read your currently playing content and Spotify Connect devices information.
     scopes += "user-modify-playback-state "; // Control playback on your Spotify clients and Spotify Connect devices.
     scopes += "user-read-currently-playing "; // Get the User's Currently Playing Track and Queue

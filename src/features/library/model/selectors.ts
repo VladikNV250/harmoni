@@ -31,6 +31,11 @@ export const selectLikedTracks = createSelector(
     (state: ILibraryState) => state.tracks,
 )
 
+export const selectLikedEpisodes = createSelector(
+    selectBase,
+    (state: ILibraryState) => state.episodes,
+)
+
 export const selectFolders = createSelector(
     selectBase,
     (state: ILibraryState) => state.folders,

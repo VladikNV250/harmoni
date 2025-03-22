@@ -42,6 +42,9 @@ import AddToLibrary from "shared/assets/icons/add-to-library-big.svg?react";
 import CheckFilled from "shared/assets/icons/check-big__filled.svg?react";
 import RemoveIcon from "shared/assets/icons/remove-big.svg?react";
 import AddIcon from "shared/assets/icons/add-big.svg?react";
+import PrivateFilledIcon from "shared/assets/icons/private-big__filled.svg?react";
+import PrivateIcon from "shared/assets/icons/private-big.svg?react";
+import PenIcon from "shared/assets/icons/pen.svg?react";
 
 
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
@@ -52,6 +55,7 @@ import PlaceholderFolderImage from "shared/assets/placeholder/folder_placeholder
 
 /** ICONS */
 export {
+    PenIcon,
     Album,
     Play,
     Pause,
@@ -96,6 +100,8 @@ export {
     CheckFilled,
     RemoveIcon,
     AddIcon,
+    PrivateFilledIcon,
+    PrivateIcon
 }
 
 /** IMAGES */

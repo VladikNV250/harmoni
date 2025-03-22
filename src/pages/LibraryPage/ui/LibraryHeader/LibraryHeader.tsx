@@ -26,7 +26,6 @@ import {
 import { selectUser } from "entities/user";
 import { shallowEqual } from "react-redux";
 import { useNavigate } from "react-router";
-import { IFolder } from "entities/folder";
 import styles from "./style.module.scss";
 
 interface ILibraryHeader {
@@ -47,16 +46,9 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
 
 
     const handleCreateFolder = useCallback(() => {
-        const newFolder: IFolder = {
-            id: `${Date.now()}`,
-            items: [],
-            name: "Folder" + (folders.length + 1),
-            type: 'folder',
-        }
+        const { payload: newFolderId } = dispatch(createFolder("Folder" + (folders.length + 1)));
 
-        dispatch(createFolder(newFolder));
-
-        navigate(`/folders/${newFolder.id}`);
+        navigate(`/folders/${newFolderId}`);
     }, [createFolder, dispatch, folders.length, navigate])
 
     const handleCreatePlaylist = useCallback(async () => {

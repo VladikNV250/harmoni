@@ -2,6 +2,7 @@ import { apiInstance } from "shared/api/base";
 import { 
     ILibraryAlbums, 
     ILibraryArtists, 
+    ILibraryEpisodes, 
     ILibraryPlaylists, 
     ILibraryShows, 
     ILikedTracks, 
@@ -11,6 +12,7 @@ import {
 
 const ENDPOINT = "/v1/me";
 
+/** USER API */
 export const followUsers = (userIds: string[]): Promise<void> => {
     return apiInstance.put(ENDPOINT + "/following", 
         {
@@ -61,6 +63,7 @@ export const fetchUserTopTracks = (options: {
     });
 }
 
+/** ALBUM API */
 export const fetchLibraryAlbums = (): Promise<ILibraryAlbums> => {
     return apiInstance.get(ENDPOINT + "/albums");
 }
@@ -93,6 +96,7 @@ export const fetchLibraryPlaylists = (): Promise<ILibraryPlaylists> => {
     return apiInstance.get(ENDPOINT + "/playlists");
 }
 
+/** SHOW API */
 export const fetchLibraryShows = (): Promise<ILibraryShows> => {
     return apiInstance.get(ENDPOINT + "/shows");
 }
@@ -121,6 +125,7 @@ export const checkSavedShows = (showIds: string[]): Promise<boolean[]> => {
     })
 }
 
+/** ARTIST API */
 export const fetchLibraryArtists = (): Promise<ILibraryArtists> => {
     return apiInstance.get(ENDPOINT + "/following", {
         params: {
@@ -161,6 +166,7 @@ export const checkFollowedArtists = (artistIds: string[]): Promise<boolean[]> =>
     })
 }
 
+/** TRACK API */
 export const fetchLikedTracks = (): Promise<ILikedTracks> => {
     return apiInstance.get(ENDPOINT + "/tracks");
 } 
@@ -185,6 +191,35 @@ export const checkLikedTracks = (trackIds: string[]): Promise<boolean[]> => {
     return apiInstance.get(ENDPOINT + "/tracks/contains", {
         params: {
             ids: trackIds.join(',') || null
+        }
+    })
+}
+
+/** EPISODE API */
+export const fetchLibraryEpisodes = (): Promise<ILibraryEpisodes> => {
+    return apiInstance.get(ENDPOINT + "/episodes");
+}
+
+export const saveEpisodesToLibrary = (episodeIds: string[]): Promise<void> => {
+    return apiInstance.put(ENDPOINT + "/episodes", {}, {
+        params: {
+            ids: episodeIds.join(',') || null
+        }
+    })
+}
+
+export const removeEpisodesFromLibrary = (episodeIds: string[]): Promise<void> => {
+    return apiInstance.delete(ENDPOINT + "/episodes", {
+        params: {
+            ids: episodeIds.join(',') || null,
+        }
+    })
+}
+
+export const checkSavedEpisodes = (episodeIds: string[]): Promise<boolean[]> => {
+    return apiInstance.get(ENDPOINT + "/episodes/contains", {
+        params: {
+            ids: episodeIds.join(',') || null
         }
     })
 }

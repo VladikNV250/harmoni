@@ -1,32 +1,68 @@
-import { CSSProperties, FC, useEffect, useState } from "react";
-import { fetchAlbum, IAlbum } from "shared/api/album";
-import { useParams } from "react-router";
-import { displayDate, useAppDispatch, useAppSelector, useColor } from "shared/lib";
-import { Description, Loader, SearchInput, Title } from "shared/ui";
+import { 
+    CSSProperties, 
+    FC, 
+    useEffect, 
+    useState 
+} from "react";
+import { 
+    fetchAlbum, 
+    IAlbum 
+} from "shared/api/album";
+import { 
+    useParams 
+} from "react-router";
+import { 
+    displayDate, 
+    useAppDispatch, 
+    useAppSelector, 
+    useColor 
+} from "shared/lib";
+import { 
+    Description, 
+    Loader, 
+    SearchInput, 
+    Title 
+} from "shared/ui";
+import { 
+    getUserInfo, 
+    selectUser, 
+    selectUserLoading 
+} from "entities/user";
+import { PlaceholderImage } from "shared/assets";
+import { 
+    getLibraryAlbums, 
+    getLibraryPlaylists, 
+    selectLibraryLoading, 
+} from "features/library";
 import { TrackItem } from "entities/track";
 import { ISimplifiedTrack } from "shared/api/track";
 import { ArtistList } from "entities/artist";
-import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
+import { usePlaybackAdapter } from "entities/playback";
 import { fetchPlaybackState } from "entities/playback/api/playback";
-import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
-import { PlaceholderImage } from "shared/assets";
 import styles from "./style.module.scss";
+import { AlbumControlPanel } from "../AlbumControlPanel/AlbumControlPanel";
+
 
 const AlbumPage: FC = () => {
     const { id } = useParams();
-    const [album, setAlbum] = useState<IAlbum | null>(null);
-    const [albumLoading, setAlbumLoading] = useState(false);
-    const color = useColor(album?.images[0]?.url ?? PlaceholderImage);
-    const { setApiPlayback } = usePlaybackAdapter();
     const dispatch = useAppDispatch();
+    const [album, setAlbum] = useState<IAlbum | null>(null);
+    const [albumLoading, setAlbumLoading] = useState<boolean>(false);
+    const libraryLoading = useAppSelector(selectLibraryLoading);
     const user = useAppSelector(selectUser);
     const userLoading = useAppSelector(selectUserLoading);
+    const color = useColor(album?.images[0]?.url ?? PlaceholderImage);
+    const { setApiPlayback } = usePlaybackAdapter();
+
 
     useEffect(() => {
         (async () => {
             try {
                 setAlbumLoading(true);
                 if (id) setAlbum(await fetchAlbum(id));
+                
+                dispatch(getLibraryAlbums());
+                dispatch(getLibraryPlaylists());
                 setApiPlayback?.(await fetchPlaybackState());
             } catch (e) {
                 console.error(e);
@@ -34,13 +70,13 @@ const AlbumPage: FC = () => {
                 setAlbumLoading(false);
             }
         })()
-    }, [id, setApiPlayback])
+    }, [id, setApiPlayback, dispatch])
 
     useEffect(() => {
         if (user === null) {
             dispatch(getUserInfo());
         }
-    }, [dispatch, user])
+    }, [dispatch, user]);
 
     const renderTracks = (tracks: ISimplifiedTrack[]) => {
         return (tracks.length > 0 && album) && tracks.map(track =>
@@ -57,7 +93,7 @@ const AlbumPage: FC = () => {
         <div 
             className={styles["album"]} 
             style={{'--color': color} as CSSProperties}>
-            <Loader loading={albumLoading || userLoading} />
+            <Loader loading={albumLoading || libraryLoading || userLoading} />
             <header className={styles["album-header"]}>
                 <SearchInput placeholder={"Find in album"} />
             </header>
@@ -82,9 +118,7 @@ const AlbumPage: FC = () => {
                     {displayDate(album?.release_date, album?.release_date_precision)}
                 </Description>
             </div>
-            <PagePlaybackControl 
-                contextUri={album?.uri}
-            />
+            <AlbumControlPanel album={album} />
             <div className={styles["album-items-container"]}>
                 {renderTracks(album?.tracks.items ?? [])}
             </div>

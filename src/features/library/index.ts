@@ -13,15 +13,8 @@ export {
     getLibraryPlaylists,
     getLibraryShows,
     getLikedTracks,
+    getLikedEpisodes,
     createPlaylistThunk,
-    // removeAlbums,
-    // removeArtists,
-    // removePlaylist,
-    // removeShows,
-    // saveAlbums,
-    // saveArtists,
-    // savePlaylist,
-    // saveShows,
 } from "./model/libraryThunk";
 export {
     selectFolders,
@@ -31,5 +24,6 @@ export {
     selectSavedAlbums,
     selectSavedPlaylists,
     selectSavedShows,
-    selectLikedTracks
+    selectLikedTracks,
+    selectLikedEpisodes,
 } from "./model/selectors";

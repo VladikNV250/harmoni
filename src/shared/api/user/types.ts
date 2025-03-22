@@ -126,12 +126,36 @@ export interface ILikedTracks {
     /** The total number of items available to return. */
     readonly total: number;
     /** The list of tracks */
-    readonly items: ISavedTracks[];
+    readonly items: ISavedTrack[];
 }
 
-export interface ISavedTracks {
+export interface ISavedTrack {
     /** The date and time the track was saved */
     readonly added_at: string;
     /** Information about the track. */
     readonly track: ITrack | IEpisode;
+}
+
+export interface ILibraryEpisodes {
+    /** A link to the Web API endpoint */
+    readonly href: string;
+    /** The maximum number of items to return. */
+    readonly limit: number;
+    /** URL to the next page of items */
+    readonly next: string | null;
+    /** The offset of the items returned */
+    readonly offset: number;
+    /** URL to the previous page of items. */
+    readonly previous: string | null;
+    /** The total number of items available to return. */
+    readonly total: number;
+    /** The list of episodes */
+    readonly items: ISavedEpisode[];
+}
+
+export interface ISavedEpisode {
+    /** The date and time the episode was saved */
+    readonly added_at: string;
+    /** Information about the episode. */
+    readonly episode: IEpisode;
 }

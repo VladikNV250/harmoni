@@ -1,0 +1,28 @@
+.artist-control-panel {
+    padding: 0 15px; 
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    .control-panel-button {
+        display: flex;
+        color: var(--fg-secondary);
+        transition: color .2s ease-in-out;
+
+        &:hover {
+            color: var(--fg-primary);
+        }
+
+        &.shuffle {
+            color: var(--primary);
+        }
+
+        &-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+    }
+}

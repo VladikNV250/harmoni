@@ -17,8 +17,7 @@ import {
     FilledButton, 
     Paragraph, 
 } from "shared/ui";
-import { addItemToQueue } from "features/queue";
-import { getAvailableDevices } from "features/device";
+import { addItemToQueue, getUserQueue } from "features/queue";
 import { usePlaybackAdapter } from "entities/playback";
 import { playerSlice } from "widgets/Player/model/playerSlice";
 import { createPlaylistThunk, selectSavedPlaylists } from "features/library";
@@ -47,7 +46,7 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
 
         try {
             await addItemToQueue(uri);
-            await dispatch(getAvailableDevices());
+            await dispatch(getUserQueue());
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("ADD-ITEM-TO-QUEUE", e);

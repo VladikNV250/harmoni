@@ -6,6 +6,7 @@ import {
     getLibraryArtists, 
     getLibraryPlaylists, 
     getLibraryShows, 
+    getLikedEpisodes, 
     getLikedTracks, 
 } from "./libraryThunk"
 import { IFolder } from "entities/folder"
@@ -17,6 +18,7 @@ const initialState: ILibraryState = {
     playlists: [],
     shows:     [],
     tracks:    [],
+    episodes:  [],
     folders:   [],
     
     loading:   false,
@@ -27,8 +29,16 @@ export const librarySlice = createSlice({
     name: "library",
     initialState,
     reducers: {
-        createFolder: (state, action: PayloadAction<IFolder>) => {
-            state.folders.push(action.payload);
+        createFolder: (state, action: PayloadAction<IFolder["name"]>) => {
+            const newFolder: IFolder = {
+                id: `${Date.now()}`,
+                items: [],
+                name: action.payload,
+                type: "folder",
+            }
+
+            state.folders.push(newFolder);
+            action.payload = newFolder.id
         },
         addToFolder: (state, action: PayloadAction<{id: IFolder["id"], item: IPlaylist}>) => {
             const { id, item } = action.payload;
@@ -38,9 +48,11 @@ export const librarySlice = createSlice({
         },
         removeFromFolder: (state, action: PayloadAction<{id: IFolder["id"], itemId: string}>) => {
             const { id, itemId } = action.payload;
-            state.folders
-                .find(folder => folder.id === id)
-                ?.items.filter(item => item.id !== itemId);
+            const folder = state.folders.find(folder => folder.id === id);
+
+            if (folder) {
+                folder.items = folder.items.filter(item => item.id !== itemId);
+            }
         },
         deleteFolder: (state, action: PayloadAction<IFolder["id"]>) => {
             state.folders = state.folders.filter(folder => folder.id !== action.payload);
@@ -119,6 +131,19 @@ export const librarySlice = createSlice({
                 // state.playlists.push(LikedPlaylist);                
             })
             .addCase(getLikedTracks.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload ?? null;
+            })
+            .addCase(getLikedEpisodes.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getLikedEpisodes.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.episodes = action.payload;
+            })
+            .addCase(getLikedEpisodes.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload ?? null;
             })

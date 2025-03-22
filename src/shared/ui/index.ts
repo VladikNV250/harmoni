@@ -21,3 +21,5 @@ export { CategoryTabs } from "./tabs/categoryTabs/categoryTabs";
 export { FilledButton } from "./buttons/filledButton/filledButton";
 export { TextButton } from "./buttons/textButton/textButton";
 export { OutlinedButton } from "./buttons/outlinedButton/outlinedButton";
+
+export { TextArea } from "./textarea/textarea";

@@ -4,25 +4,19 @@ import { IArtist } from "shared/api/artist";
 import { 
     createPlaylist,
     IPlaylist,
-    // followPlaylist, 
     ISimplifiedPlaylist, 
-    // unfollowPlaylist 
 } from "shared/api/playlist";
 import { 
     fetchLibraryAlbums, 
     fetchLibraryArtists, 
+    fetchLibraryEpisodes, 
     fetchLibraryPlaylists, 
     fetchLibraryShows, 
     fetchLikedTracks, 
-    // followArtists, 
     ISavedAlbum, 
-    ISavedShow, 
-    ISavedTracks,
-    // removeAlbumsFromLibrary,
-    // removeShowsFromLibrary,
-    // saveAlbumsToLibrary,
-    // saveShowsToLibrary,
-    // unfollowArtists
+    ISavedEpisode, 
+    ISavedShow,
+    ISavedTrack, 
 } from "shared/api/user";
 
 export const getLibraryAlbums = createAsyncThunk<
@@ -98,7 +92,7 @@ export const getLibraryArtists = createAsyncThunk<
 })
 
 export const getLikedTracks = createAsyncThunk<
-    ISavedTracks[],
+    ISavedTrack[],
     void,
     { readonly rejectValue: RejectedDataType }
 >("library/getLikedTracks", async (_, thunkAPI) => {
@@ -113,6 +107,24 @@ export const getLikedTracks = createAsyncThunk<
             status: knownError.response?.status,
         })
     }
+})
+
+export const getLikedEpisodes = createAsyncThunk<
+    ISavedEpisode[],
+    void,
+    { readonly rejectValue: RejectedDataType }
+>("library/getLikedEpisodes", async (_, thunkAPI) => {
+    try {
+        const response = await fetchLibraryEpisodes();
+        return response.items;
+    } catch (e: unknown) {
+        const knownError = e as ErrorType;
+
+        return thunkAPI.rejectWithValue({
+            messageError: knownError.message,
+            status: knownError.response.status,
+        })
+    } 
 })
 
 export const createPlaylistThunk = createAsyncThunk<
@@ -140,147 +152,3 @@ export const createPlaylistThunk = createAsyncThunk<
         })
     }
 });
-
-// export const saveAlbums = createAsyncThunk<
-//     string[],
-//     string[],
-//     { readonly rejectValue: RejectedDataType }
-// >("library/saveAlbums", async (ids, thunkAPI) => {
-//     try {
-//         await saveAlbumsToLibrary(ids);
-//         return ids;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })
-
-// export const removeAlbums = createAsyncThunk<
-//     string[],
-//     string[],
-//     { readonly rejectValue: RejectedDataType }
-// >("library/removeAlbums", async (ids, thunkAPI) => {
-//     try {
-//         await removeAlbumsFromLibrary(ids);
-//         return ids;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })
-
-// export const saveShows = createAsyncThunk<
-//     string[],
-//     string[],
-//     { readonly rejectValue: RejectedDataType }
-// >("library/saveShows", async (ids, thunkAPI) => {
-//     try {
-//         await saveShowsToLibrary(ids);
-//         return ids;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })
-
-// export const removeShows = createAsyncThunk<
-//     string[],
-//     string[],
-//     { readonly rejectValue: RejectedDataType }
-// >("library/removeShows", async (ids, thunkAPI) => {
-//     try {
-//         await removeShowsFromLibrary(ids);
-//         return ids;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })
-
-// export const savePlaylist = createAsyncThunk<
-//     string,
-//     string,
-//     { readonly rejectValue: RejectedDataType }
-// >("library/savePlaylist", async (id, thunkAPI) => {
-//     try {
-//         await followPlaylist(id);
-//         return id;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })
-
-// export const removePlaylist = createAsyncThunk<
-//     string,
-//     string,
-//     { readonly rejectValue: RejectedDataType }
-// >("library/removePlaylist", async (id, thunkAPI) => {
-//     try {
-//         await unfollowPlaylist(id);
-//         return id;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })
-
-// export const saveArtists = createAsyncThunk<
-//     string[],
-//     string[],
-//     { readonly rejectValue: RejectedDataType }
-// >("library/saveArtists", async (ids, thunkAPI) => {
-//     try {
-//         await followArtists(ids);
-//         return ids;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })
-
-// export const removeArtists = createAsyncThunk<
-//     string[],
-//     string[],
-//     { readonly rejectValue: RejectedDataType }
-// >("library/saveShows", async (ids, thunkAPI) => {
-//     try {
-//         await unfollowArtists(ids);
-//         return ids;
-//     } catch (e: unknown) {
-//         const knownError = e as ErrorType;
-
-//         return thunkAPI.rejectWithValue({
-//             messageError: knownError.message,
-//             status: knownError.response?.status
-//         })
-//     }
-// })

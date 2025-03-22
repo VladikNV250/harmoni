@@ -3,12 +3,12 @@ import { ChangeEvent, FC, InputHTMLAttributes, useState } from "react";
 import styles from "./style.module.scss";
 
 
-interface IInput extends InputHTMLAttributes<HTMLInputElement> {
+interface ITextArea extends InputHTMLAttributes<HTMLTextAreaElement> {
     /** Additional styles. */
     readonly className?: string,
 }
 
-export const Input: FC<IInput> = (props) => {
+export const TextArea: FC<ITextArea> = (props) => {
     const {
         name,
         value,
@@ -18,15 +18,14 @@ export const Input: FC<IInput> = (props) => {
     } = props;
     const [inputData, setInputData] = useState<string>("");
     
-    const onChangeInputData = (e: ChangeEvent<HTMLInputElement>) => {
+    const onChangeInputData = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setInputData(e.target.value);
     }
     
     return (
-        <div className={clsx(styles["input-container"], className)}>
-            <input 
-                type="text" 
-                className={styles["input"]}
+        <div className={clsx(styles["textarea-container"], className)}>
+            <textarea 
+                className={styles["textarea"]}
                 name={name}
                 value={value ?? inputData}
                 placeholder={placeholder}

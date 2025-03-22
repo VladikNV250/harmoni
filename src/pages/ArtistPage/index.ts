@@ -1,1 +1,1 @@
-export { LazyArtistPage as ArtistPage } from "./ui/lazy";
+export { LazyArtistPage as ArtistPage } from "./ui/ArtistPage/lazy";

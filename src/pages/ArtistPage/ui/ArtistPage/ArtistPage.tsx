@@ -1,17 +1,48 @@
-import { CSSProperties, FC, useEffect, useState } from "react";
-import { fetchArtist, fetchArtistAlbums, fetchArtistTopTracks, IArtist } from "shared/api/artist";
+import { 
+    CSSProperties, 
+    FC, 
+    useEffect, 
+    useState 
+} from "react";
 import { useParams } from "react-router";
-import { useAppDispatch, useAppSelector, useColor, useTabs } from "shared/lib";
-import { Description, Loader, NavigationTabs, Title } from "shared/ui";
+import { 
+    fetchArtist, 
+    fetchArtistAlbums, 
+    fetchArtistTopTracks, 
+    IArtist 
+} from "shared/api/artist";
+import { 
+    useAppDispatch, 
+    useAppSelector, 
+    useColor, 
+    useTabs 
+} from "shared/lib";
+import { 
+    Description, 
+    Loader, 
+    NavigationTabs, 
+    Title 
+} from "shared/ui";
+import { 
+    getUserInfo, 
+    selectUser, 
+    selectUserLoading 
+} from "entities/user";
+import { 
+    getLibraryArtists, 
+    selectLibraryLoading 
+} from "features/library";
 import { ITrack } from "shared/api/track";
 import { ISimplifiedAlbum } from "shared/api/album";
 import { AlbumPreview } from "entities/album";
 import { TrackItem } from "entities/track";
-import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
+import { usePlaybackAdapter } from "entities/playback";
 import { fetchPlaybackState } from "entities/playback/api/playback";
-import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
 import { PlaceholderProfileImage } from "shared/assets";
+import { ArtistControlPanel } from "../ArtistControlPanel/ArtistControlPanel";
+import { toast } from "react-toastify";
 import styles from "./style.module.scss";
+
 
 const ArtistPage: FC = () => {
     const { id } = useParams();
@@ -25,11 +56,13 @@ const ArtistPage: FC = () => {
     const [artistLoading, setArtistLoading] = useState(false);
     const [tabs, setTabs] = useState<string[]>([]);
     const { activeTab, chooseTab } = useTabs<string, "Top Tracks">("Top Tracks");
-    const color = useColor(artist?.images[0]?.url ?? PlaceholderProfileImage);
-    const { setApiPlayback } = usePlaybackAdapter();
     const dispatch = useAppDispatch();
+    const libraryLoading = useAppSelector(selectLibraryLoading);
     const user = useAppSelector(selectUser);
     const userLoading = useAppSelector(selectUserLoading);
+    const color = useColor(artist?.images[0]?.url ?? PlaceholderProfileImage);
+    const { setApiPlayback } = usePlaybackAdapter();
+
 
     useEffect(() => {
         if (user === null) {
@@ -43,6 +76,7 @@ const ArtistPage: FC = () => {
                 setArtistLoading(true);
                 if (id) {
                     setArtist(await fetchArtist(id));
+                    dispatch(getLibraryArtists());
                     setApiPlayback?.(await fetchPlaybackState());
 
 
@@ -79,13 +113,15 @@ const ArtistPage: FC = () => {
                 } 
             } catch (e) {
                 console.error(e);
+                toast.error("Something went wrong. Try to reload the page.");
             } finally {
                 setArtistLoading(false);
             }
         })()
 
         return () => setTabs([]);
-    }, [id])
+    }, [id, dispatch, setApiPlayback])
+
 
     const displayFollowers = (followers: number = 0): string => {
         if (followers === 0) return "";
@@ -117,7 +153,7 @@ const ArtistPage: FC = () => {
         <div 
             className={styles["artist"]} 
             style={{'--color': color} as CSSProperties}>
-            <Loader loading={artistLoading || userLoading} />
+            <Loader loading={artistLoading || libraryLoading || userLoading} />
             <div className={styles["artist-image-container"]}>
                 <img 
                     src={artist?.images[0].url || PlaceholderProfileImage} 
@@ -132,10 +168,7 @@ const ArtistPage: FC = () => {
                     </Description>
                 </div>
             </div>
-            <PagePlaybackControl 
-                className={styles["artist-control-panel"]} 
-                contextUri={artist?.uri}
-            />
+            <ArtistControlPanel artist={artist} />
             <NavigationTabs
                 tabs={tabs}
                 activeTab={activeTab}

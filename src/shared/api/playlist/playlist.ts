@@ -34,15 +34,11 @@ export const changePlaylistDetails = (
     playlistId: string,
     body: {
         name?: string,
-        public?: boolean,
-        collaborative?: boolean,
         description?: string,
     }
 ): Promise<void> => {
     return apiInstance.put(ENDPOINT + `/${playlistId}`, {
         name: body.name ?? null,
-        public: body.public ?? null,
-        collaborative: body.collaborative ?? null,
         description: body.description ?? null,
     })
 }

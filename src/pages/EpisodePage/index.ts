@@ -1,1 +1,1 @@
-export { LazyEpisodePage as EpisodePage } from "./ui/lazy";
+export { LazyEpisodePage as EpisodePage } from "./ui/EpisodePage/lazy";

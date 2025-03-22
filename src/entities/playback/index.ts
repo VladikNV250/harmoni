@@ -10,7 +10,6 @@ export {
 }  from "./api/playback";
 
 export { PlaybackProvider } from "./ui/PlaybackProvider/PlaybackProvider";
-export { PagePlaybackControl } from "./ui/PagePlaybackControl/PagePlaybackControl";
 
 export type { IPlaybackAdapter } from "./lib/playbackAdapter";
 export { ApiPlaybackAdapter, PlaybackAdapterFactory, SdkPlaybackAdapter } from "./lib/playbackAdapter";

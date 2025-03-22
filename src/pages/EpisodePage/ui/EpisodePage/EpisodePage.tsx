@@ -1,24 +1,56 @@
-import { CSSProperties, FC, useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
-import { fetchEpisode, IEpisode } from "shared/api/episode";
-import { calculateDuration, useAppDispatch, useAppSelector, useColor } from "shared/lib";
-import { Description, Title, Loader } from "shared/ui";
-import { getDate } from "entities/episode";
-import { PagePlaybackControl, usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
-import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
+import { 
+    CSSProperties, 
+    FC, 
+    useEffect, 
+    useState 
+} from "react";
+import { 
+    Link, 
+    useParams 
+} from "react-router";
+import { 
+    fetchEpisode, 
+    IEpisode 
+} from "shared/api/episode";
+import { 
+    calculateDuration, 
+    useAppDispatch, 
+    useAppSelector, 
+    useColor 
+} from "shared/lib";
+import { 
+    Description, 
+    Title, 
+    Loader, 
+} from "shared/ui";
+import { 
+    getUserInfo, 
+    selectUser, 
+    selectUserLoading 
+} from "entities/user";
 import { PlaceholderImage } from "shared/assets";
+import { 
+    getLibraryPlaylists, 
+    getLikedEpisodes, 
+    selectLibraryLoading, 
+} from "features/library";
+import { getDate } from "entities/episode";
+import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState } from "entities/playback/api/playback";
+import { EpisodeControlPanel } from "../EpisodeControlPanel/EpisodeControlPanel";
 import styles from "./style.module.scss";
+
 
 const EpisodePage: FC = () => {
     const { id } = useParams();
+    const dispatch = useAppDispatch();
     const [episode, setEpisode] = useState<IEpisode | null>(null);
     const [episodeLoading, setEpisodeLoading] = useState(false);
-    const color = useColor(episode?.images[0]?.url ?? PlaceholderImage);
-    const { setApiPlayback } = usePlaybackAdapter();
-    const dispatch = useAppDispatch();
+    const libraryLoading = useAppSelector(selectLibraryLoading);
     const user = useAppSelector(selectUser);
     const userLoading = useAppSelector(selectUserLoading);
+    const color = useColor(episode?.images[0]?.url ?? PlaceholderImage);
+    const { setApiPlayback } = usePlaybackAdapter();
 
     useEffect(() => {
         if (user === null) {
@@ -31,21 +63,24 @@ const EpisodePage: FC = () => {
             try {
                 setEpisodeLoading(true);
                 if (id) setEpisode(await fetchEpisode(id));
+
                 setApiPlayback?.(await fetchPlaybackState());
+                dispatch(getLikedEpisodes());
+                dispatch(getLibraryPlaylists());
             } catch (e) {
                 console.error(e);
             } finally {
                 setEpisodeLoading(false);
             }
         })()
-    }, [id])
+    }, [id]);
 
     return (
         <div 
             className={styles["episode"]} 
             style={{'--color': color} as CSSProperties}
         >
-            <Loader loading={episodeLoading || userLoading} />
+            <Loader loading={episodeLoading || libraryLoading || userLoading} />
             <div className={styles["episode-image-container"]}>
                 <img 
                     src={episode?.images[0].url || PlaceholderImage} 
@@ -70,10 +105,7 @@ const EpisodePage: FC = () => {
                     {calculateDuration(episode?.duration_ms ?? 0)}
                 </Description>
             </div>
-            <PagePlaybackControl 
-                contextUri={episode?.show.uri}
-                episodeUri={episode?.uri}
-            />
+            <EpisodeControlPanel episode={episode} />
             <div className={styles["episode-content"]}>
                 <p 
                     className={styles["episode-description"]} 

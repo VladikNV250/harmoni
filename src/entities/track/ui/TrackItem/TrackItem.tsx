@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, MouseEvent, useState } from "react";
 import { Paragraph } from "shared/ui";
 import { ISimplifiedTrack, ITrack } from "shared/api/track";
 import { Link } from "react-router";
@@ -8,6 +8,8 @@ import { usePlaybackAdapter } from "entities/playback";
 import { More, PlaceholderImage } from "shared/assets";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
+import { TrackMenu } from "../TrackMenu/TrackMenu";
+import clsx from "clsx";
 
 
 export interface ITrackItem {
@@ -17,10 +19,13 @@ export interface ITrackItem {
     readonly defaultAlbum?: IAlbum;
     /** URI of context to play the song */
     readonly contextUri?: string,
+    /** PlaylistID for removing track from this playlist */
+    readonly playlistId?: string,
 }
 
-export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum, contextUri }) => {
-    const { name, artists, album } = track as ITrack;
+export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum, contextUri, playlistId }) => {
+    const { name, artists, album, id } = track as ITrack;
+    const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
     const { adapter } = usePlaybackAdapter();
 
     const handlePlay = async () => {
@@ -36,11 +41,22 @@ export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum, contextUri }) =
             console.error("PLAY", e);
         }
     }
+
+    const openMenu = (e: MouseEvent) => {
+        e.stopPropagation();
+        setIsOpenMenu(true);
+    }
     
     return (
         <div 
             className={styles["track"]} 
             onClick={async () => await handlePlay()}>
+            <TrackMenu 
+                isOpen={isOpenMenu}
+                setIsOpen={setIsOpenMenu}
+                track={track}
+                playlistId={playlistId}
+            />
             <img 
                 src={
                     album?.images[0]?.url ?? 
@@ -50,8 +66,13 @@ export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum, contextUri }) =
                 className={styles["track-image"]}    
             />
             <div className={styles["track-content"]}>
-                <Link to={`/albums/${album?.id ?? defaultAlbum?.id ?? ""}`}>
-                    <Paragraph className={styles["track-name"]}>
+                <Link 
+                    onClick={e => e.stopPropagation()}
+                    to={`/albums/${album?.id ?? defaultAlbum?.id ?? ""}`}>
+                    <Paragraph className={clsx(
+                        styles["track-name"],
+                        adapter.getTrackID() === id && styles["playing"]
+                    )}>
                         {name ?? ""}
                     </Paragraph>
                 </Link>
@@ -59,7 +80,10 @@ export const TrackItem: FC<ITrackItem> = ({ track, defaultAlbum, contextUri }) =
                     <ArtistList artists={artists} />
                 </div>
             </div>
-            <button className={styles["track-button"]}>
+            <button 
+                className={styles["track-button"]}
+                onClick={openMenu}
+            >
                 <More width={40} height={40} />
             </button>
         </div>

@@ -1,9 +1,11 @@
 import { 
     FC, 
-    useMemo, 
+    useMemo,
+    useState, 
 } from "react";
 import { 
     AddIcon, 
+    AddToPlaylist, 
     AddToQueue, 
     CheckFilled, 
     Pause, 
@@ -22,11 +24,17 @@ import {
     saveEpisodesToLibrary 
 } from "shared/api/user";
 import { 
+    createPlaylistThunk,
     getLikedEpisodes, 
-    selectLikedEpisodes, 
+    selectLikedEpisodes,
+    selectSavedPlaylists, 
 } from "features/library";
 import { usePlaybackAdapter } from "entities/playback";
 import { IEpisode } from "shared/api/episode";
+import { PlaylistMenu } from "entities/playlist";
+import { selectUser } from "entities/user";
+import { addItemsToPlaylist, fetchPlaylistItems, IPlaylist } from "shared/api/playlist";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import clsx from "clsx";
 import styles from "./style.module.scss";
@@ -37,7 +45,11 @@ interface IEpisodeControlPanel {
 
 export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { adapter } = usePlaybackAdapter();
+    const [isOpen, setIsOpen] = useState(false);
+    const user = useAppSelector(selectUser);
+    const libraryPlaylists = useAppSelector(selectSavedPlaylists);
     const libraryEpisodes = useAppSelector(selectLikedEpisodes);
 
     const isEpisodeInLibrary = useMemo(
@@ -77,10 +89,7 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
 
     const addToQueueHandle = async () => {
         try {
-            if (!episode) {
-                toast.error("Something went wrong. Try again or reload the page.");
-                return;
-            }
+            if (!episode) throw new Error("Episode doesn't exist");
             
             await addItemToQueue(episode.uri);
             await dispatch(getUserQueue());
@@ -91,9 +100,56 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
         }
     }
 
+    const addToNewPlaylist = async () => {
+        try {
+            if (!user || !episode?.uri) throw new Error("User or episodeURI doesn't exist");
+            const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
+                userId: user.id,
+                body: {
+                    name: "New Playlist #" + libraryPlaylists.length,
+                }
+            })).unwrap();
+    
+            if (newPlaylist) {
+                await addItemsToPlaylist(newPlaylist.id, [episode.uri], 0);
+    
+                navigate(`/playlists/${newPlaylist.id}`);
+                setIsOpen(false);
+            }
+        } catch (e) {
+            toast.error("Something went wrong. Try again or reload the page.");
+            console.error("ADD-TO-NEW-PLAYLIST", e);
+        }
+    }
+
+    const addToPlaylist = async (playlistId: string) => {
+        try {
+            if (!playlistId || !episode?.id || !episode?.uri) throw new Error("PlaylistId or EpisodeId or EpisodeURI doesn't exist");
+            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
+
+            if (playlistItems.findIndex(item => item.id === episode.id) === -1) {
+                await addItemsToPlaylist(playlistId, [episode.uri], 0);
+    
+                setIsOpen(false);
+                toast("The episode added to this playlist.");
+            } else {
+                toast.warn("The episode have been in this playlist already.");                
+            }
+        } catch (e) {
+            toast.error("Something went wrong. Try again or reload the page.");
+            console.error("ADD-TO-PLAYLIST", e);
+        }
+    }
+
     return (
         <>
             <div className={styles["episode-control-panel"]}>
+                <PlaylistMenu 
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                    onCreatePlaylist={addToNewPlaylist}
+                    onSelectPlaylist={addToPlaylist}
+                />
                 <div className={styles["control-panel-button-container"]}>
                     <button 
                         className={styles["control-panel-button"]} 
@@ -112,6 +168,9 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
                     >
                         <AddIcon width={50} height={50} className={styles["icon"]} />
                         <CheckFilled width={50} height={50} className={styles["icon__active"]} />
+                    </button>
+                    <button className={styles["control-panel-button"]} onClick={() => setIsOpen(true)}>
+                        <AddToPlaylist width={40} height={40} />
                     </button>
                     <button
                         className={styles["control-panel-button"]}

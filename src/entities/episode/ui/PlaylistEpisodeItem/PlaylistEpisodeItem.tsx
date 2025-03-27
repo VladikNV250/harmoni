@@ -1,10 +1,8 @@
 import { FC, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { IEpisode, ISimplifiedEpisode } from "shared/api/episode";
+import {  IPlaylistEpisode } from "shared/api/episode";
 import { Description, Paragraph } from "shared/ui";
-import { getDate } from "entities/episode/lib/getDate";
 import { 
-    calculateDuration, 
     useAppDispatch, 
     useAppSelector 
 } from "shared/lib";
@@ -15,6 +13,7 @@ import {
     CheckFilled, 
     PlaceholderImage, 
     Play, 
+    RemoveIcon
 } from "shared/assets";
 import { 
     createPlaylistThunk,
@@ -28,30 +27,26 @@ import {
 } from "shared/api/user";
 import { usePlaybackAdapter } from "entities/playback";
 import { toast } from "react-toastify";
+import styles from "./style.module.scss";
 import clsx from "clsx";
 import { addItemToQueue, getUserQueue } from "features/queue";
-import { addItemsToPlaylist, fetchPlaylistItems, IPlaylist } from "shared/api/playlist";
+import { addItemsToPlaylist, fetchPlaylistItems, IPlaylist, removePlaylistItems } from "shared/api/playlist";
 import { PlaylistMenu } from "entities/playlist";
 import { selectUser } from "entities/user";
-import styles from "./style.module.scss";
 
 
-interface IEpisodeItem {
-    readonly episode: IEpisode | ISimplifiedEpisode;
-    readonly showURI: string;
+interface IPlaylistEpisodeItem {
+    readonly episode: IPlaylistEpisode;
+    readonly playlistId?: string;
 }
 
-export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
+export const PlaylistEpisodeItem: FC<IPlaylistEpisodeItem> = ({ episode, playlistId }) => {
     const {
-        description,
-        duration_ms,
         id,
-        images,
         name,
-        release_date,
-        release_date_precision,
         uri,
-    } = episode
+        album,
+    } = episode;
     const { adapter } = usePlaybackAdapter();
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
@@ -68,7 +63,7 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
     const handlePlay = async () => {
         try {
             await adapter.play({
-                context_uri: showURI,
+                context_uri: album.uri,
                 offset: {
                     uri: episode.uri
                 }
@@ -151,6 +146,18 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
         }
     }
 
+    const removeFromPlaylist = async () => {
+        try {
+            if (!playlistId || !uri) throw new Error("PlaylistID or TrackURI doesn't exist.");
+
+            await removePlaylistItems(playlistId, [uri]);
+            navigate(0);
+        } catch (e) {
+            toast.error("Something went wrong. Try again or reload the page.");
+            console.error("DELETE-FROM-PLAYLIST", e);
+        }
+    }
+
     return (
         <div className={styles["episode"]}>
             <PlaylistMenu 
@@ -164,7 +171,7 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                 onClick={() => navigate(`/episodes/${id}`)}
             >
                 <img 
-                    src={images?.[0]?.url || PlaceholderImage} 
+                    src={album.images?.[0]?.url || PlaceholderImage} 
                     className={styles["episode-image"]}    
                 />
                 <div className={styles["episode-body"]}>
@@ -172,19 +179,10 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                         {name ?? ""}
                     </Paragraph>
                     <Description className={styles["episode-author"]}>
-                        {description ?? ""}
+                        {album.name ?? ""}
                     </Description>
                 </div>
-            </div>
-            <div className={styles["episode-content"]}>
-                <Description>
-                    {getDate(release_date, release_date_precision)}
-                </Description>
-                <p>&#183;</p>
-                <Description>
-                    {calculateDuration(duration_ms)}
-                </Description>
-            </div>
+            </div>            
             <div className={`${styles["episode-control-panel"]}`}>
                 <div className={styles["button-container"]}>
                     <button
@@ -206,6 +204,13 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                     >
                         <AddToQueue width={40} height={40} />
                     </button>
+                    {playlistId &&
+                    <button 
+                        className={styles["button"]}
+                        onClick={async () => await removeFromPlaylist()}    
+                    >
+                        <RemoveIcon width={40} height={40} />
+                    </button>}
                 </div>
                 <div className={styles["button-container"]}>
                     <button 

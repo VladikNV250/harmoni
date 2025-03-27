@@ -1,7 +1,7 @@
 .show {
     position: relative;
     padding-top: 80px;
-    padding-bottom: 124px;
+    padding-bottom: 180px;
     &::before {
         content: "";
         position: absolute;
@@ -32,6 +32,9 @@
             &-button {
                 display: flex;
                 color: var(--fg-secondary);
+                transition: color .2s ease-in-out;
+
+                &:hover { color: var(--fg-primary); }
             }
         }
     }

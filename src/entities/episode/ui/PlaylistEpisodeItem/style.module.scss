@@ -46,15 +46,6 @@
         overflow: hidden;
     }
 
-    &-content {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
-        color: var(--fg-secondary);
-    }
-
     &-control-panel {
         position: relative;
         display: flex;

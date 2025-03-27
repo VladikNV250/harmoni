@@ -1,5 +1,5 @@
 import { IImage } from "shared/types";
-import { IEpisode } from "../episode/types";
+import { IPlaylistEpisode } from "../episode/types";
 import { ITrack } from "../track/types";
 
 export interface IPlaylist {
@@ -168,7 +168,7 @@ export interface IPlaylistTrack {
     /** Whether this track or episode is a local file or not. */
     readonly is_local: boolean,
     /** Information about the track or episode */
-    readonly track: ITrack | IEpisode
+    readonly track: ITrack | IPlaylistEpisode
 }
 
 export interface IPlaylistItems {

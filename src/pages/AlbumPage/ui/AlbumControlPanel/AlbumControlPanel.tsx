@@ -35,7 +35,7 @@ import {
 import { IAlbum } from "shared/api/album";
 import { usePlaybackAdapter } from "entities/playback";
 import { selectUser } from "entities/user";
-import { AddToPlaylistMenu } from "entities/playlist";
+import { PlaylistMenu } from "entities/playlist";
 import { toast } from "react-toastify";
 import clsx from "clsx";
 import styles from "./style.module.scss";
@@ -106,12 +106,9 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
     }
 
     const addToNewPlaylist = async () => {
-        if (!user || !album) {
-            toast.error("Something went wrong. Try again or reload the page.")
-            return;
-        } 
-
         try {
+            if (!user || !album) throw new Error("User or album doesn't exist"); 
+
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
                 body: {
@@ -138,12 +135,9 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
     }
 
     const addToPlaylist = async (playlistId: string) => {
-        if (!playlistId || !album) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            return;
-        }
-
         try {
+            if (!playlistId || !album) throw new Error("PlaylistID or album doesn't exist");
+
             const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
 
             const notAddedTrackURIs = album.tracks.items
@@ -170,11 +164,11 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
 
     return (
         <>
-            <AddToPlaylistMenu 
+            <PlaylistMenu 
                 isOpen={controlPanel.playlistMenu}
                 setIsOpen={setPlaylistMenu}
-                addToNewPlaylist={addToNewPlaylist}
-                addToPlaylist={addToPlaylist}
+                onCreatePlaylist={addToNewPlaylist}
+                onSelectPlaylist={addToPlaylist}
             />
             <div className={styles["album-control-panel"]}>
                 <div className={styles["control-panel-button-container"]}>

@@ -1,8 +1,19 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
-import { Description, FilledButton, Input, Modal, Subtitle } from "shared/ui";
-import styles from "./style.module.scss";
+import { 
+    ChangeEvent, 
+    FC, 
+    useEffect, 
+    useState 
+} from "react";
+import { 
+    Description, 
+    FilledButton, 
+    Input, 
+    Modal, 
+    Subtitle 
+} from "shared/ui";
 import { useAppDispatch } from "shared/lib";
 import { librarySlice } from "features/library";
+import styles from "./style.module.scss";
 
 interface IEditMenu {
     readonly id: string;
@@ -37,15 +48,17 @@ export const EditMenu: FC<IEditMenu> = ({ id, name, setIsOpen, isOpen }) => {
                     <Subtitle className={styles["edit-title"]}>
                         Folder Name
                     </Subtitle>
-                    <Input 
-                        onChange={handleChange}
-                        value={value}   
-                    />
-                    <FilledButton className={styles["edit-button"]} onClick={saveChanges}>
-                        <Description className="edit-button-text">
-                            Save changes
-                        </Description>
-                    </FilledButton>
+                    <div className={styles["edit-container"]}>
+                        <Input 
+                            onChange={handleChange}
+                            value={value}   
+                        />
+                        <FilledButton className={styles["edit-button"]} onClick={saveChanges}>
+                            <Description className="edit-button-text">
+                                Save changes
+                            </Description>
+                        </FilledButton>
+                    </div>
                 </div>
             </div>        
         </Modal>

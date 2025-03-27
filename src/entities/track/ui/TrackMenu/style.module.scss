@@ -1,4 +1,10 @@
 .menu {
+    &-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
     &-content {
         display: flex;
         flex-direction: column;
@@ -30,5 +36,5 @@
                 margin-bottom: 5px;
             }
         }
-    }    
+    }
 }

@@ -6,29 +6,24 @@
         padding: 30px 20px;
     }
 
+    &-title {
+        text-align: center;
+        color: var(--fg-primary);
+    }
+
     &-button,
     &-link {
         max-width: 100%;
         display: flex;
         gap: 10px;
         align-items: center;
+        justify-content: space-between;
         text-align: left;
         color: var(--fg-secondary);
+        height: 40px;
         
         &:hover { color: var(--fg-primary); }
 
-        > .button-icon { min-width: 40px; }
-    }        
-
-    &-artists {
-        background: var(--bg-main);
-        z-index: 11;
-
-        &-content {
-            padding: 10px;
-            > *:not(:last-child) {
-                margin-bottom: 5px;
-            }
-        }
-    }    
+        > .icon { color: var(--primary); }
+    }         
 }

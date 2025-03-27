@@ -1,4 +1,5 @@
 import { ICopyright, IImage } from "shared/types"
+import { ISimplifiedArtist } from "../artist"
 
 export interface IEpisode {
     /** A description of the episode */
@@ -138,6 +139,88 @@ export interface ISimplifiedEpisode {
         /** The reason for the restriction */
         readonly reason: "market" | "product" | "explicit",
     }
+}
+
+export interface IPlaylistEpisode {
+    /** The album on which the track appears */
+    readonly album: {
+        /** The type of the album. */
+        readonly album_type: "compilation",
+        /** The number of tracks in the album */
+        readonly total_tracks: number,
+        /** The markets in which the album is available */
+        readonly available_marlets: string[],
+        /** Known external URLs for this album. */
+        readonly external_urls: { 
+            /** The Spotify URL for the object. */
+            readonly spotify: string 
+        };
+        /** A link to the Web API endpoint providing full details of the album */
+        readonly href: string,
+        /** The Spotify ID for the album. */
+        readonly id: string,
+        /** The cover art for the album in various sizes, widest first */
+        readonly images: IImage[],
+        /** The name of the album. */
+        readonly name: string,
+        /** The date the album was first released. */
+        readonly release_date: string,
+        /** The precision with which release_date value is known */
+        readonly release_date_precision: "year" | "month" | "day",
+        /** Included in the response when a content restriction is applied. */
+        readonly restrictions?: {
+            /** The reason for the restriction */
+            readonly reason: "market" | "product" | "explicit",
+        }
+        /** The object type. */
+        readonly type: "show",
+        /** The Spotify URI for the album. */
+        readonly uri: string,
+        /** The artists of the album */
+        readonly artists: ISimplifiedArtist[],
+    },
+    /** The artists who performed the track */
+    readonly artists: ISimplifiedArtist[],
+    /** A list of the countries in which the show can be played */
+    readonly available_markets: string[],
+    /** The disc number */
+    readonly disc_number: number,
+    /** The track length in milliseconds. */
+    readonly duration_ms: number,
+    /** */
+    readonly episode: boolean,
+    /** Whether or not the episode has explicit content */
+    readonly explicit: boolean,
+    /** External URLs for this episode. */
+    readonly external_urls: {
+        /** The Spotify URL for the object. */
+        readonly spotify: string,
+    },
+    /** External IDs for this episode. */
+    readonly external_ids: {
+        /** The Spotify ID for the object. */
+        readonly spotify: string,
+    },
+    /** The Spotify URL for the object. */
+    readonly href: string,
+    /** The Spotify ID for the episode. */
+    readonly id: string,
+    /** Whether or not the episode is from a local file. */
+    readonly is_local: string,
+    /** The name of the episode. */
+    readonly name: string,
+    /** The popularity of the episode */
+    readonly popularity: number,
+    /**  */
+    readonly preview_url: string,
+    /**  */
+    readonly track: boolean,
+    /** The number of the episode */
+    readonly track_number: number,
+    /** The object type */
+    readonly type: "episode",
+    /** The Spotify URI for the episode. */
+    readonly uri: string,
 }
 
 export interface ISeveralEpisodes {

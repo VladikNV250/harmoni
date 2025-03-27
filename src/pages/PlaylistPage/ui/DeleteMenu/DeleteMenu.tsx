@@ -6,26 +6,31 @@ import {
     TextButton, 
     Title 
 } from "shared/ui";
+import { 
+    IPlaylist, 
+    unfollowPlaylist 
+} from "shared/api/playlist";
 import { useNavigate } from "react-router";
-import styles from "./style.module.scss";
-import { IPlaylist, unfollowPlaylist } from "shared/api/playlist";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "shared/lib";
 import { getLibraryPlaylists } from "features/library";
+import styles from "./style.module.scss";
 
 interface IDeleteMenu {
     readonly id: IPlaylist["id"];
     readonly isOpen: boolean;
     readonly setIsOpen: (isOpen: boolean) => void;
+    readonly onDelete?: () => void;
 }
 
 
-export const DeleteMenu: FC<IDeleteMenu> = ({id, isOpen, setIsOpen}) => {   
+export const DeleteMenu: FC<IDeleteMenu> = ({id, isOpen, setIsOpen, onDelete}) => {   
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const handleDelete = async () => {
         try {
+            onDelete?.();
             await unfollowPlaylist(id);
             toast.info("The playlist has been removed from the library.");
             dispatch(getLibraryPlaylists());

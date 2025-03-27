@@ -29,7 +29,8 @@ export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, activeTab, choo
     const { menus, openMenu } = useMenu({ 
         moreMenu: false, 
         volumeBar: false, 
-        artistMenu: false 
+        artistMenu: false,
+        playlistMenu: false,
     })
     const fullscreen = useAppSelector(selectPlayerFullsreenMode);
 

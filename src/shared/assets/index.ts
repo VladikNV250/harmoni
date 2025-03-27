@@ -45,6 +45,11 @@ import AddIcon from "shared/assets/icons/add-big.svg?react";
 import PrivateFilledIcon from "shared/assets/icons/private-big__filled.svg?react";
 import PrivateIcon from "shared/assets/icons/private-big.svg?react";
 import PenIcon from "shared/assets/icons/pen.svg?react";
+import CheckedIcon from "shared/assets/icons/checked-big.svg?react";
+import ArrowUp from "shared/assets/icons/arrow-up-big.svg?react";
+import ArrowDown from "shared/assets/icons/arrow-down-big.svg?react";
+import ArrowLeft from "shared/assets/icons/arrow-left-big.svg?react";
+import ArrowRight from "shared/assets/icons/arrow-right-big.svg?react";
 
 
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
@@ -101,7 +106,12 @@ export {
     RemoveIcon,
     AddIcon,
     PrivateFilledIcon,
-    PrivateIcon
+    PrivateIcon,
+    CheckedIcon,
+    ArrowDown,
+    ArrowLeft,
+    ArrowRight,
+    ArrowUp,
 }
 
 /** IMAGES */

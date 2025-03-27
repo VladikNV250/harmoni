@@ -1,11 +1,15 @@
 import { 
+    ChangeEvent,
     CSSProperties, 
     FC, 
+    useCallback, 
     useEffect, 
+    useMemo, 
     useState 
 } from "react";
 import { 
     Link, 
+    useNavigate, 
     useParams 
 } from "react-router";
 import { 
@@ -22,17 +26,20 @@ import {
     calculateDuration, 
     useAppDispatch, 
     useAppSelector, 
-    useColor 
+    useColor, 
+    useDebounce
 } from "shared/lib";
 import { TrackItem } from "entities/track";
-import { EpisodeItem } from "entities/episode";
+import { PlaylistEpisodeItem } from "entities/episode";
 import { usePlaybackAdapter } from "entities/playback";
 import { 
+    ArrowLeft,
     PlaceholderImage, 
     Sort 
 } from "shared/assets";
 import { 
     getUserInfo, 
+    selectUser, 
     selectUserLoading 
 } from "entities/user";
 import { 
@@ -41,18 +48,42 @@ import {
 } from "features/library";
 import { fetchPlaybackState } from "entities/playback/api/playback";
 import { PlaylistControlPanel } from "../PlaylistControlPanel/PlaylistControlPanel";
+import { 
+    SortMenu,
+    TRACK_SORT_TYPES, 
+    TSortOrder, 
+    TTrackSortBy
+} from "features/sort";
 import styles from "./style.module.scss";
 
 
 const PlaylistPage: FC = () => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [playlist, setPlaylist] = useState<IPlaylist | null>(null);
     const [playlistLoading, setPlaylistLoading] = useState(false);
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const userLoading = useAppSelector(selectUserLoading);
+    const user = useAppSelector(selectUser);
+    const [value, setValue] = useState("");
+    const debouncedValue = useDebounce(value, 300);
     const color = useColor(playlist?.images?.[0]?.url ?? PlaceholderImage);
     const { setApiPlayback } = usePlaybackAdapter();
+    const [sort, setSort] = useState<{
+        isOpen: boolean,
+        by: TTrackSortBy,
+        order: TSortOrder
+    }>({
+        isOpen: false,
+        by: "Custom order",
+        order: "Ascending"
+    });
+
+    const isUserOwner = useMemo(
+        () => playlist?.owner.id === user?.id,
+        [user, playlist]
+    )
 
     useEffect(() => {
         (async () => {
@@ -82,33 +113,123 @@ const PlaylistPage: FC = () => {
         return calculateDuration(total_duration);
     }
 
-    const renderPlaylistTracks = (tracks: IPlaylist["tracks"]["items"]) => {
-        return tracks.length > 0 && tracks.map(({ track }) =>
-            track.type === "track" ?
-                <TrackItem 
-                    key={track.id} 
-                    track={track} 
-                    contextUri={playlist?.uri} 
-                /> :
-            track.type === "episode" ? 
-                <EpisodeItem 
-                    key={track.id} 
-                    episode={track} 
-                    showURI={track?.show?.uri ?? ""} 
-                /> 
-            : null
-        )
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setValue(value);
     }
+
+    const sortTracks = useCallback((tracks: IPlaylist["tracks"]["items"]): IPlaylist["tracks"]['items'] => {
+        let sortedTracks = tracks;
+
+        switch (sort.by) {
+            case "Alphabetical":
+                sortedTracks = tracks.sort((a, b) => {
+                    if (a.track.name < b.track.name) {
+                        return -1;
+                    } else if (a.track.name > b.track.name) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })
+                break;
+            case "Duration":
+                sortedTracks = tracks.sort((a, b) => 
+                    a.track.duration_ms - b.track.duration_ms
+                )
+                break;
+            case "Date added":
+                sortedTracks = tracks.sort((a, b) => {
+                    if ((a.added_at ?? "") < (b.added_at ?? "")) {
+                        return -1;
+                    } else if ((a.added_at ?? "") > (b.added_at ?? "")) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })
+                break;
+        }
+
+        if (sort.order === "Descending") {
+            return sortedTracks.reverse();
+        } else {
+            return sortedTracks;
+        }
+    }, [sort.by, sort.order])
+
+    const renderPlaylistTracks = useCallback((tracks: IPlaylist["tracks"]["items"]) => {
+        const sortedTracks = sortTracks(tracks);
+
+        if (sortedTracks.length > 0) {
+            if (debouncedValue) {
+                return sortedTracks.map(({ track }) => {
+                    const lowerName = track.name?.toLowerCase();
+                    const lowerValue = (debouncedValue as string).toLowerCase();
+                    const isMatch = lowerName?.includes(lowerValue);
+                    return isMatch && (
+                        track.type === "track" ?
+                            <TrackItem 
+                                key={track.id} 
+                                track={track} 
+                                contextUri={playlist?.uri} 
+                                playlistId={isUserOwner ? playlist?.id : ""}
+                            /> :
+                        track.type === "episode" ? 
+                            <PlaylistEpisodeItem
+                                key={track.id}
+                                episode={track}
+                                playlistId={isUserOwner ? playlist?.id : ""}
+                            />
+                        : null
+                    )
+                })
+            } else {
+                return sortedTracks.map(({ track }) =>
+                    track.type === "track" ?
+                        <TrackItem 
+                            key={track.id} 
+                            track={track} 
+                            contextUri={playlist?.uri} 
+                            playlistId={isUserOwner ? playlist?.id : ""}
+                        /> :
+                    track.type === "episode" ? 
+                        <PlaylistEpisodeItem
+                            key={track.id}
+                            episode={track}
+                            playlistId={isUserOwner ? playlist?.id : ""}
+                        />
+                    : null
+                )
+            }
+        }
+    }, [debouncedValue, playlist?.id, playlist?.uri, sortTracks])
 
     return (
         <div className={styles["playlist"]} style={{'--color': color} as CSSProperties}>
             <Loader loading={playlistLoading || libraryLoading || userLoading} />
+            <SortMenu<TTrackSortBy>
+                sort={sort}
+                setSort={setSort}
+                sortTypes={TRACK_SORT_TYPES}
+            />
             <header className={styles["playlist-header"]}>
+                <button 
+                    className={styles["header-button"]}
+                    onClick={() => navigate(-1)}
+                >
+                    <ArrowLeft width={40} height={40} />
+                </button>
                 <SearchInput 
+                    value={value}
+                    onChange={handleChange}
                     placeholder="Search playlist" 
                     className={styles["header-input"]} 
                 />
-                <button className={styles["header-button"]}>
+                <button 
+                    className={styles["header-button"]}
+                    onClick={() => setSort(prevState => ({...prevState, isOpen: true}))}
+                >
                     <Sort width={40} height={40} />
                 </button>   
             </header>

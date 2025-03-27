@@ -1,5 +1,6 @@
 .artist {
     position: relative;
+    padding-bottom: 50px;
     &::before {
         content: "";
         position: absolute;
@@ -49,6 +50,29 @@
         gap: 6px;
     }
 
+    &-button {
+        display: flex;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: var(--bg-main);
+        border-radius: 50%;
+        z-index: 5;
+        overflow: hidden;
+        > * { z-index: 1; }
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--fg-primary);
+            opacity: 0.75;
+        }
+    }
+
     &-name { color: var(--fg-primary); }
     
     &-total { color: var(--fg-secondary); }
@@ -68,7 +92,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 16px;
     }
 
     &-albums-container {

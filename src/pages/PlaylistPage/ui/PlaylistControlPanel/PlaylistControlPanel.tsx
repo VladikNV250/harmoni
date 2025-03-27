@@ -46,7 +46,7 @@ import { EditMenu } from "../EditMenu/EditMenu";
 import { selectUser } from "entities/user";
 import { useNavigate } from "react-router";
 import { usePlaybackAdapter } from "entities/playback";
-import { AddToPlaylistMenu } from "entities/playlist";
+import { PlaylistMenu } from "entities/playlist";
 import { IFolder } from "entities/folder";
 import { toast } from "react-toastify";
 import clsx from "clsx";
@@ -133,12 +133,9 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
     }
 
     const addToNewPlaylist = async () => {
-        if (!user || !playlist) {
-            toast.error("Something went wrong. Try again or reload the page.")
-            return;
-        } 
-
         try {
+            if (!user || !playlist) throw new Error("User or playlist doesn't exist");
+
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
                 body: {
@@ -165,12 +162,9 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
     }
 
     const addToPlaylist = async (playlistId: string) => {
-        if (!playlistId || !playlist) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            return;
-        }
-
         try {
+            if (!playlistId || !playlist) throw new Error("Playlist doesn't exist");
+
             const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
 
             const notAddedTrackURIs = playlist.tracks.items
@@ -194,9 +188,20 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
             console.error("ADD-TO-PLAYLIST", e);
         }
     }
+    
+    const removeFromFolderHandle = () => {
+        if (!playlist) return;
+        if (findFolderIdByPlaylist() !== null) {
+            dispatch(removeFromFolder({
+                id: findFolderIdByPlaylist() ?? "", 
+                itemId: playlist.id ?? ""
+            }));
+        }
+    } 
 
     const addToNewFolder = () => {
         if (!playlist) return;
+        removeFromFolderHandle();
 
         const newFolderId = dispatch(createFolder("Folder #" + folders.length + 1)).payload;
         dispatch(addToFolder({
@@ -205,21 +210,10 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
         }));
         navigate(`/folders/${newFolderId}`);
     }
-
-    const removeFromFolderHandle = () => {
-        if (!playlist) return;
-
-        dispatch(removeFromFolder({
-            id: findFolderIdByPlaylist() ?? "", 
-            itemId: playlist.id ?? ""
-        }));
-    } 
     
     const addToFolderHandle = (folderID: string) => {
         if (!playlist) return;
-        if (findFolderIdByPlaylist() !== null) {
-            removeFromFolderHandle();
-        }
+        removeFromFolderHandle();        
 
         dispatch(addToFolder({
             id: folderID,
@@ -287,11 +281,11 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
                     : null}
                 </div>
             </DragDownMenu>
-            <AddToPlaylistMenu 
+            <PlaylistMenu 
                 isOpen={controlPanel.playlistMenu}
                 setIsOpen={setPlaylistMenu}
-                addToNewPlaylist={addToNewPlaylist}
-                addToPlaylist={addToPlaylist}
+                onCreatePlaylist={addToNewPlaylist}
+                onSelectPlaylist={addToPlaylist}
                 playlistId={playlist?.id}
             />
             <DragDownMenu
@@ -320,6 +314,7 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
                 id={playlist?.id ?? ""}
                 isOpen={controlPanel.deleteMenu}
                 setIsOpen={setDeleteMenu}
+                onDelete={removeFromFolderHandle}
             />
             <EditMenu 
                 playlist={playlist}

@@ -1,51 +1,73 @@
-import { FC, useEffect, useState } from "react";
 import { 
-    Edit, 
+    FC, 
+    useCallback, 
+    useEffect, 
+    useState 
+} from "react";
+import { 
     GridIcon, 
-    LeftIcon, 
     ListIcon, 
-    PlaylistIcon, 
-    RemoveIcon, 
     Sort 
 } from "shared/assets";
-import { Description, Loader, Title } from "shared/ui";
 import { 
-    createPlaylistThunk, 
+    Description, 
+    Loader, 
+    Title 
+} from "shared/ui";
+import { 
     getLibraryPlaylists, 
     ListPreview, 
     selectFolders, 
     selectLibraryLoading, 
-    selectSavedPlaylists, 
     useView 
 } from "features/library";
-import { useNavigate, useParams } from "react-router";
+import { 
+    useParams 
+} from "react-router";
+import { 
+    useAppDispatch, 
+    useAppSelector, 
+} from "shared/lib";
+import { 
+    getUserInfo, 
+    selectUserLoading 
+} from "entities/user";
+import { 
+    IPlaylist, 
+    ISimplifiedPlaylist 
+} from "shared/api/playlist";
+import { 
+    PLAYLIST_SORT_TYPES, 
+    SortMenu, 
+    TPlaylistSortBy, 
+    TSortOrder 
+} from "features/sort";
 import { IFolder } from "entities/folder";
-import { useAppDispatch, useAppSelector } from "shared/lib";
-import { IPlaylist } from "shared/api/playlist";
 import { PlaylistPreview } from "entities/playlist";
-import { EditMenu } from "../EditMenu/EditMenu";
-import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
-import { DeleteMenu } from "../DeleteMenu/DeleteMenu";
 import { usePlaybackAdapter } from "entities/playback";
 import { fetchPlaybackState } from "entities/playback/api/playback";
+import { FolderControlPanel } from "../FolderControlPanel/FolderControlPanel";
 import styles from "./style.module.scss";
+
 
 const FolderPage: FC = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [folder, setFolder] = useState<IFolder | null>(null);
-    const [isOpen, setIsOpen] = useState({
-        editMenu: false,
-        deleteMenu: false,
-    });
     const folders = useAppSelector(selectFolders);
-    const user = useAppSelector(selectUser);
-    const playlists = useAppSelector(selectSavedPlaylists);
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const userLoading = useAppSelector(selectUserLoading);
     const { viewMode, switchMode } = useView();
     const { setApiPlayback } = usePlaybackAdapter();
+    const [sort, setSort] = useState<{
+        isOpen: boolean,
+        by: TPlaylistSortBy,
+        order: TSortOrder
+    }>({
+        isOpen: false,
+        by: "Recently added",
+        order: "Ascending"
+    });
 
     useEffect(() => {
         const findedFolder = folders.find(item => item.id === id);
@@ -66,12 +88,52 @@ const FolderPage: FC = () => {
         })()
     }, [dispatch, setApiPlayback]);
 
-    const renderItems = (items: IPlaylist[]) => {
+    const sortPlaylists = useCallback((playlists: (IPlaylist | ISimplifiedPlaylist)[]): (IPlaylist | ISimplifiedPlaylist)[] => {
+        const sortedPlaylists = [...playlists];
+
+        switch (sort.by) {
+            case "Alphabetical":
+                sortedPlaylists.sort((a, b) => {
+                    if (a.name < b.name) {
+                        return -1;
+                    } else if (a.name > b.name) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })
+                break;
+            case "Creator":
+                sortedPlaylists.sort((a, b) => {
+                    if (!a.owner.display_name || !b.owner.display_name) {
+                        return 0;
+                    }
+                    if (a.owner.display_name < b.owner.display_name) {
+                        return -1;
+                    } else if (a.owner.display_name > b.owner.display_name) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })
+                break;
+        }
+
+        if (sort.order === "Descending") {
+            return sortedPlaylists.reverse();
+        } else {
+            return sortedPlaylists;
+        }
+    }, [sort.by, sort.order])
+
+    const renderItems = (items: (IPlaylist | ISimplifiedPlaylist)[]) => {
+        const sortedItems = sortPlaylists(items);
+
         switch (viewMode) {
             case "list":
                 return (
                     <div className={styles["folder-list"]}>
-                        {items.map(item => 
+                        {sortedItems.map(item => 
                             <ListPreview key={item.id} item={item} />
                         )}
                     </div>
@@ -79,7 +141,7 @@ const FolderPage: FC = () => {
             case "grid":
                 return (
                     <div className={styles["folder-grid"]}>
-                        {items.map(item => 
+                        {sortedItems.map(item => 
                             <PlaylistPreview key={item.id} playlist={item} />
                         )}
                     </div>
@@ -87,71 +149,24 @@ const FolderPage: FC = () => {
         }
     }
 
-    const handleCreatePlaylist = async () => {
-        if (user) {
-            const playlist = (await dispatch(createPlaylistThunk({
-                userId: user.id, 
-                body: {
-                    name: `Playlist#${playlists.length + 1}`,
-                    collaborative: false,
-                    description: "",
-                    public: true,
-                }
-            }))).unwrap();
-
-            navigate(`/playlists/${playlist.id}`)
-        }
-    }
-
     return (
         <div className={styles["folder"]}>
             <Loader loading={userLoading || libraryLoading} />
-            <EditMenu 
-                id={folder?.id ?? ""}
-                name={folder?.name ?? ""}
-                isOpen={isOpen.editMenu}
-                setIsOpen={(isOpen) => setIsOpen(prevState => ({...prevState, editMenu: isOpen}))}
+            <SortMenu<TPlaylistSortBy> 
+                sort={sort}
+                setSort={setSort}
+                sortTypes={PLAYLIST_SORT_TYPES}
             />
-            <DeleteMenu 
-                id={folder?.id ?? ""}
-                isOpen={isOpen.deleteMenu}
-                setIsOpen={(isOpen) => setIsOpen(prevState => ({...prevState, deleteMenu: isOpen}))}
-            />
-            <header className={styles["folder-header"]}>
-                <button 
-                    className={styles["folder-button"]}
-                    onClick={() => navigate(-1)}
-                >
-                    <LeftIcon width={40} height={40} />
-                </button>
-                <Title className={styles["folder-name"]}>
-                    {folder?.name ?? ""}
-                </Title>
-                <button 
-                    className={styles["folder-button"]} 
-                    onClick={() => setIsOpen(prevState => ({...prevState, deleteMenu: true}))}
-                >
-                    <RemoveIcon width={40} height={40} />
-                </button>
-                <button 
-                    className={styles["folder-button"]} 
-                    onClick={() => setIsOpen(prevState => ({...prevState, editMenu: true}))}
-                >
-                    <Edit width={40} height={40} />
-                </button>
-                <button 
-                    className={styles["folder-button"]}
-                    onClick={async () => await handleCreatePlaylist()}
-                >
-                    <PlaylistIcon width={40} height={40} />
-                </button>
-            </header>
+            <FolderControlPanel folder={folder} />
             <div className={styles["folder-body"]}>
                 <header className={styles['folder-body-header']}>
-                    <button className={styles['folder-body-button']}>
+                    <button 
+                        className={styles['folder-body-button']}
+                        onClick={() => setSort(prevState => ({...prevState, isOpen: true}))}
+                    >
                         <Sort width={40} height={40} />
                         <Description>
-                            Recents
+                            {sort.by}
                         </Description>
                     </button>
                     <button 

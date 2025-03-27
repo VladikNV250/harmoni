@@ -1,34 +1,48 @@
-import { FC, MouseEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { 
+    FC, 
+    MouseEvent 
+} from "react";
+import { 
+    Link, 
+    useNavigate 
+} from "react-router";
 import { 
     AddToPlaylist, 
     AddToQueue, 
     Album, 
     ArtistIcon, 
-    PlaceholderImage 
 } from "shared/assets";
 import { 
     useAppDispatch, 
     useAppSelector 
 } from "shared/lib";
 import { 
-    Description, 
     DragDownMenu, 
-    FilledButton, 
     Paragraph, 
 } from "shared/ui";
-import { addItemToQueue, getUserQueue } from "features/queue";
+import { 
+    addItemToQueue, 
+    getUserQueue 
+} from "features/queue";
+import { 
+    createPlaylistThunk, 
+    selectSavedPlaylists 
+} from "features/library";
+import { 
+    addItemsToPlaylist, 
+    fetchPlaylistItems, 
+    IPlaylist 
+} from "shared/api/playlist";
 import { usePlaybackAdapter } from "entities/playback";
 import { playerSlice } from "widgets/Player/model/playerSlice";
-import { createPlaylistThunk, selectSavedPlaylists } from "features/library";
-import { addItemsToPlaylist, fetchPlaylistItems, IPlaylist, ISimplifiedPlaylist } from "shared/api/playlist";
 import { selectUser } from "entities/user";
-import styles from "./style.module.scss";
 import { toast } from "react-toastify";
+import { PlaylistMenu } from "entities/playlist";
+import styles from "./style.module.scss";
 
 
 interface IMoreMenu {
-    readonly menus: { [key: string]: boolean },
+    readonly menus: Record<string, boolean>,
     readonly openMenu: (whatOpen: string, openState?: boolean) => void,
 }
 
@@ -39,7 +53,6 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
     const { toggleFullscreenMode } = playerSlice.actions;
     const playlists = useAppSelector(selectSavedPlaylists);
     const user = useAppSelector(selectUser);
-    
     
     const addItemToQueueHandle = async (uri: string) => {
         if (uri === "") return;
@@ -63,26 +76,11 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
         openMenu("playlistMenu", true);
     }
 
-    const renderArtists = (artists: {name: string, id: string}[]) => {
-        return artists.map(artist => 
-            <Link 
-                key={artist.id} 
-                to={`/artists/${artist.id}`}
-                className={styles["menu-link"]}
-                onClick={() => {
-                    openMenu("moreMenu", false)
-                    dispatch(toggleFullscreenMode())
-                }}>
-                <ArtistIcon width={40} height={40} />
-                {artist.name}
-            </Link>
-        )
-    }
-
-    const addToNewPlaylist = async (trackUri: string) => {
-        if (!user) return;
-
+    const addToNewPlaylist = async () => {
         try {
+            const trackUri = adapter.getTrackURI();
+            if (!user || !trackUri) throw new Error("User or trackURI doesn't exist"); 
+            
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
                 body: {
@@ -102,14 +100,14 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("ADD-TO-NEW-PLAYLIST", e);
         }
-
-        
     }
 
-    const addToPlaylist = async (playlistId: string, trackUri: string, trackId: string) => {
-        if (!playlistId || !trackId || !trackUri) return;
-
+    const addToPlaylist = async (playlistId: string) => {
         try {
+            const trackUri = adapter.getTrackURI();
+            const trackId = adapter.getTrackID();
+            if (!playlistId || !trackId || !trackUri) throw new Error("PlaylistID or trackID or trackURI doesn't exist");
+
             const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
 
             if (playlistItems.findIndex(item => item.id === trackId) === -1) {
@@ -126,24 +124,19 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
         }
     }
 
-    const renderPlaylists = (items: ISimplifiedPlaylist[]) => {
-        const userPlaylists = items.filter(item => item.owner?.id === user?.id);
-
-        return userPlaylists.map(playlist => 
-            <button 
-                key={playlist.id} 
-                className={styles["menu-playlists-button"]}
-                onClick={async () => addToPlaylist(playlist.id, adapter.getTrackURI(), adapter.getTrackID())}
-            >
-                <img 
-                    src={playlist.images?.[0]?.url || PlaceholderImage}  
-                    className={styles["button-image"]}
-                />
-                <Description>
-                    {playlist.name ?? ""}
-                </Description>
-                <AddToPlaylist width={40} height={40} />                
-            </button>
+    const renderArtists = (artists: {name: string, id: string}[]) => {
+        return artists.map(artist => 
+            <Link 
+                key={artist.id} 
+                to={`/artists/${artist.id}`}
+                className={styles["menu-link"]}
+                onClick={() => {
+                    openMenu("moreMenu", false)
+                    dispatch(toggleFullscreenMode())
+                }}>
+                <ArtistIcon width={40} height={40} />
+                {artist.name}
+            </Link>
         )
     }
 
@@ -203,22 +196,12 @@ export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
                     {renderArtists(adapter.getArtists())}
                 </div>
             </DragDownMenu>
-            <DragDownMenu
-                className={styles["menu-playlists"]}
+            <PlaylistMenu 
                 isOpen={menus.playlistMenu}
                 setIsOpen={(state: boolean) => openMenu("playlistMenu", state)}
-            >
-                <div className={styles["menu-playlists-body"]}>
-                    <FilledButton onClick={async () => await addToNewPlaylist(adapter.getTrackURI())}>
-                        <Paragraph>
-                            New Playlist
-                        </Paragraph>
-                    </FilledButton>       
-                    <div className={styles["menu-playlists-content"]}>
-                        {renderPlaylists(playlists)}
-                    </div>
-                </div>
-            </DragDownMenu>
+                onCreatePlaylist={addToNewPlaylist}
+                onSelectPlaylist={addToPlaylist}
+            />
         </>
     )
 }

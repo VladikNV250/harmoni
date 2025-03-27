@@ -1,4 +1,4 @@
-import { IPlaylist } from "shared/api/playlist"
+import { IPlaylist, ISimplifiedPlaylist } from "shared/api/playlist"
 
 export interface IFolder {
     /** Type of the object */
@@ -8,7 +8,7 @@ export interface IFolder {
     /** Id of folder */
     readonly id: string,
     /** Items of folder */
-    readonly items: IPlaylist[],
+    readonly items: (IPlaylist | ISimplifiedPlaylist)[],
 }
 
 export interface IFolderState {

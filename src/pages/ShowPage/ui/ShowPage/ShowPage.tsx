@@ -1,10 +1,12 @@
 import { 
+    ChangeEvent,
     CSSProperties, 
     FC, 
+    useCallback, 
     useEffect, 
     useState 
 } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { 
     fetchShow, 
     IShow 
@@ -13,12 +15,10 @@ import {
     useAppDispatch, 
     useAppSelector, 
     useColor, 
+    useDebounce, 
     useTabs 
 } from "shared/lib";
-import { 
-    PlaceholderImage, 
-    Sort 
-} from "shared/assets";
+import { ArrowLeft, PlaceholderImage } from "shared/assets";
 import { 
     Description, 
     Loader, 
@@ -39,17 +39,20 @@ import { EpisodeItem } from "entities/episode";
 import { usePlaybackAdapter } from "entities/playback";
 import { ISimplifiedEpisode } from "shared/api/episode";
 import { fetchPlaybackState } from "entities/playback/api/playback";
-import { ShowControlPanel } from "./ShowControlPanel/ShowControlPanel";
+import { ShowControlPanel } from "../ShowControlPanel/ShowControlPanel";
 import styles from "./style.module.scss";
 
 
 const ShowPage: FC = () => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [show, setShow] = useState<IShow | null>(null);
+    const [showLoading, setShowLoading] = useState(false);
     const [tabs, setTabs] = useState<string[]>([]);
     const { activeTab, chooseTab } = useTabs<string, "Episodes">("Episodes")
-    const [showLoading, setShowLoading] = useState(false);
+    const [value, setValue] = useState("");
+    const debouncedValue = useDebounce(value, 300);
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const user = useAppSelector(selectUser);
     const userLoading = useAppSelector(selectUserLoading);
@@ -88,15 +91,39 @@ const ShowPage: FC = () => {
         })()
     }, [id, setApiPlayback, dispatch]);
 
-    const renderEpisodes = (episodes: ISimplifiedEpisode[]) => {
-        return episodes.length > 0 && episodes.map(episode =>
-            <EpisodeItem 
-                key={episode.id} 
-                episode={episode} 
-                showURI={show?.uri ?? ""}
-            />
-        )
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setValue(value);
     }
+
+    const renderEpisodes = useCallback((episodes: ISimplifiedEpisode[]) => {
+        if (episodes.length > 0) {
+            if (debouncedValue) {
+                return episodes.map(episode => {
+                    const lowerName = episode.name?.toLowerCase();
+                    const lowerValue = (debouncedValue as string).toLowerCase();
+                    const isMatch = lowerName?.includes(lowerValue);
+                    return isMatch && (
+                        <EpisodeItem 
+                            key={episode.id} 
+                            episode={episode} 
+                            showURI={show?.uri ?? ""}
+                        />
+                    )
+                })
+            } else {
+                return episodes.map(episode => {
+                    return (
+                        <EpisodeItem 
+                            key={episode.id} 
+                            episode={episode} 
+                            showURI={show?.uri ?? ""}
+                        />
+                    )
+                })
+            }
+        }
+    }, [debouncedValue, show?.uri])
 
     return (
         <div 
@@ -105,13 +132,18 @@ const ShowPage: FC = () => {
         >
             <Loader loading={showLoading || libraryLoading || userLoading} />
             <header className={styles["show-header"]}>
+                <button 
+                    className={styles["header-button"]}
+                    onClick={() => navigate(-1)}
+                >
+                    <ArrowLeft width={40} height={40} />
+                </button>
                 <SearchInput 
+                    value={value}
+                    onChange={handleChange}
                     placeholder="Search episode" 
                     className={styles["header-input"]} 
-                />
-                <button className={styles["header-button"]}>
-                    <Sort width={40} height={40} />
-                </button>   
+                />  
             </header>
             <div className={styles["show-image-container"]}>
                 <img 

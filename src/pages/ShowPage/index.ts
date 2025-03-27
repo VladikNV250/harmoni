@@ -1,1 +1,1 @@
-export { LazyShowPage as ShowPage } from "./ui/lazy";
+export { LazyShowPage as ShowPage } from "./ui/ShowPage/lazy";

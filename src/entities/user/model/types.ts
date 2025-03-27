@@ -6,4 +6,3 @@ export interface IUserState {
     loading: boolean,
     error: RejectedDataType | null;
 }
-

@@ -1,6 +1,7 @@
 export type {
     IEpisode,
     ISimplifiedEpisode,
+    IPlaylistEpisode
 } from "./types";
 
 export {

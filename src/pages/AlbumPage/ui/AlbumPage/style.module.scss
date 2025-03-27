@@ -1,6 +1,6 @@
 .album {
     position: relative;
-    padding: 80px 15px 124px;
+    padding: 80px 15px 180px;
     &::before {
         content: "";
         position: absolute;
@@ -24,6 +24,19 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+
+        .header {
+            &-input {
+                width: 84%; // 306 * 100 / 363
+            }
+            &-button {
+                display: flex;
+                color: var(--fg-secondary);
+                transition: color .2s ease-in-out;
+
+                &:hover { color: var(--fg-primary); }
+            }
+        }
     }
     
     &-image {
@@ -69,6 +82,5 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 16px;
     }
 }

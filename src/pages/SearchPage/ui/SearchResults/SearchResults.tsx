@@ -170,7 +170,7 @@ export const SearchResults: FC = () => {
                     key={item.id}
                     type={item.type}
                     link={`/albums/${item.album.id}`}
-                    image={item.album.images?.[0].url ?? ""}
+                    image={item.album.images?.[0]?.url ?? ""}
                     content={
                         <>
                             <Paragraph className={styles["search-item-name"]}>
@@ -212,7 +212,7 @@ export const SearchResults: FC = () => {
                     key={item.id}
                     type={item.type}
                     link={`/albums/${item.id}`}
-                    image={item.images?.[0].url ?? ""}
+                    image={item.images?.[0]?.url ?? ""}
                     content={
                         <>
                             <Paragraph className={styles["search-item-name"]}>
@@ -287,7 +287,7 @@ export const SearchResults: FC = () => {
                     key={item.id}
                     type={item.type}
                     link={`/playlists/${item.id}`}
-                    image={item.images?.[0].url ?? ""}
+                    image={item.images?.[0]?.url ?? ""}
                     content={
                         <>
                             <Paragraph className={styles["search-item-name"]}>

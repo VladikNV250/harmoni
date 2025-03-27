@@ -1,0 +1,24 @@
+.folder {
+    &-header {
+        display: grid;
+        grid-template-columns: auto 1fr repeat(3, auto);
+        gap: 6px;
+        align-items: center;
+        background: var(--bg-primary);
+        border-bottom: 2px solid var(--bg-secondary);
+        padding: 10px 15px;
+    }
+
+    &-button {
+        display: flex;
+        color: var(--fg-secondary);
+
+        &:hover { color: var(--fg-primary); }
+    }
+
+    &-name {
+        color: var(--fg-primary);
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+}

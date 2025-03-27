@@ -1,6 +1,6 @@
 .episode {
     position: relative;
-    padding: 80px 15px 124px;
+    padding: 80px 15px 180px;
     &::before {
         content: "";
         position: absolute;
@@ -26,6 +26,16 @@
             justify-content: center;
             margin-bottom: 32px;
         }
+    }
+
+    &-button {
+        position: absolute;
+        color: var(--fg-secondary);
+        top: 20px;
+        left: 15px;
+        transition: color .2 ease-in-out;
+
+        &:hover { color: var(--fg-primary); }
     }
     
     &-name {

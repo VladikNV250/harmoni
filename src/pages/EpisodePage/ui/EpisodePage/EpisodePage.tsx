@@ -6,6 +6,7 @@ import {
 } from "react";
 import { 
     Link, 
+    useNavigate, 
     useParams 
 } from "react-router";
 import { 
@@ -28,7 +29,10 @@ import {
     selectUser, 
     selectUserLoading 
 } from "entities/user";
-import { PlaceholderImage } from "shared/assets";
+import { 
+    ArrowLeft, 
+    PlaceholderImage 
+} from "shared/assets";
 import { 
     getLibraryPlaylists, 
     getLikedEpisodes, 
@@ -44,6 +48,7 @@ import styles from "./style.module.scss";
 const EpisodePage: FC = () => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [episode, setEpisode] = useState<IEpisode | null>(null);
     const [episodeLoading, setEpisodeLoading] = useState(false);
     const libraryLoading = useAppSelector(selectLibraryLoading);
@@ -81,6 +86,12 @@ const EpisodePage: FC = () => {
             style={{'--color': color} as CSSProperties}
         >
             <Loader loading={episodeLoading || libraryLoading || userLoading} />
+            <button 
+                className={styles["episode-button"]}
+                onClick={() => navigate(-1)}
+            >
+                <ArrowLeft width={40} height={40} />
+            </button>
             <div className={styles["episode-image-container"]}>
                 <img 
                     src={episode?.images[0].url || PlaceholderImage} 

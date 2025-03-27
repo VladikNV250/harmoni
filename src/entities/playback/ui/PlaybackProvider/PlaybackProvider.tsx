@@ -40,5 +40,3 @@ export const PlaybackProvider: FC<IPlaybackProvider> = ({ children }) => {
         </PlaybackContext.Provider>
     );
 };
-
-

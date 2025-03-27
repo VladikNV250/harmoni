@@ -8,15 +8,15 @@ import { AddToPlaylist, PlaceholderImage } from "shared/assets";
 import styles from "./style.module.scss";
 
 
-interface IAddToPlaylistMenu {
+interface IPlaylistMenu {
     readonly isOpen: boolean;
     readonly setIsOpen: (state: boolean) => void;
-    readonly addToNewPlaylist: () => Promise<void>;
-    readonly addToPlaylist: (playlistId: string) => Promise<void>;
+    readonly onCreatePlaylist: () => Promise<void> | void;
+    readonly onSelectPlaylist: (playlistId: string) => Promise<void> | void;
     readonly playlistId?: string; // ID of playlist (for PlaylistPage)
 }
 
-export const AddToPlaylistMenu: FC<IAddToPlaylistMenu> = ({ isOpen, setIsOpen, addToNewPlaylist, addToPlaylist, playlistId }) => {
+export const PlaylistMenu: FC<IPlaylistMenu> = ({ isOpen, setIsOpen, onCreatePlaylist, onSelectPlaylist, playlistId }) => {
     const user = useAppSelector(selectUser);
     const libraryPlaylists = useAppSelector(selectSavedPlaylists);
 
@@ -27,7 +27,7 @@ export const AddToPlaylistMenu: FC<IAddToPlaylistMenu> = ({ isOpen, setIsOpen, a
             <button 
                 key={playlist.id} 
                 className={styles["menu-playlists-button"]}
-                onClick={async () => addToPlaylist(playlist.id)}
+                onClick={async () => onSelectPlaylist(playlist.id)}
             >
                 <img 
                     src={playlist.images?.[0]?.url || PlaceholderImage}  
@@ -48,7 +48,7 @@ export const AddToPlaylistMenu: FC<IAddToPlaylistMenu> = ({ isOpen, setIsOpen, a
             setIsOpen={setIsOpen}
         >
             <div className={styles["menu-playlists-body"]}>
-                <FilledButton onClick={async () => await addToNewPlaylist()}>
+                <FilledButton onClick={async () => await onCreatePlaylist()}>
                     <Paragraph>
                         New Playlist
                     </Paragraph>

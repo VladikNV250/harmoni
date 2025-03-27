@@ -1,6 +1,8 @@
 import { 
+    ChangeEvent,
     CSSProperties, 
     FC, 
+    useCallback, 
     useEffect, 
     useState 
 } from "react";
@@ -9,13 +11,15 @@ import {
     IAlbum 
 } from "shared/api/album";
 import { 
+    useNavigate,
     useParams 
 } from "react-router";
 import { 
     displayDate, 
     useAppDispatch, 
     useAppSelector, 
-    useColor 
+    useColor, 
+    useDebounce
 } from "shared/lib";
 import { 
     Description, 
@@ -28,32 +32,37 @@ import {
     selectUser, 
     selectUserLoading 
 } from "entities/user";
-import { PlaceholderImage } from "shared/assets";
+import { 
+    ArrowLeft, 
+    PlaceholderImage 
+} from "shared/assets";
 import { 
     getLibraryAlbums, 
     getLibraryPlaylists, 
-    selectLibraryLoading, 
+    selectLibraryLoading,
 } from "features/library";
 import { TrackItem } from "entities/track";
 import { ISimplifiedTrack } from "shared/api/track";
 import { ArtistList } from "entities/artist";
 import { usePlaybackAdapter } from "entities/playback";
+import { AlbumControlPanel } from "../AlbumControlPanel/AlbumControlPanel";
 import { fetchPlaybackState } from "entities/playback/api/playback";
 import styles from "./style.module.scss";
-import { AlbumControlPanel } from "../AlbumControlPanel/AlbumControlPanel";
 
 
 const AlbumPage: FC = () => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [album, setAlbum] = useState<IAlbum | null>(null);
     const [albumLoading, setAlbumLoading] = useState<boolean>(false);
+    const [value, setValue] = useState("");
+    const debouncedValue = useDebounce(value, 300);
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const user = useAppSelector(selectUser);
     const userLoading = useAppSelector(selectUserLoading);
     const color = useColor(album?.images[0]?.url ?? PlaceholderImage);
     const { setApiPlayback } = usePlaybackAdapter();
-
 
     useEffect(() => {
         (async () => {
@@ -78,16 +87,41 @@ const AlbumPage: FC = () => {
         }
     }, [dispatch, user]);
 
-    const renderTracks = (tracks: ISimplifiedTrack[]) => {
-        return (tracks.length > 0 && album) && tracks.map(track =>
-            <TrackItem 
-                key={track.id} 
-                track={track} 
-                defaultAlbum={album}
-                contextUri={album.uri}
-            />
-        )
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setValue(value);
     }
+
+    const renderTracks = useCallback((tracks: ISimplifiedTrack[]) => {
+        if (tracks.length > 0 && album) {
+            if (debouncedValue) {
+                return tracks.map(track => {
+                    const lowerName = track.name?.toLowerCase();
+                    const lowerValue = (debouncedValue as string).toLowerCase();
+                    const isMatch = lowerName?.includes(lowerValue);
+                    return isMatch && (
+                        <TrackItem 
+                            key={track.id} 
+                            track={track} 
+                            defaultAlbum={album}
+                            contextUri={album.uri}
+                        />
+                    )
+                })
+            } else {
+                return tracks.map(track => {
+                    return (
+                        <TrackItem 
+                            key={track.id} 
+                            track={track} 
+                            defaultAlbum={album}
+                            contextUri={album.uri}
+                        />
+                    )
+                })
+            }
+        }
+    }, [debouncedValue, album]);
 
     return (
         <div 
@@ -95,7 +129,18 @@ const AlbumPage: FC = () => {
             style={{'--color': color} as CSSProperties}>
             <Loader loading={albumLoading || libraryLoading || userLoading} />
             <header className={styles["album-header"]}>
-                <SearchInput placeholder={"Find in album"} />
+                <button 
+                    className={styles["header-button"]}
+                    onClick={() => navigate(-1)}
+                >
+                    <ArrowLeft width={40} height={40} />
+                </button>
+                <SearchInput 
+                    value={value} 
+                    onChange={handleChange}    
+                    placeholder={"Find in album"}
+                    className={styles["header-input"]} 
+                />
             </header>
             <div className={styles["album-image-container"]}>
                 <img 

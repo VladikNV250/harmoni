@@ -10,7 +10,7 @@ import {
     getLikedTracks, 
 } from "./libraryThunk"
 import { IFolder } from "entities/folder"
-import { IPlaylist } from "shared/api/playlist"
+import { IPlaylist, ISimplifiedPlaylist } from "shared/api/playlist"
 
 const initialState: ILibraryState = {
     albums:    [],
@@ -40,7 +40,7 @@ export const librarySlice = createSlice({
             state.folders.push(newFolder);
             action.payload = newFolder.id
         },
-        addToFolder: (state, action: PayloadAction<{id: IFolder["id"], item: IPlaylist}>) => {
+        addToFolder: (state, action: PayloadAction<{id: IFolder["id"], item: IPlaylist | ISimplifiedPlaylist}>) => {
             const { id, item } = action.payload;
             state.folders
                 .find(folder => folder.id === id)

@@ -4,7 +4,10 @@ import {
     useEffect, 
     useState 
 } from "react";
-import { useParams } from "react-router";
+import { 
+    useNavigate, 
+    useParams 
+} from "react-router";
 import { 
     fetchArtist, 
     fetchArtistAlbums, 
@@ -32,13 +35,16 @@ import {
     getLibraryArtists, 
     selectLibraryLoading 
 } from "features/library";
+import { 
+    ArrowLeft, 
+    PlaceholderProfileImage 
+} from "shared/assets";
 import { ITrack } from "shared/api/track";
 import { ISimplifiedAlbum } from "shared/api/album";
 import { AlbumPreview } from "entities/album";
 import { TrackItem } from "entities/track";
 import { usePlaybackAdapter } from "entities/playback";
 import { fetchPlaybackState } from "entities/playback/api/playback";
-import { PlaceholderProfileImage } from "shared/assets";
 import { ArtistControlPanel } from "../ArtistControlPanel/ArtistControlPanel";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
@@ -57,6 +63,7 @@ const ArtistPage: FC = () => {
     const [tabs, setTabs] = useState<string[]>([]);
     const { activeTab, chooseTab } = useTabs<string, "Top Tracks">("Top Tracks");
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const user = useAppSelector(selectUser);
     const userLoading = useAppSelector(selectUserLoading);
@@ -167,6 +174,12 @@ const ArtistPage: FC = () => {
                         {displayFollowers(artist?.followers.total)}
                     </Description>
                 </div>
+                <button 
+                    className={styles["artist-button"]}
+                    onClick={() => navigate(-1)}
+                >
+                    <ArrowLeft width={40} height={40} />
+                </button>
             </div>
             <ArtistControlPanel artist={artist} />
             <NavigationTabs

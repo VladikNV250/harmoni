@@ -1,2 +1,2 @@
 export { PlaylistPreview } from "./ui/PlaylistPreview/PlaylistPreview";
-export { AddToPlaylistMenu } from "./ui/AddToPlaylistMenu/AddToPlaylistMenu";
+export { PlaylistMenu } from "./ui/PlaylistMenu/PlaylistMenu";

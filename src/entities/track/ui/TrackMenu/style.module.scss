@@ -1,0 +1,19 @@
+.menu {
+    &-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    &-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 30px 20px;
+    }       
+}
+
+.track-menu {
+    top: 100%;
+    right: 0;
+}

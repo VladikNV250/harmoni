@@ -1,0 +1,15 @@
+@use "app/styles/breakpoints" as *;
+
+.context-menu {
+    bottom: calc(100% + 1px);
+    right: calc(7px + 18px);
+    height: 340px;
+
+    .button-overflow {
+        display: grid;
+
+        @media (min-width: 1240px) {
+            display: none;
+        }
+    }
+}

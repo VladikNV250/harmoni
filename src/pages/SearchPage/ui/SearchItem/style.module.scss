@@ -1,0 +1,87 @@
+.search-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    column-gap: 10px;
+    align-items: center;
+    cursor: default;
+
+    &-image {
+        aspect-ratio: 1 / 1;
+        width: 51px;
+        border-radius: 10px;
+
+        &-circle {
+            @extend .search-item-image;
+            border-radius: 50%;   
+        }
+    }
+
+    &-body {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow: hidden;
+        color: var(--fg-secondary);
+    }
+
+    &-content {
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--fg-secondary);
+    }
+
+    &-name {
+        display: block;
+        color: var(--fg-primary);
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover { text-decoration: underline; }
+    }
+
+    &-publisher { 
+        display: block;
+        color: var(--fg-secondary);
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &-type::first-letter { text-transform: uppercase; }
+
+    &-button {
+        display: grid;
+        color: var(--fg-secondary);
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        align-items: center;
+        justify-content: center;
+
+        > * {
+            grid-area: 1 / 1;
+            transition: all 0.1s ease-in-out;
+            transform-origin: center center;
+            &:nth-child(1) { transform: scale(0); }
+            &:nth-child(2) { transform: scale(1); }
+        }
+        &.active {
+            > * {
+                grid-area: 1 / 1;
+                transition: all 0.1s ease-in-out;
+                transform-origin: center center;
+                &:nth-child(1) { transform: scale(1); }
+                &:nth-child(2) { transform: scale(0); }
+            }
+        }
+    }
+
+    &-button-text { font-weight: 600; }
+}

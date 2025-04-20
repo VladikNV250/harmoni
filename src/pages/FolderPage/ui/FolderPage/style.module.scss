@@ -1,0 +1,51 @@
+@use "app/styles/breakpoints" as *;
+
+.folder {
+    padding-bottom: 180px;
+    min-height: 100vh;
+
+    &-body {
+        &-header {
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        &-button {
+            display: flex;
+            align-items: center;
+            color: var(--fg-secondary);
+            position: relative;
+        
+            &:hover { color: var(--fg-primary); }
+        }
+    }
+
+    &-empty {
+        color: var(--fg-primary);
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    &-grid {
+        width: 100%;
+        padding: 0 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+    }
+
+    &-list {
+        padding: 0 15px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        gap: 12px;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+    }
+}

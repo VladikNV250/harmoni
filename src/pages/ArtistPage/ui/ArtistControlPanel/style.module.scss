@@ -1,0 +1,30 @@
+.artist-control-panel {
+    padding: 0 15px; 
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    .control-panel-button {
+        display: flex;
+        color: #898989;
+        border-color: #898989;
+        transition: color .2s ease-in-out;
+
+        &:hover {
+            color: #E0E0E0;
+            border-color: #E0E0E0;
+        }
+
+        &.shuffle {
+            color: var(--primary);
+        }
+
+        &-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+    }
+}

@@ -1,0 +1,32 @@
+.folder {
+    &-header {
+        display: grid;
+        grid-template-columns: auto 1fr repeat(3, auto);
+        gap: 6px;
+        align-items: center;
+        background: var(--bg-primary);
+        border-bottom: 2px solid var(--bg-secondary);
+        padding: 10px 15px;
+    }
+
+    &-button {
+        display: flex;
+        color: var(--fg-secondary);
+        position: relative;
+
+        &:hover { color: var(--fg-primary); }
+    }
+
+    &-name {
+        color: var(--fg-primary);
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    &-playlist-menu {
+        right: 100%;
+        top: 0;
+        left: auto;
+        bottom: auto;
+    }
+}

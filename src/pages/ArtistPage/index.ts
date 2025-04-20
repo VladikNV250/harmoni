@@ -1,0 +1,1 @@
+export { LazyArtistPage as ArtistPage } from "./ui/ArtistPage/lazy";

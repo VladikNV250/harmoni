@@ -1,0 +1,45 @@
+.playlist-control-panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .control-panel-button {
+        display: grid;
+        position: relative;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        align-items: center;
+        justify-content: center;
+        color: var(--fg-secondary);
+        transition: color .2s ease-in-out;
+
+        &:hover {
+            color: var(--fg-primary);
+        }
+
+        .icon,
+        .icon__active {
+            grid-area: 1 / 1;
+            transition: transform .2s ease-in-out;
+        }
+
+        .icon { transform: scale(1); }
+        .icon__active { transform: scale(0); }
+
+        &.active {
+            .icon { transform: scale(0); }
+            .icon__active { transform: scale(1); }
+        }
+
+        &.shuffle {
+            color: var(--primary);
+        }
+
+        &-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+    }
+}

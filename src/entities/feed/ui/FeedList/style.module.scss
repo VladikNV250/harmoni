@@ -1,0 +1,39 @@
+.feed-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 13px;
+    padding-bottom: 13px;
+    position: relative;
+
+    .item {
+        &-feed {
+            width: 100%;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            align-items: center;
+            transition: all 400ms ease-in-out;
+            &.hidden { opacity: 50%; }
+        }
+
+        &-button {
+            display: flex;
+            color: var(--fg-secondary);
+            cursor: pointer;
+            &:hover { color: var(--fg-primary); }
+            &.grab-button { cursor: grab; }
+            .icon.active { color: var(--primary); }
+        }
+
+        &-name {
+            color: var(--fg-primary);
+            margin-left: 10px;
+            padding-right: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+    }
+}

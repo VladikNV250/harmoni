@@ -1,0 +1,9 @@
+@use "app/styles/breakpoints" as *;
+
+.library {
+    padding-bottom: 180px;
+    min-height: 100vh;
+    @media (min-width: $desktop) {
+        padding-bottom: 12px;
+    }
+}

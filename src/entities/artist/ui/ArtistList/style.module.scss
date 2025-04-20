@@ -1,0 +1,16 @@
+.item-link-artist {
+    display: inline-block;
+    color: var(--fg-secondary);
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    font-weight: 400;
+    
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+        color: var(--fg-primary);
+    }
+}

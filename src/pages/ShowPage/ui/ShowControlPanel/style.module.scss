@@ -1,0 +1,22 @@
+.show-control-panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .control-panel-button {
+        display: flex;
+        color: var(--fg-secondary);
+        transition: color .2s ease-in-out;
+
+        &:hover {
+            color: var(--fg-primary);
+        }
+
+        &-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+    }
+}

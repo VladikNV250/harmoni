@@ -1,0 +1,56 @@
+@use "app/styles/breakpoints" as *;
+
+.search {
+    padding-top: 53px;
+    padding-bottom: 180px;
+    min-height: 100vh;
+    @media (min-width: $desktop) {
+        padding: 12px 0;
+    }
+
+    &-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 12px 15px 6px;
+        z-index: 10;
+        background: var(--bg-main);
+        @media (min-width: $desktop) {
+            display: none;
+        }
+    }
+
+    &-browse {
+        padding: 0 15px;
+    }
+
+    &-title,
+    &-subtitle { color: var(--fg-primary); }
+    
+    &-title { margin-top: 10px; }
+    
+    &-subtitle { margin-top: 15px; }
+
+    &-content {
+        margin-top: 23px;
+        width: 100%;
+        display: grid;
+        justify-content: space-between;
+        gap: 12px;
+        grid-template-columns: repeat(2, minmax(auto, 170px));
+        grid-auto-flow: row;
+        @media (min-width: $desktop) {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+    }
+
+    &-loader {
+        position: absolute;
+        z-index: 8;
+    }   
+}

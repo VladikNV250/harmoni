@@ -1,0 +1,21 @@
+@use "app/styles/breakpoints" as *;
+
+.carousel {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    order: 2;
+    scroll-behavior: smooth;
+    
+    @media (min-width: $desktop) {
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+    }
+}
+
+.catalogue-item {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;    
+}

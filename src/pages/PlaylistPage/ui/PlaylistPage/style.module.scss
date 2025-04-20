@@ -1,0 +1,239 @@
+@use "app/styles/breakpoints" as *;
+
+.playlist {
+    position: relative;
+    padding: 80px 15px;
+    height: 100vh;
+    @media (min-width: $desktop) {
+        display: flex;
+        flex-direction: column;
+        padding: 22px 15px;
+    }
+    
+    @media (min-width: 1140px) {
+        flex-direction: row-reverse;
+        padding: 22px 25px;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, var(--color) 0%, var(--bg-main) 100%);
+        top: 0;
+        left: 0;
+        opacity: 0.47;
+    }
+    
+    &-header {
+        position: relative;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 12px 15px 6px;
+        z-index: 10;
+        backdrop-filter: blur(100px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 5px;
+        @media (min-width: $desktop) {
+            display: none;
+        }
+
+        .header-button {
+            display: flex;
+            color: var(--fg-secondary);
+            transition: color .2s ease-in-out;
+
+            &:hover { color: var(--fg-primary); }
+        }
+    }
+
+    &-search {
+        width: 84%; // 306 * 100 / 363
+        
+        &__desktop {
+            display: none;
+            @media (min-width: $desktop) {
+                display: flex;
+            }
+        }
+    }
+
+    &-image {
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+        object-fit: cover;
+        max-width: 58%;
+        @media (min-width: $desktop) {
+            max-width: 200px;
+        }
+
+        @media (min-width: 1240px) {
+            max-width: 320px;
+        }
+
+        &-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            @media (min-width: $desktop) {
+                width: auto;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            @media (min-width: 1140px) {
+                margin-bottom: 0;
+                align-items: flex-start;
+                justify-content: flex-start;
+            }
+        }
+    }
+
+    &-content {
+        padding-bottom: 180px;
+        @media (min-width: $desktop) {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding-bottom: 0;
+        }
+
+        @media (min-width: 1140px) {
+            padding-right: 40px;
+        }
+    }
+
+    &-name {
+        position: relative;
+        color: var(--fg-primary);
+        margin-bottom: 20px;
+        @media (min-width: $desktop) {
+            display: none;
+        }
+
+        &__desktop {
+            @extend .playlist-name;
+            display: none;
+            @media (min-width: $desktop) {
+                display: block;
+            }
+        }
+    }
+
+    &-owner {
+        margin-left: 4px;
+        color: var(--fg-primary);
+        font-weight: 500;
+        font-size: 14px;    
+        .by {
+            color: var(--fg-secondary);
+            font-weight: 400;
+            font-size: 14px;
+            margin-right: 4px;
+        }
+    }
+
+    &-description-container {
+        position: relative;
+        color: var(--fg-secondary);
+        margin-bottom: 20px;
+        @media (min-width: $desktop) {
+            display: flex;
+            align-items: center;
+        }
+
+        > *:not(:last-child):after {
+            content: "\b7";
+            margin: 0 10px;
+            pointer-events: none;
+            color: var(--fg-secondary);
+        }
+
+        > *:not(:last-child):hover:after {
+            color: var(--fg-secondary);
+        }
+    }
+
+    &-items-empty {
+        color: var(--fg-primary);
+    }
+
+    &-items-body {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        @media (min-width: $desktop) {
+            gap: 5px;
+        }
+    }
+
+    &-items-header {
+        position: relative;
+        width: 100%;
+        padding: 0 18px 12px 10px;
+        display: none;
+        grid-template-columns: auto auto 1fr 1fr auto auto;
+        color: var(--fg-secondary);
+        margin-bottom: 20px;
+        @media (min-width: $desktop) {
+            display: grid;
+        }
+
+        &::after {
+            content: "";
+            width: calc(100% - 20px);
+            background: var(--fg-secondary);
+            opacity: 0.15;
+            height: 2px;
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            border-radius: 2px;
+        }
+
+        > *:not(:last-child) { margin-right: 20px; }
+
+        .gap { margin-right: 0; width: 0; }
+        .gap-button { margin-right: 0; width: 40px; }
+
+        .sequence-number {
+            width: 42px;
+            text-align: center;
+        }
+
+        .title {
+            width: 51px;
+        }
+        
+        .album {
+            width: 100%;
+        }
+
+        .duration {
+            width: 70px;
+        }
+    }
+
+    .control-panel-container {
+        margin-bottom: 20px;
+        @media (min-width: $desktop) {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 30px;
+        }
+    }
+}

@@ -1,0 +1,58 @@
+@use "app/styles/breakpoints" as *;
+
+.album-control-panel { 
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    @media (min-width: $desktop) {
+        margin-bottom: 0;
+    }
+
+    .control-panel-button {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        align-items: center;
+        justify-content: center;
+        color: var(--fg-secondary);
+        transition: color .2s ease-in-out;
+        position: relative;
+
+        &:hover {
+            color: var(--fg-primary);
+        }
+
+        .icon,
+        .icon__active {
+            grid-area: 1 / 1;
+            transition: transform .2s ease-in-out;
+        }
+
+        .icon { transform: scale(1); }
+        .icon__active { transform: scale(0); }
+
+        &.active {
+            .icon { transform: scale(0); }
+            .icon__active { transform: scale(1); }
+        }
+
+        &.shuffle {
+            color: var(--primary);
+        }
+
+        &-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+    }
+
+    .playlist-menu {
+        @media (min-width: $desktop) {
+            top: 0;
+            left: 100%;
+        }
+    }
+}

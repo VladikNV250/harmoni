@@ -1,0 +1,12 @@
+.folder-menu {
+    z-index: 11;
+
+    &-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        overflow-y: auto;
+        max-height: 300px;
+        scrollbar-width: none;    
+    }
+}

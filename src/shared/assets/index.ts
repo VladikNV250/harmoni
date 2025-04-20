@@ -50,6 +50,16 @@ import ArrowUp from "shared/assets/icons/arrow-up-big.svg?react";
 import ArrowDown from "shared/assets/icons/arrow-down-big.svg?react";
 import ArrowLeft from "shared/assets/icons/arrow-left-big.svg?react";
 import ArrowRight from "shared/assets/icons/arrow-right-big.svg?react";
+import LibraryIcon from "shared/assets/icons/library-big.svg?react";
+import LibraryFilled from "shared/assets/icons/library-big__filled.svg?react";
+import PodcastIcon from "shared/assets/icons/podcast-big.svg?react";
+import AddFolder from "shared/assets/icons/add-folder-big.svg?react";
+import SearchIcon from "shared/assets/icons/search-big.svg?react";
+import SearchFilled from "shared/assets/icons/search-big__filled.svg?react";
+import HomeIcon from "shared/assets/icons/home-big.svg?react";
+import HomeFilled from "shared/assets/icons/home-big__filled.svg?react";
+import UserIcon from "shared/assets/icons/user-big.svg?react";
+import UserFilled from "shared/assets/icons/user-big__filled.svg?react";
 
 
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
@@ -60,6 +70,14 @@ import PlaceholderFolderImage from "shared/assets/placeholder/folder_placeholder
 
 /** ICONS */
 export {
+    HomeFilled,
+    HomeIcon,
+    SearchFilled,
+    SearchIcon,
+    UserFilled,
+    UserIcon,
+    AddFolder,
+    PodcastIcon,
     PenIcon,
     Album,
     Play,
@@ -112,6 +130,8 @@ export {
     ArrowLeft,
     ArrowRight,
     ArrowUp,
+    LibraryIcon,
+    LibraryFilled,
 }
 
 /** IMAGES */

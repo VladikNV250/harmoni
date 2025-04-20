@@ -33,9 +33,10 @@ import styles from "./style.module.scss";
 
 interface IArtistControlPanel {
     readonly artist: IArtist | null;
+    readonly className?: string;
 }
 
-export const ArtistControlPanel: FC<IArtistControlPanel> = ({ artist }) => {
+export const ArtistControlPanel: FC<IArtistControlPanel> = ({ artist, className }) => {
     const dispatch = useAppDispatch();
     const [shuffle, setShuffle] = useState<boolean>(false);
     const libraryArtists = useAppSelector(selectFollowedArtists);
@@ -54,8 +55,12 @@ export const ArtistControlPanel: FC<IArtistControlPanel> = ({ artist }) => {
 
     const handlePlay = async () => {
         try {
-            await adapter.play({ context_uri: artist?.uri ?? "" });
-            adapter.toggleShuffle(shuffle);
+            if (adapter.getContextURI() === artist?.uri) {
+                await adapter.resume();
+            } else {
+                await adapter.play({ context_uri: artist?.uri ?? "" });
+                adapter.toggleShuffle(shuffle);
+            }
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
@@ -85,13 +90,16 @@ export const ArtistControlPanel: FC<IArtistControlPanel> = ({ artist }) => {
     }
 
     return (
-        <div className={styles["artist-control-panel"]}>
+        <div className={clsx(
+            styles["artist-control-panel"],
+            className
+        )}>
             <div className={styles["control-panel-button-container"]}>
                 <button 
                     className={styles["control-panel-button"]} 
                     onClick={async () => await handlePlay()}
                     >
-                    {adapter.getContextURI() === artist?.uri ?
+                    {adapter.getContextURI() === artist?.uri && adapter.getIsPlaying() ?
                     <Pause width={60} height={60} /> :
                     <Play width={60} height={60} />}
                 </button>
@@ -105,7 +113,9 @@ export const ArtistControlPanel: FC<IArtistControlPanel> = ({ artist }) => {
                     <Shuffle width={50} height={50} />
                 </button>
             </div>
-            <OutlinedButton onClick={async () => await handleFollow()}>
+            <OutlinedButton 
+                className={styles["control-panel-button"]}
+                onClick={async () => await handleFollow()}>
                 <Description>
                     {isArtistFollowed
                     ? "Unfollow"

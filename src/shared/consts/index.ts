@@ -1,4 +1,6 @@
-export { NAVIGATION_LINKS } from "./pages";
+export { 
+    NAVIGATION_LINKS_MOBILE 
+} from "./pages";
 
 export { 
     CLIENT_ID,

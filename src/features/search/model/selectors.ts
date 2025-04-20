@@ -16,6 +16,11 @@ export const selectBrowseCategories = createSelector(
     (state: ISearchState) => state.categories,
 )
 
+export const selectSearchQuery = createSelector(
+    selectBase,
+    (state: ISearchState) => state.query,
+)
+
 export const selectSearchLoading = createSelector(
     selectBase,
     (state: ISearchState) => state.loading,

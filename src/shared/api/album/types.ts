@@ -6,7 +6,7 @@ export interface IAlbum {
     /** The type of the album */
     readonly album_type: "album" | "single" | "compilation",
     /** The number of tracks in the album */
-    readonly total_traks: number,
+    readonly total_tracks: number,
     /** The markets in which the album is available */
     readonly available_markets: string[],
     /** Known external URLs for this album */
@@ -75,7 +75,7 @@ export interface ISimplifiedAlbum {
     /** The type of the album */
     readonly album_type: "album" | "single" | "compilation",
     /** The number of tracks in the album */
-    readonly total_traks: number,
+    readonly total_tracks: number,
     /** The markets in which the album is available */
     readonly available_markets: string[],
     /** Known external URLs for this album */

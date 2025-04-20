@@ -4,15 +4,14 @@ import { Description } from "shared/ui";
 import { useAppSelector } from "shared/lib";
 import { selectUser } from "entities/user";
 import styles from "./style.module.scss";
+import { selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
 
-interface IForPremiumMessage {
-    readonly activeTab: "track" | "devices" | "queue"
-}
 
-export const ForPremiumMessage: FC<IForPremiumMessage> = ({ activeTab }) => {
+export const ForPremiumMessage: FC = () => {
+    const openedMenu = useAppSelector(selectPlayerOpenedMenu);
     const user = useAppSelector(selectUser);
 
-    if (activeTab === "devices" && user?.product === "premium")  return (
+    if (openedMenu === "device" && user?.product === "premium")  return (
         <div 
             className={styles["for-premium"]} 
             onClick={(e) => e.currentTarget.classList.add(styles["closed"])}

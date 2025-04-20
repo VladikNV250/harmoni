@@ -5,13 +5,14 @@ import {
 } from "react";
 import { 
     Description, 
+    ExpandableSearchInput, 
     SearchInput 
 } from "shared/ui";
 import { 
-    FolderIcon, 
+    AddFolder,
+    AddToPlaylist,
     GridIcon, 
     ListIcon, 
-    PlaylistIcon 
 } from "shared/assets";
 import { 
     useAppDispatch, 
@@ -33,7 +34,6 @@ interface ILibraryHeader {
     readonly setValue: (value: string) => void;
     readonly switchMode: () => void;
     readonly viewMode: "list" | "grid";
-
 }
 
 export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, switchMode }) => {
@@ -57,7 +57,7 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
         const playlist = await dispatch(createPlaylistThunk({
             userId: user.id, 
             body: {
-                name: `Playlist#${playlists.length + 1}`,
+                name: `New Playlist #${playlists.length + 1}`,
                 collaborative: false,
                 description: "",
                 public: true,
@@ -79,7 +79,7 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
                     placeholder="Search in library"
                     value={value}
                     onChange={handleChange}
-                    className={styles["library-header-input"]} 
+                    className={styles["library-header-input__mobile"]} 
                 />
                 <button 
                     className={styles["library-header-button"]} 
@@ -89,14 +89,21 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
                     ? <ListIcon width={40} height={40} />
                     : <GridIcon width={40} height={40} />}
                 </button>
+                <ExpandableSearchInput 
+                    placeholder="Search in library"
+                    value={value}
+                    onChange={handleChange}
+                    className={styles["library-header-input__desktop"]}
+                    direction="right"
+                />
             </div>
             <div className={styles["library-header-container__two"]}>
                 <button 
                     className={styles["library-header-button"]} 
                     onClick={handleCreateFolder}
                 >
-                    <FolderIcon width={40} height={40} />
-                    <Description>
+                    <AddFolder width={40} height={40} />
+                    <Description className={styles["button-text"]}>
                         Create folder
                     </Description>
                 </button>
@@ -104,8 +111,8 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
                     className={styles["library-header-button"]}
                     onClick={async () => await handleCreatePlaylist()}
                 >
-                    <PlaylistIcon width={40} height={40} />
-                    <Description>
+                    <AddToPlaylist width={40} height={40} />
+                    <Description className={styles["button-text"]}>
                         Create playlist
                     </Description>
                 </button>

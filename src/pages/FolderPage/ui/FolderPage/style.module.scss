@@ -1,5 +1,8 @@
+@use "app/styles/breakpoints" as *;
+
 .folder {
     padding-bottom: 180px;
+    min-height: 100vh;
 
     &-body {
         &-header {
@@ -13,6 +16,7 @@
             display: flex;
             align-items: center;
             color: var(--fg-secondary);
+            position: relative;
         
             &:hover { color: var(--fg-primary); }
         }

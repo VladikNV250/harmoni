@@ -1,16 +1,17 @@
 import clsx from "clsx";
 import { FC } from "react";
 import styles from "./style.module.scss";
+import { createPortal } from "react-dom";
 
 interface IModal {
     readonly children: JSX.Element,
     readonly className?: string,
     readonly isOpen?: boolean,
-    readonly setIsOpen?: (isOpen: boolean) => void;
+    readonly setIsOpen?: (state: boolean) => void;
 }
 
 export const Modal: FC<IModal> = ({ children, className, isOpen, setIsOpen }) => {
-    return (
+    return createPortal(
         <div 
             onClick={() => setIsOpen?.(false)}
             className={clsx(
@@ -18,6 +19,7 @@ export const Modal: FC<IModal> = ({ children, className, isOpen, setIsOpen }) =>
                 isOpen && styles["open"], className
             )}> 
             {children}
-        </div>
+        </div>,
+        document.body.querySelector("#layout") ?? document.body
     )
 }

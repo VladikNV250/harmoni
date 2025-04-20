@@ -2,23 +2,23 @@ import clsx from "clsx";
 import { FC } from "react";
 import { Device, Playing } from "shared/assets";
 import { useAppDispatch, useAppSelector } from "shared/lib";
-import { Description, Loader } from "shared/ui";
+import { Description, Loader, Subtitle } from "shared/ui";
 import { getAvailableDevices } from "features/device/model/deviceThunk";
 import { selectDevices, selectDevicesLoading } from "features/device/model/selectors";
-import { transferPlayback, usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
+import { fetchPlaybackState, transferPlayback, usePlaybackAdapter } from "entities/playback";
 import { selectUser } from "entities/user";
 import { PLAYBACK_NAME } from "shared/consts";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
+import { IDevice } from "features/device/api/types";
 
 
 interface IDeviceList {
-    readonly activeTab: "track" | "devices" | "queue",
-    readonly chooseTab: (tab: "devices" | "queue" | "track") => void,
+    readonly isVisited: boolean,
+    readonly onTransfer?: () => void,
 }
 
-export const DeviceList: FC<IDeviceList> = ({ activeTab, chooseTab }) => {
+export const DeviceList: FC<IDeviceList> = ({ isVisited, onTransfer }) => {
     const devices = useAppSelector(selectDevices);
     const loading = useAppSelector(selectDevicesLoading);
     const dispatch = useAppDispatch();
@@ -33,7 +33,7 @@ export const DeviceList: FC<IDeviceList> = ({ activeTab, chooseTab }) => {
                 await transferPlayback(device_id ?? "");
                 setApiPlayback?.(await fetchPlaybackState());
                 dispatch(getAvailableDevices())
-                chooseTab("track");
+                onTransfer?.();
             }
         } catch (e) {
             toast.error("Something went wrong. Try to reload the page.")
@@ -41,20 +41,14 @@ export const DeviceList: FC<IDeviceList> = ({ activeTab, chooseTab }) => {
         }
     }
 
-    return (
-        <div 
-            className={clsx(
-                styles["fullscreen-devices"], 
-                activeTab === "devices" && styles["active"]
-            )}
-        >
-            <Loader loading={loading} />
-            {devices.map(({id, name, is_active}, index) =>
+    const renderDeviceItems = (devices: IDevice[]) => {
+        if (devices.length > 0) {
+            return devices.map(({id, name, is_active}, index) =>
                 <div 
                     key={id ?? index} 
                     onClick={async () => await handleTransferDevice(id, name)}
                     className={clsx(
-                        styles["fullscreen-device"], 
+                        styles["device-item"], 
                         is_active && styles["active"]
                     )}
                 >
@@ -65,7 +59,30 @@ export const DeviceList: FC<IDeviceList> = ({ activeTab, chooseTab }) => {
                     {is_active &&
                     <Playing width={40} height={40} style={{color: "var(--primary)"}} />}
                 </div>
+            )
+        } else {
+            return (
+                <Subtitle className={styles["devices-empty"]}>
+                    No devices available. Make sure your devices are connected and try again.
+                </Subtitle>
+            )
+        }
+    }
+
+    return (
+        <div 
+            className={clsx(
+                styles["devices-list-container"], 
+                isVisited && styles["active"]
             )}
+        >
+            <Subtitle className={styles["devices-title"]}>
+                Devices
+            </Subtitle>
+            <Loader loading={loading} />
+            <div className={styles["devices-list"]}>
+                {renderDeviceItems(devices)}
+            </div>
         </div>
     )
 }

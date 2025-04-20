@@ -1,8 +1,12 @@
 import { TIconComponent } from "./iconTypes";
 
 export interface INavLinkType {
-    title: string,
-    href: string,
-    Icon: TIconComponent,
-    ActiveIcon: TIconComponent,
+    /** Title of page */
+    readonly title: string,
+    /** Link to page */
+    readonly href: string,
+    /** Icon of page */
+    readonly Icon: TIconComponent,
+    /** Icon, when the page is currently being visited */
+    readonly ActiveIcon: TIconComponent,
 }

@@ -3,7 +3,6 @@ import {
     useAppDispatch, 
     useAppSelector, 
     useColor, 
-    useTabs
 } from "shared/lib";
 import { useTheme } from "entities/theme";
 import { FullscreenPlayer } from "../FullscreenPlayer/FullscreenPlayer";
@@ -12,18 +11,20 @@ import { getUserQueue } from "features/queue";
 import { getAvailableDevices } from "features/device";
 import { MinimizedPlayer } from "../MinimizedPlayer/MinimizedPlayer";
 import { usePlaybackAdapter } from "entities/playback";
-import { selectPlayerFullsreenMode } from "widgets/Player/model/selectors";
+import { selectPlayerFullsreenMode, selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
 import { getUserInfo } from "entities/user";
-import { useIsLikedTrack } from "widgets/Player/lib/track/useIsLikedTrack";
+import { useLike } from "widgets/Player/lib/player/player";
+import { DesktopPlayer } from "../DesktopPlayer/DesktopPlayer";
+
 
 export const Player: FC = () => {    
     const { theme } = useTheme();
-    const { activeTab, chooseTab } = useTabs<"devices" | "queue", "track">("track"); 
     const dispatch = useAppDispatch();
+    const openedMenu = useAppSelector(selectPlayerOpenedMenu);
     const fullscreen = useAppSelector(selectPlayerFullsreenMode);
     const { adapter } = usePlaybackAdapter();
     const color = useColor(adapter.getTrackImage(), true, theme ?? "none");
-    const { isLiked, setIsLiked } = useIsLikedTrack(adapter); 
+    const { isLiked, handleLike } = useLike(); 
 
     useEffect(() => {
         dispatch(getUserQueue());
@@ -32,35 +33,36 @@ export const Player: FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        switch (activeTab) {
-            case "devices": 
+        switch (openedMenu) {
+            case "device": 
                 dispatch(getAvailableDevices());
                 break;
             case "queue": 
                 dispatch(getUserQueue());
                 break;
             case "track": 
-                // dispatch(getPlaybackState());
                 break;
         }
-    }, [activeTab, dispatch, fullscreen]);
+    }, [openedMenu, dispatch, fullscreen]);
 
 
     return (
         <>
+            <DesktopPlayer
+                color={color}
+                isLiked={isLiked}
+                handleLike={handleLike}
+            />
             <PlayerCurtain />
             <FullscreenPlayer 
                 color={color}
-                activeTab={activeTab}
-                chooseTab={chooseTab}
                 isLiked={isLiked}
-                setIsLiked={setIsLiked}
+                handleLike={handleLike}
             />
             <MinimizedPlayer 
                 color={color}
-                chooseTab={chooseTab}
                 isLiked={isLiked}
-                setIsLiked={setIsLiked}
+                handleLike={handleLike}
             />
         </>
     )

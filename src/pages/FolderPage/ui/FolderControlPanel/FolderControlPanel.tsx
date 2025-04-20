@@ -101,12 +101,6 @@ export const FolderControlPanel: FC<IFolderControlPanel> = ({ folder }) => {
                 isOpen={controlPanel.deleteMenu}
                 setIsOpen={setDeleteMenu}
             />
-            <PlaylistMenu 
-                isOpen={controlPanel.playlistMenu}
-                setIsOpen={setPlaylistMenu}
-                onCreatePlaylist={addNewPlaylist}
-                onSelectPlaylist={addPlaylist}
-            />
             <header className={styles["folder-header"]}>
                 <button 
                     className={styles["folder-button"]}
@@ -131,8 +125,15 @@ export const FolderControlPanel: FC<IFolderControlPanel> = ({ folder }) => {
                 </button>
                 <button 
                     className={styles["folder-button"]}
-                    onClick={() => setPlaylistMenu(true)}
+                    onClick={() => setPlaylistMenu(!controlPanel.playlistMenu)}
                 >
+                    <PlaylistMenu 
+                        isOpen={controlPanel.playlistMenu}
+                        setIsOpen={setPlaylistMenu}
+                        onCreatePlaylist={addNewPlaylist}
+                        onSelectPlaylist={addPlaylist}
+                        className={styles["folder-playlist-menu"]}
+                    />
                     <PlaylistIcon width={40} height={40} />
                 </button>
             </header>

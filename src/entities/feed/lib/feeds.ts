@@ -13,9 +13,9 @@ export const useFilterFeeds = (
                 setFilteredFeeds(Object.fromEntries(
                     Object.entries(feeds).filter(
                         ([, feed]) => 
-                            feed.items[0].type === "playlist" ||
-                            feed.items[0].type === "album" ||
-                            feed.items[0].type === "artist"
+                            feed.items[0]?.type === "playlist" ||
+                            feed.items[0]?.type === "album" ||
+                            feed.items[0]?.type === "artist"
                     )
                 ))
                 break;
@@ -23,8 +23,8 @@ export const useFilterFeeds = (
                 setFilteredFeeds(Object.fromEntries(
                     Object.entries(feeds).filter(
                         ([, feed]) => 
-                            feed.items[0].type === "show" ||
-                            feed.items[0].type === "episode"
+                            feed.items[0]?.type === "show" ||
+                            feed.items[0]?.type === "episode"
                     )
                 ))
                 break;

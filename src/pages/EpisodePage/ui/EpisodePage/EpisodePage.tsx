@@ -22,7 +22,8 @@ import {
 import { 
     Description, 
     Title, 
-    Loader, 
+    Loader,
+    DesktopTitle, 
 } from "shared/ui";
 import { 
     getUserInfo, 
@@ -39,8 +40,7 @@ import {
     selectLibraryLoading, 
 } from "features/library";
 import { getDate } from "entities/episode";
-import { usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { EpisodeControlPanel } from "../EpisodeControlPanel/EpisodeControlPanel";
 import styles from "./style.module.scss";
 
@@ -98,33 +98,46 @@ const EpisodePage: FC = () => {
                     className={styles["episode-image"]} 
                 />
             </div>
-            <Title className={styles["episode-name"]}>
-                {episode?.name ?? ""}
-            </Title>
-            <Link 
-                to={`/shows/${episode?.show.id}`} 
-                className={styles["episode-author"]}
-            >
-                {episode?.show.publisher ?? ""}
-            </Link>
-            <div className={styles["episode-info-container"]}>
-                <Description>
-                    {getDate(episode?.release_date, episode?.release_date_precision)}
-                </Description>
-                <p>&#183;</p>
-                <Description>
-                    {calculateDuration(episode?.duration_ms ?? 0)}
-                </Description>
-            </div>
-            <EpisodeControlPanel episode={episode} />
             <div className={styles["episode-content"]}>
-                <p 
-                    className={styles["episode-description"]} 
-                    dangerouslySetInnerHTML={{
-                        __html: episode?.html_description ?? ""
-                    }} 
-                />
-            </div>
+                <Title className={styles["episode-name"]}>
+                    {episode?.name ?? ""}
+                </Title>
+                <DesktopTitle className={styles["episode-name__desktop"]}>
+                    {episode?.name ?? ""}
+                </DesktopTitle>
+                <Link 
+                    to={`/shows/${episode?.show.id}`} 
+                    className={styles["episode-publisher"]}
+                >
+                    {episode?.show.publisher ?? ""}
+                </Link>
+                <div className={styles["episode-info-container"]}>
+                    <Link 
+                        to={`/shows/${episode?.show.id}`} 
+                        className={styles["episode-publisher__desktop"]}
+                    >
+                        {episode?.show.publisher ?? ""}
+                    </Link>
+                    <Description>
+                        {getDate(episode?.release_date, episode?.release_date_precision)}
+                    </Description>
+                    <Description>
+                        {calculateDuration(episode?.duration_ms ?? 0)}
+                    </Description>
+                </div>
+                <EpisodeControlPanel episode={episode} />
+                <div className={styles["episode-body"]}>
+                    <Title className={styles["episode-about"]}>
+                        About Episode
+                    </Title>
+                    <p 
+                        className={styles["episode-description"]} 
+                        dangerouslySetInnerHTML={{
+                            __html: episode?.html_description ?? ""
+                        }} 
+                    />
+                </div>
+            </div>  
         </div>
     )
 }

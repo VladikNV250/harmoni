@@ -1,3 +1,5 @@
+@use "app/styles/breakpoints" as *;
+
 .fullscreen-player {
     position: fixed;
     top: 0;
@@ -8,6 +10,9 @@
     z-index: 10;
     padding: 0 18px 1.77vh; /* (15 * 100%)/844 where 60px is a padding on display height 844px */
     animation: slide-down 0.2s ease-in-out forwards;
+    @media (min-width: $desktop) {
+        display: none;
+    }
 
     &.active {
         top: 0;
@@ -38,6 +43,7 @@
         margin-bottom: 5.9vh; /* (50 * 100%)/844 */
         height: 54vh;
         overflow-y: hidden;
+        overflow-x: hidden;
     }
 }
 

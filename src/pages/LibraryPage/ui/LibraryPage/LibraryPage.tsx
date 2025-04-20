@@ -9,7 +9,8 @@ import {
 import { 
     useAppDispatch, 
     useAppSelector, 
-    useDebounce
+    useDebounce,
+    useWindowDimensions
 } from "shared/lib";
 import { 
     getLibraryAlbums,
@@ -26,9 +27,9 @@ import {
 } from "entities/user";
 import { LibraryGroupList } from "../LibraryGroupList/LibraryGroupList";
 import { LibraryHeader } from "../LibraryHeader/LibraryHeader";
-import { usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import styles from "./style.module.scss";
+import { LibraryFlatList } from "../LibraryFlatList/LibraryFlatList";
 
 
 
@@ -40,6 +41,7 @@ const LibraryPage: FC = () => {
     const libraryLoading = useAppSelector(selectLibraryLoading);
     const userLoading = useAppSelector(selectUserLoading);     
     const { setApiPlayback } = usePlaybackAdapter();  
+    const { width } = useWindowDimensions();
 
     useEffect(() => {
         dispatch(getLikedTracks());
@@ -64,10 +66,18 @@ const LibraryPage: FC = () => {
                 viewMode={viewMode}
                 switchMode={switchMode}
             />
+            {width >= 768 
+            ?
+            <LibraryFlatList 
+                query={`${debouncedValue}`}
+                viewMode={viewMode}
+            />
+            :
             <LibraryGroupList 
                 query={`${debouncedValue}`}
                 viewMode={viewMode}
             />
+            }
         </div>
     )
 }

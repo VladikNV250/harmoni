@@ -1,1 +1,1 @@
-export { AlbumPreview } from "./ui/AlbumPreview";
+export { AlbumPreview } from "./ui/AlbumPreview/AlbumPreview";

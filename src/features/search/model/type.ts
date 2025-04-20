@@ -17,8 +17,9 @@ export interface ISearchState {
         episodes: ISimplifiedEpisode[],
     },
     categories: ICategory[],
+    query: string,
     loading: boolean,
     error: RejectedDataType | null,
 }
 
-export type TSearchFilter = "All" | "Songs" | "Albums" | "Artists" | "Playlists" | "Shows";
+export type TSearchFilter = "All" | "Songs" | "Albums" | "Artists" | "Playlists" | "Podcasts";

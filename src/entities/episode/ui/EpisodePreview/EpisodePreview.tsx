@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Text } from "shared/ui";
 import { useNavigate } from "react-router";
 import { calculateDuration, useColor } from "shared/lib";
-import { IEpisode } from "shared/api/episode";
+import { IEpisode, ISimplifiedEpisode } from "shared/api/episode";
 import { getDate } from "entities/episode/lib/getDate";
 import { usePlaybackAdapter } from "entities/playback";
 import { Pause, PlaceholderImage, Play } from "shared/assets";
@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 
 
 interface IEpisodePreview {
-    episode: IEpisode;
+    episode: IEpisode | ISimplifiedEpisode;
 }
 
 export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
@@ -24,25 +24,27 @@ export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
         id, 
         show, 
         uri
-    } = episode;
+    } = episode as IEpisode;
     const navigate = useNavigate();
     const color = useColor(images[0]?.url);
     const { adapter } = usePlaybackAdapter();
 
     const handlePlay = async () => {
-        try {
-            await adapter.play({ 
-                context_uri: show.uri, 
-                offset: { 
-                    uri: uri 
-                } 
-            });
+        try {            
+            if (adapter.getContextURI() === show.uri) {
+                await adapter.resume();
+            } else {
+                await adapter.play({ 
+                    context_uri: show.uri, 
+                    offset: { 
+                        uri: uri 
+                    } 
+                });
+            }
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
-        }
-        
-        
+        } 
     }
     
     return (
@@ -74,14 +76,15 @@ export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
                     </div>
                 </div>
             </div>
+            {show &&
             <button 
                 className={styles["episode-button"]} 
                 onClick={async () => await handlePlay()}
             >
-                {adapter.getTrackURI() === uri ?
+                {adapter.getTrackURI() === uri && adapter.getIsPlaying() ?
                 <Pause width={40} height={40} /> :
                 <Play width={40} height={40} />}
-            </button>
+            </button>}
         </div>
     )
 }

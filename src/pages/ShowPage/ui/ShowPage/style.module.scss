@@ -1,7 +1,20 @@
+@use "app/styles/breakpoints" as *;
+
 .show {
     position: relative;
     padding-top: 80px;
     padding-bottom: 180px;
+    min-height: 100vh;
+    @media (min-width: $desktop) {
+        display: flex;
+        flex-direction: column;
+        padding: 22px 25px;
+    }
+
+    @media (min-width: 1140px) {
+        flex-direction: row-reverse;
+    }
+
     &::before {
         content: "";
         position: absolute;
@@ -24,17 +37,26 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        @media (min-width: $desktop) {
+            display: none;
+        }
 
-        .header {
-            &-input {
-                width: 84%; // 306 * 100 / 363
-            }
-            &-button {
+        .header-button {
+            display: flex;
+            color: var(--fg-secondary);
+            transition: color .2s ease-in-out;
+
+            &:hover { color: var(--fg-primary); }
+        }
+    }
+
+    &-search {
+        width: 84%; // 306 * 100 / 363
+
+        &__desktop {
+            display: none;
+            @media (min-width: $desktop) {
                 display: flex;
-                color: var(--fg-secondary);
-                transition: color .2s ease-in-out;
-
-                &:hover { color: var(--fg-primary); }
             }
         }
     }
@@ -44,6 +66,13 @@
         border-radius: 10px;
         object-fit: cover;
         max-width: 30%;
+        @media (min-width: $desktop) {
+            max-width: 200px;
+        }
+
+        @media (min-width: 1240px) {
+            max-width: 320px;
+        }
 
         &-container {
             position: relative;
@@ -53,6 +82,18 @@
             align-items: flex-end;
             gap: 16px;
             margin-bottom: 24px;
+            @media (min-width: $desktop) {
+                width: auto;
+                align-items: flex-start;
+                justify-content: flex-start;
+                flex-direction: column;
+                gap: 30px;
+                padding: 0;
+            }
+            
+            @media (min-width: 1140px) {
+                margin-bottom: 0;
+            }
         }
     }
 
@@ -62,15 +103,82 @@
         color: var(--fg-primary);
     }
     
-    &-name { margin-bottom: 10px; }
+    &-name { 
+        margin-bottom: 10px; 
+        color: var(--fg-primary);
+        @media (min-width: $desktop) {
+            display: none;
+        }
+
+        &__desktop {
+            @extend .show-name;
+            display: none;
+            position: relative;
+            margin-bottom: 20px;
+            @media (min-width: $desktop) {
+                display: block;
+            }
+        }
+    }
+
+    &-about {
+        display: none;
+        @media (min-width: $desktop) {
+            display: block;
+            margin-bottom: 10px;
+        }
+    }
+
+    &-publisher {
+        color: var(--fg-primary);
+        position: relative;
+        display: block;
+        @media (min-width: $desktop) {
+            display: none;
+        }
+
+        &__desktop {
+            @extend .show-publisher;
+            display: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            @media (min-width: $desktop) {
+                display: block;
+            }
+        }
+    }
+
+    &-content {
+        @media (min-width: $desktop) {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        @media (min-width: 1140px) {
+            padding-right: 40px;
+        }
+    }
 
     &-control-panel {
-        margin-bottom: 8px;
+        margin-bottom: 20px;
         padding: 0 15px;
+        @media (min-width: $desktop) {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding: 0;
+            margin-bottom: 40px;
+        }
     }
 
     &-tabs {
         margin-bottom: 20px;
+        display: grid;
+        @media (min-width: $desktop) {
+            display: none;
+        }
     }
 
     &-items-container {
@@ -80,6 +188,27 @@
         flex-direction: column;
         align-items: center;
         gap: 16px;
+    }
+
+    &-description {
+        color: var(--fg-secondary);
+        position: relative;
+        display: block;
+        @media (min-width: $desktop) {
+            display: none;
+        }
+
+        &__desktop {
+            @extend .show-description;
+            display: none;
+            @media (min-width: $desktop) {
+                display: inline-block;
+            }
+
+            @media (min-width: 1140px) {
+                max-width: 320px;
+            }
+        }
     }
     
     &-description-container {

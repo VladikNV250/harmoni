@@ -20,8 +20,12 @@ export const PlaylistPreview: FC<IPlaylistPreview> = ({ playlist }) => {
     const { adapter } = usePlaybackAdapter();
 
     const handlePlay = async () => {
-        try {
-            await adapter.play({ context_uri: uri });
+        try {                        
+            if (adapter.getContextURI() === uri) {
+                await adapter.resume();
+            } else {
+                await adapter.play({ context_uri: uri });
+            }
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
@@ -43,21 +47,21 @@ export const PlaylistPreview: FC<IPlaylistPreview> = ({ playlist }) => {
                 </div>
                 <div className={styles["playlist-body"]}>
                     <Text className={styles["playlist-name"]}>
-                        {name}
+                        {name ?? ""}
                     </Text>
                     <Text style={{color}}>
                         {`${tracks.total}`}
                     </Text>
                 </div>
                 <p className={styles["playlist-description"]}>
-                    {description}
+                    {description ?? ""}
                 </p>
             </div>
             <button 
                 className={styles["playlist-button"]} 
                 onClick={async () => await handlePlay()}
             >
-                {adapter.getContextURI() === uri ?
+                {adapter.getContextURI() === uri && adapter.getIsPlaying() ?
                 <Pause width={40} height={40} /> :
                 <Play width={40} height={40} />}
             </button>

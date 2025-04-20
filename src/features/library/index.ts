@@ -26,4 +26,8 @@ export {
     selectSavedShows,
     selectLikedTracks,
     selectLikedEpisodes,
+    selectLibraryFilter,
 } from "./model/selectors";
+export type {
+    TLibraryFilter
+} from "./model/type";

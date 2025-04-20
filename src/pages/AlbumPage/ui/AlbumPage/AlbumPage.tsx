@@ -11,10 +11,12 @@ import {
     IAlbum 
 } from "shared/api/album";
 import { 
+    Link,
     useNavigate,
     useParams 
 } from "react-router";
 import { 
+    calculateDuration,
     displayDate, 
     useAppDispatch, 
     useAppSelector, 
@@ -23,7 +25,10 @@ import {
 } from "shared/lib";
 import { 
     Description, 
+    DesktopTitle, 
+    ExpandableSearchInput, 
     Loader, 
+    Paragraph, 
     SearchInput, 
     Title 
 } from "shared/ui";
@@ -34,6 +39,7 @@ import {
 } from "entities/user";
 import { 
     ArrowLeft, 
+    ArtistIcon, 
     PlaceholderImage 
 } from "shared/assets";
 import { 
@@ -44,9 +50,8 @@ import {
 import { TrackItem } from "entities/track";
 import { ISimplifiedTrack } from "shared/api/track";
 import { ArtistList } from "entities/artist";
-import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { AlbumControlPanel } from "../AlbumControlPanel/AlbumControlPanel";
-import { fetchPlaybackState } from "entities/playback/api/playback";
 import styles from "./style.module.scss";
 
 
@@ -95,7 +100,7 @@ const AlbumPage: FC = () => {
     const renderTracks = useCallback((tracks: ISimplifiedTrack[]) => {
         if (tracks.length > 0 && album) {
             if (debouncedValue) {
-                return tracks.map(track => {
+                return tracks.map((track, index) => {
                     const lowerName = track.name?.toLowerCase();
                     const lowerValue = (debouncedValue as string).toLowerCase();
                     const isMatch = lowerName?.includes(lowerValue);
@@ -103,17 +108,23 @@ const AlbumPage: FC = () => {
                         <TrackItem 
                             key={track.id} 
                             track={track} 
+                            sequenceNumber={index + 1}
+                            showAlbum={false}
+                            showImage={false}
                             defaultAlbum={album}
                             contextUri={album.uri}
                         />
                     )
                 })
             } else {
-                return tracks.map(track => {
+                return tracks.map((track, index) => {
                     return (
                         <TrackItem 
                             key={track.id} 
                             track={track} 
+                            sequenceNumber={index + 1}
+                            showAlbum={false}
+                            showImage={false}
                             defaultAlbum={album}
                             contextUri={album.uri}
                         />
@@ -122,6 +133,30 @@ const AlbumPage: FC = () => {
             }
         }
     }, [debouncedValue, album]);
+
+    const calculateAlbumDuration = () => {
+        let totalDuration = 0;
+        album?.tracks.items.map(item => totalDuration += item?.duration_ms ?? 0);
+
+        return calculateDuration(totalDuration, "word");
+    }
+
+
+    const renderArtists = () => {
+        return (album?.artists.length ?? 0) > 0 && album?.artists.map(item =>
+            <div key={item.id} className={styles["album-artist__desktop"]}>
+                <Link 
+                    to={`/artists/${item.id}`} 
+                    className={styles["album-artist-link"]}
+                >
+                    <ArtistIcon width={60} height={60} />
+                    <Paragraph className={styles["album-artist-name"]}>
+                        {item.name ?? ""}
+                    </Paragraph>
+                </Link>
+            </div>
+        )
+    }
 
     return (
         <div 
@@ -139,7 +174,7 @@ const AlbumPage: FC = () => {
                     value={value} 
                     onChange={handleChange}    
                     placeholder={"Find in album"}
-                    className={styles["header-input"]} 
+                    className={styles["album-search"]} 
                 />
             </header>
             <div className={styles["album-image-container"]}>
@@ -147,25 +182,64 @@ const AlbumPage: FC = () => {
                     src={album?.images[0].url || PlaceholderImage} 
                     className={styles["album-image"]} 
                 />
+                <div className={styles["album-artists-list__desktop"]}>
+                    {renderArtists()}
+                </div>
             </div>
-            <Title className={styles["album-name"]}>{album?.name ?? ""}</Title>
-            <div className={styles["album-info-container"]}>
-                <ArtistList 
-                    artists={album?.artists} 
-                    className={styles["album-artist"]}
-                />
-                <p className={styles["dot"]}>&#183;</p>
-                <Description className={styles["album-type"]}>
-                    {album?.album_type ?? ""}
-                </Description>
-                <p className={styles["dot"]}>&#183;</p>
-                <Description>
-                    {displayDate(album?.release_date, album?.release_date_precision)}
-                </Description>
-            </div>
-            <AlbumControlPanel album={album} />
-            <div className={styles["album-items-container"]}>
-                {renderTracks(album?.tracks.items ?? [])}
+            <div className={styles["album-content"]}>
+                <Title className={styles["album-name"]}>
+                    {album?.name ?? ""}
+                </Title>
+                <DesktopTitle className={styles["album-name__desktop"]}>
+                    {album?.name ?? ""}
+                </DesktopTitle>
+                <div className={styles["album-info-container"]}>
+                    <div className={styles["album-artists-list"]}>
+                        <ArtistList 
+                            artists={album?.artists} 
+                            className={styles["album-artists"]}
+                        />
+                    </div>
+                    <Description className={styles["album-type"]}>
+                        {album?.album_type ?? ""}
+                    </Description>
+                    <Description>
+                        {(album?.total_tracks ?? 0) > 0 ? album?.total_tracks + " Songs" : ""}
+                    </Description>
+                    <Description>
+                        {calculateAlbumDuration()}
+                    </Description>
+                    <Description>
+                        {displayDate(album?.release_date, album?.release_date_precision)}
+                    </Description>
+                </div>
+                <div className={styles["control-panel-container"]}>
+                    <AlbumControlPanel album={album} />
+                    <ExpandableSearchInput 
+                        className={styles["album-search__desktop"]}
+                        value={value} 
+                        onChange={handleChange}    
+                        placeholder={"Find in album"}
+                        direction="left"
+                    />
+                </div>
+                <header className={styles["album-items-header"]}>
+                    <Description className={styles["sequence-number"]}>
+                        #
+                    </Description>
+                    <div className={styles["gap"]} />
+                    <Description className={styles["title"]}>
+                        Title
+                    </Description>
+                    <div className={styles["gap"]} />
+                    <Description className={styles["duration"]}>
+                        Duration
+                    </Description>
+                    <div className={styles["gap-button"]} />
+                </header>
+                <div className={styles["album-items-body"]}>
+                    {renderTracks(album?.tracks.items ?? [])}
+                </div>
             </div>
         </div>
     )

@@ -1,32 +1,18 @@
 import { 
     FC, 
-    useCallback, 
-    useMemo 
+    useMemo, 
 } from "react";
 import { 
-    addItemsToPlaylist, 
-    fetchPlaylistItems, 
     followPlaylist, 
     IPlaylist, 
     unfollowPlaylist 
 } from "shared/api/playlist";
 import { 
-    Description, 
-    DragDownMenu, 
-    FilledButton, 
-    OutlinedButton, 
-    Paragraph 
-} from "shared/ui";
-import { 
     AddIcon, 
-    AddToPlaylist, 
     CheckFilled, 
-    Edit, 
-    FolderIcon, 
     More, 
     Pause, 
     Play, 
-    RemoveIcon, 
     Shuffle 
 } from "shared/assets";
 import { 
@@ -35,50 +21,33 @@ import {
     useControlPanel 
 } from "shared/lib";
 import { 
-    createPlaylistThunk, 
     getLibraryPlaylists, 
-    librarySlice, 
-    selectFolders, 
     selectSavedPlaylists 
 } from "features/library";
-import { DeleteMenu } from "../DeleteMenu/DeleteMenu";
-import { EditMenu } from "../EditMenu/EditMenu";
 import { selectUser } from "entities/user";
-import { useNavigate } from "react-router";
 import { usePlaybackAdapter } from "entities/playback";
-import { PlaylistMenu } from "entities/playlist";
-import { IFolder } from "entities/folder";
 import { toast } from "react-toastify";
 import clsx from "clsx";
 import styles from "./style.module.scss";
+import { MoreMenu } from "../MoreMenu/MoreMenu";
 
 interface IPlaylistControlPanel {
     readonly playlist: IPlaylist | null,
 }
 
 export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) => {
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
-    const folders = useAppSelector(selectFolders);
     const libraryPlaylists = useAppSelector(selectSavedPlaylists);
     const { adapter } = usePlaybackAdapter();
-    const { addToFolder, removeFromFolder, createFolder } = librarySlice.actions;
     const { controlPanel, updateControlPanel } = useControlPanel({
-        shuffle:      false,
-        moreMenu:     false,
-        playlistMenu: false,
-        folderMenu:   false,
-        deleteMenu:   false,
-        editMenu:     false,
+        shuffle: false,
+        moreMenu: false,
     } as Record<string, boolean>);
-
-    const setMoreMenu =     (state: boolean) => updateControlPanel('moreMenu', state);
-    const setPlaylistMenu = (state: boolean) => updateControlPanel('playlistMenu', state);
-    const setFolderMenu =   (state: boolean) => updateControlPanel('folderMenu', state);
-    const setShuffle =      (state: boolean) => updateControlPanel('shuffle', state);
-    const setDeleteMenu =   (state: boolean) => updateControlPanel('deleteMenu', state);
-    const setEditMenu =     (state: boolean) => updateControlPanel('editMenu', state);
+    
+    const setShuffle = (state: boolean) => updateControlPanel('shuffle', state);
+    const setMoreMenu = (state: boolean) => updateControlPanel('moreMenu', state);
+    
 
     const isPlaylistInLibrary = useMemo(
         () => libraryPlaylists.findIndex(item => item.id === playlist?.id) !== -1,
@@ -90,18 +59,14 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
         [user, playlist]
     )
 
-    const findFolderIdByPlaylist = useCallback(() => {
-        const folder = folders.find(folder => 
-            folder.items.some(item => item.id === playlist?.id)
-        );
-
-        return folder?.id || null;
-    }, [folders, playlist]);
-
     const handlePlay = async () => {
         try {
-            await adapter.play({ context_uri: playlist?.uri ?? "" });
-            adapter.toggleShuffle(controlPanel.shuffle);
+            if (adapter.getContextURI() === playlist?.uri) {
+                await adapter.resume();
+            } else {
+                await adapter.play({ context_uri: playlist?.uri ?? "" });
+                adapter.toggleShuffle(controlPanel.shuffle);
+            }
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
@@ -132,234 +97,50 @@ export const PlaylistControlPanel: FC<IPlaylistControlPanel> = ({ playlist }) =>
         }
     }
 
-    const addToNewPlaylist = async () => {
-        try {
-            if (!user || !playlist) throw new Error("User or playlist doesn't exist");
-
-            const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
-                userId: user.id,
-                body: {
-                    name: "New Playlist #" + libraryPlaylists.length,
-                }
-            })).unwrap();
-
-            if (newPlaylist) {
-                const playlistTrackURIs = playlist.tracks.items
-                    .map(({ track }) => track.uri)
-                    .filter(item => item !== undefined);
-
-
-
-                await addItemsToPlaylist(newPlaylist.id, [...playlistTrackURIs], 0);
-
-                navigate(`/playlists/${newPlaylist.id}`);
-                setPlaylistMenu(false);
-            }
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error("ADD-TO-NEW-PLAYLIST", e);
-        }
-    }
-
-    const addToPlaylist = async (playlistId: string) => {
-        try {
-            if (!playlistId || !playlist) throw new Error("Playlist doesn't exist");
-
-            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
-
-            const notAddedTrackURIs = playlist.tracks.items
-                .filter(({ track }) => playlistItems.findIndex(item => item.id === track.id) === -1)
-                .map(({ track }) => track.uri)
-                .filter(uri => uri !== undefined);
-            
-            
-            if (notAddedTrackURIs.length > 0 && notAddedTrackURIs.length <= 100) {
-                await addItemsToPlaylist(playlistId, [...notAddedTrackURIs], 0);
-                
-                setPlaylistMenu(false);
-                toast("The songs from the playlist have been added to this playlist.");
-            } else if (notAddedTrackURIs.length > 100) {
-                toast.warn("Cannot handle this operation. Tracks in playlist are over 100.");                
-            } else {
-                toast.warn("All songs from the playlist is already in this playlist.");                
-            }            
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error("ADD-TO-PLAYLIST", e);
-        }
-    }
-    
-    const removeFromFolderHandle = () => {
-        if (!playlist) return;
-        if (findFolderIdByPlaylist() !== null) {
-            dispatch(removeFromFolder({
-                id: findFolderIdByPlaylist() ?? "", 
-                itemId: playlist.id ?? ""
-            }));
-        }
-    } 
-
-    const addToNewFolder = () => {
-        if (!playlist) return;
-        removeFromFolderHandle();
-
-        const newFolderId = dispatch(createFolder("Folder #" + folders.length + 1)).payload;
-        dispatch(addToFolder({
-            id: newFolderId, 
-            item: playlist
-        }));
-        navigate(`/folders/${newFolderId}`);
-    }
-    
-    const addToFolderHandle = (folderID: string) => {
-        if (!playlist) return;
-        removeFromFolderHandle();        
-
-        dispatch(addToFolder({
-            id: folderID,
-            item: playlist
-        }))
-
-        toast.info("The playlist has been moved to this folder.")
-    }
-
-    const renderFolders = (items: IFolder[]) => {
-        return items.map(folder => {
-            if (folder.id !== findFolderIdByPlaylist()) return (
-                <button 
-                    key={folder.id} 
-                    className={styles["menu-folders-button"]}
-                    onClick={() => addToFolderHandle(folder.id)}
-                >
-                    <FolderIcon width={40} height={40} />                
-                    <Description>
-                        {folder.name ?? ""}
-                    </Description>
-                </button>
-            )
-        });
-    }
-
     return (
-        <>
-            <DragDownMenu
-                isOpen={controlPanel.moreMenu} 
-                setIsOpen={setMoreMenu}>
-                <div className={styles["menu-content"]}>
-                    <button 
-                        className={styles["menu-button"]}
-                        onClick={() => setPlaylistMenu(true)}    
+        <div className={styles["playlist-control-panel"]}>
+            <div className={styles["control-panel-button-container"]}>
+                <button 
+                    className={styles["control-panel-button"]} 
+                    onClick={async () => await handlePlay()}
                     >
-                        <AddToPlaylist width={40} height={40} />
-                        <Paragraph>Add to playlist</Paragraph>
-                    </button>
-                    <button 
-                        className={styles["menu-button"]}
-                        onClick={() => setFolderMenu(true)}    
-                    >
-                        <FolderIcon width={40} height={40} />
-                        <Paragraph>Add to folder</Paragraph>
-                    </button>
-                    {isUserOwner
-                    ?
-                    <>
-                        <button 
-                            className={styles["menu-button"]}
-                            onClick={() => setEditMenu(true)}    
-                        >
-                            <Edit width={40} height={40} />
-                            <Paragraph>Edit details</Paragraph>
-                        </button>
-                        <button 
-                            className={styles["menu-button"]}
-                            onClick={() => setDeleteMenu(true)}    
-                        >
-                            <RemoveIcon width={40} height={40} />
-                            <Paragraph>Delete</Paragraph>
-                        </button>
-                    </>
-                    : null}
-                </div>
-            </DragDownMenu>
-            <PlaylistMenu 
-                isOpen={controlPanel.playlistMenu}
-                setIsOpen={setPlaylistMenu}
-                onCreatePlaylist={addToNewPlaylist}
-                onSelectPlaylist={addToPlaylist}
-                playlistId={playlist?.id}
-            />
-            <DragDownMenu
-                className={styles["menu-folders"]}
-                isOpen={controlPanel.folderMenu}
-                setIsOpen={setFolderMenu}
-            >
-                <div className={styles["menu-folders-body"]}>
-                    <FilledButton onClick={addToNewFolder}>
-                        <Paragraph>
-                            Add to new folder
-                        </Paragraph>
-                    </FilledButton>     
-                    {findFolderIdByPlaylist() !== null &&
-                    <OutlinedButton onClick={removeFromFolderHandle}>
-                        <Paragraph>
-                            Remove from folders
-                        </Paragraph>
-                    </OutlinedButton>}
-                    <div className={styles["menu-folders-content"]}>
-                        {renderFolders(folders)}
-                    </div>
-                </div>
-            </DragDownMenu>
-            <DeleteMenu 
-                id={playlist?.id ?? ""}
-                isOpen={controlPanel.deleteMenu}
-                setIsOpen={setDeleteMenu}
-                onDelete={removeFromFolderHandle}
-            />
-            <EditMenu 
-                playlist={playlist}
-                isOpen={controlPanel.editMenu}
-                setIsOpen={setEditMenu}
-            />  
-            <div className={styles["playlist-control-panel"]}>
-                <div className={styles["control-panel-button-container"]}>
-                    <button 
-                        className={styles["control-panel-button"]} 
-                        onClick={async () => await handlePlay()}
-                        >
-                        {adapter.getContextURI() === playlist?.uri ?
-                        <Pause width={60} height={60} /> :
-                        <Play width={60} height={60} />}
-                    </button>
-                    <button 
-                        className={clsx(
-                            styles["control-panel-button"],
-                            controlPanel.shuffle && styles["shuffle"],
-                        )} 
-                        onClick={toggleShuffle}
-                    >
-                        <Shuffle width={50} height={50} />
-                    </button>
-                    {!isUserOwner 
-                    &&
-                    <button
-                        className={clsx(
-                            styles["control-panel-button"],
-                            isPlaylistInLibrary && styles["active"]
-                        )}
-                        onClick={async () => await savePlaylist()}
-                    >
-                        <AddIcon width={50} height={50} className={styles["icon"]} />
-                        <CheckFilled width={50} height={50} className={styles["icon__active"]} />
-                    </button>}
-                    <button
-                        className={styles["control-panel-button"]}
-                        onClick={() => setMoreMenu(true)}
-                    >
-                        <More width={50} height={50} />
-                    </button>
-                </div>
+                    {adapter.getContextURI() === playlist?.uri && adapter.getIsPlaying() ?
+                    <Pause width={60} height={60} /> :
+                    <Play width={60} height={60} />}
+                </button>
+                <button 
+                    className={clsx(
+                        styles["control-panel-button"],
+                        controlPanel.shuffle && styles["shuffle"],
+                    )} 
+                    onClick={toggleShuffle}
+                >
+                    <Shuffle width={50} height={50} />
+                </button>
+                {!isUserOwner 
+                &&
+                <button
+                    className={clsx(
+                        styles["control-panel-button"],
+                        isPlaylistInLibrary && styles["active"]
+                    )}
+                    onClick={async () => await savePlaylist()}
+                >
+                    <AddIcon width={50} height={50} className={styles["icon"]} />
+                    <CheckFilled width={50} height={50} className={styles["icon__active"]} />
+                </button>}
+                <button
+                    className={styles["control-panel-button"]}
+                    onClick={() => setMoreMenu(!controlPanel.moreMenu)}
+                >
+                    <MoreMenu 
+                        isOpen={controlPanel.moreMenu} 
+                        setIsOpen={setMoreMenu} 
+                        playlist={playlist} 
+                    />
+                    <More width={50} height={50} />
+                </button>
             </div>
-        </>
+        </div>
     )
 }

@@ -1,12 +1,36 @@
+@use "app/styles/breakpoints" as *;
+
+.context-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    display: none;
+    border-radius: 10px;
+    max-height: 64vh;
+    overflow: hidden;
+    background: var(--bg-secondary);
+
+    &.active {
+        display: block;
+    }
+}
+
 .menu {
     &-container {
-        padding: 20px 12px 54px ;
         width: 100%;
+        
+        @media (min-width: $desktop) {
+            padding: 20px 12px 54px;
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 12px;
+        }
     }
     
     &-title {
         width: fit-content;
-        color: #ffffff;
+        color: var(--fg-primary);
         margin: 0 auto 22px;
     }
     
@@ -48,6 +72,6 @@
         justify-content: space-between;
     }
     &-text {
-        color: #ffffff;
+        color: var(--fg-primary);
     }
 }

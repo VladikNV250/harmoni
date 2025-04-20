@@ -1,0 +1,11 @@
+.library-items {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 20px 15px 0;
+}
+
+.library-empty {
+    color: var(--fg-primary);
+}

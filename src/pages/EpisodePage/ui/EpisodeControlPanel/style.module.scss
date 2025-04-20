@@ -1,11 +1,17 @@
+@use "app/styles/breakpoints" as *;
+
 .episode-control-panel {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+    @media (min-width: $desktop) {
+        margin-bottom: 30px;       
+    }
 
     .control-panel-button {
+        position: relative;
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: 1fr;

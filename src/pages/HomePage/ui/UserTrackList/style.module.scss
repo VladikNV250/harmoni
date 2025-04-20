@@ -1,11 +1,25 @@
+@use "app/styles/breakpoints" as *;
+
 .usertracks-container {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     gap: 10px;
     margin-top: 13px;
     margin-bottom: 30px;
+    padding: 0 15px;
+
+    :nth-child(7),
+    :nth-child(8) { display: none; }
+
+    @media (min-width: $desktop) {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+
+        :nth-child(7),
+        :nth-child(8) { display: block; }
+    }
 }
 
 .usertrack-card {
@@ -17,7 +31,6 @@
         cursor: pointer;
         .card-button { opacity: 1; }
     }
-    
 }
 
 .card {

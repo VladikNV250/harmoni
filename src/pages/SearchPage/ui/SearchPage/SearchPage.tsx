@@ -2,7 +2,6 @@ import {
     ChangeEvent,
     FC, 
     useEffect, 
-    useState
 } from "react";
 import { 
     Loader,
@@ -18,8 +17,10 @@ import {
 import { 
     getSeveralBrowseCategories, 
     searchForItemThunk, 
+    searchSlice, 
     selectBrowseCategories,
-    selectSearchLoading, 
+    selectSearchLoading,
+    selectSearchQuery, 
 } from "features/search";
 import { ICategory } from "shared/api/category";
 import { BrowseCategory } from "../BrowseCategory/BrowseCategory";
@@ -37,8 +38,10 @@ import {
     selectUser, 
     selectUserLoading 
 } from "entities/user";
-import { fetchPlaybackState } from "entities/playback/api/playback";
-import { usePlaybackAdapter } from "entities/playback";
+import { 
+    fetchPlaybackState, 
+    usePlaybackAdapter 
+} from "entities/playback";
 import styles from "./style.module.scss";
 
 
@@ -47,8 +50,9 @@ const SearchPage: FC = () => {
     const categories = useAppSelector(selectBrowseCategories);
     const searchLoading = useAppSelector(selectSearchLoading);
     const libraryLoading = useAppSelector(selectLibraryLoading);
-    const [value, setValue] = useState("");
-    const debouncedValue = useDebounce(value, 300);
+    const query = useAppSelector(selectSearchQuery);
+    const { setQuery } = searchSlice.actions;
+    const debouncedValue = useDebounce(query, 500);
     const { setApiPlayback } = usePlaybackAdapter();
     const user = useAppSelector(selectUser);
     const userLoading = useAppSelector(selectUserLoading);
@@ -91,7 +95,7 @@ const SearchPage: FC = () => {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        setValue(value);
+        dispatch(setQuery(value));
     }
 
 
@@ -100,7 +104,7 @@ const SearchPage: FC = () => {
             <header className={styles["search-header"]}>
                 <SearchInput  
                     placeholder="What do you want to play?"
-                    value={value}
+                    value={query}
                     onChange={handleChange}
                 />
             </header>
@@ -124,8 +128,7 @@ const SearchPage: FC = () => {
                     {renderCategories(categories)}
                 </div>
             </div>
-            }
-            
+            }     
         </div>
     )
 }

@@ -1,7 +1,8 @@
 import { FC, useCallback, useEffect } from "react";
 import { 
-    DragDownMenu, 
-    Paragraph 
+    BottomSheet,
+    ContextMenu,
+    MenuButton, 
 } from "shared/ui";
 import { 
     AddIcon, 
@@ -10,16 +11,18 @@ import {
     Album, 
     ArtistIcon, 
     CheckFilled, 
-    RemoveIcon 
+    Like, 
+    LikeFilled, 
+    RemoveIcon, 
 } from "shared/assets";
 import { 
-    Link, 
     useNavigate 
 } from "react-router";
 import { 
     useAppDispatch, 
     useAppSelector, 
-    useControlPanel 
+    useControlPanel, 
+    useWindowDimensions
 } from "shared/lib";
 import { 
     ISimplifiedTrack, 
@@ -37,14 +40,15 @@ import {
 } from "shared/api/playlist";
 import { 
     createPlaylistThunk, 
+    getLikedTracks, 
     selectSavedPlaylists 
 } from "features/library";
-import { ISimplifiedArtist } from "shared/api/artist";
 import { selectUser } from "entities/user";
 import { toast } from "react-toastify";
-import { checkLikedTracks } from "shared/api/user";
+import { checkLikedTracks, removeTracksFromLibrary, saveTracksToLibrary } from "shared/api/user";
 import { PlaylistMenu } from "entities/playlist";
 import styles from "./style.module.scss";
+import { ArtistMenu } from "entities/artist";
 
 
 interface ITrackMenu {
@@ -61,6 +65,7 @@ export const TrackMenu: FC<ITrackMenu> = ({ isOpen, setIsOpen, track, playlistId
     const navigate = useNavigate();
     const user = useAppSelector(selectUser);
     const libraryPlaylists = useAppSelector(selectSavedPlaylists);
+    const { width } = useWindowDimensions();
     const { controlPanel, updateControlPanel } = useControlPanel({
         playlistMenu: false,
         artistMenu: false,
@@ -78,6 +83,22 @@ export const TrackMenu: FC<ITrackMenu> = ({ isOpen, setIsOpen, track, playlistId
             }
         })()
     }, [isOpen, id, setIsTrackLiked]);
+
+    const saveTrack = async () => {
+        try {
+            if (controlPanel.isTrackLiked) {
+                await removeTracksFromLibrary([id ?? ""]);
+                toast.info("The track have been removed from the library.");
+            } else {
+                await saveTracksToLibrary([id ?? ""]);
+                toast.info("The track have been added to the library.");
+            }
+            dispatch(getLikedTracks());
+        } catch (e) {
+            toast.error("Something went wrong. Try to reload the page.")
+            console.error("PLAY", e);
+        }
+    }
 
     const addItemToQueueHandle = async () => {
         try {
@@ -97,7 +118,7 @@ export const TrackMenu: FC<ITrackMenu> = ({ isOpen, setIsOpen, track, playlistId
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
                 body: {
-                    name: "New Playlist #" + libraryPlaylists.length,
+                    name: "New Playlist #" + (libraryPlaylists.length + 1),
                 }
             })).unwrap();
     
@@ -145,100 +166,156 @@ export const TrackMenu: FC<ITrackMenu> = ({ isOpen, setIsOpen, track, playlistId
         }
     }
 
-    const renderArtists = (artists: ISimplifiedArtist[]) => {
-        return artists.map(artist => 
-            <Link 
-                key={artist.id} 
-                to={`/artists/${artist.id}`}
-                className={styles["menu-link"]}
-                onClick={() => setIsOpen(false)}
-            >
-                <ArtistIcon width={40} height={40} />
-                {artist.name}
-            </Link>
-        )
-    }
-
     return (
+        width >= 768
+        ?
+        <ContextMenu
+            className={styles["track-menu"]}
+            isMenuOpen={isOpen}
+            setIsMenuOpen={setIsOpen}
+            hideMainContent={(controlPanel.playlistMenu || controlPanel.artistMenu)}
+            hasNested
+            additionalElements={[
+                <PlaylistMenu 
+                    key={"track-playlist"}
+                    isOpen={controlPanel.playlistMenu}
+                    setIsOpen={setPlaylistMenu}
+                    onSelectPlaylist={addToPlaylist}
+                    onCreatePlaylist={addToNewPlaylist}
+                    isNested
+                />,
+                <ArtistMenu 
+                    key={"track-artist"}
+                    artists={artists}
+                    isOpen={controlPanel.artistMenu}
+                    setIsOpen={() => {
+                        setArtistMenu(false);
+                        setPlaylistMenu(false);
+                    }}
+                />
+            ]}
+        >
+            <MenuButton 
+                Icon={AddToPlaylist}
+                text="Add to playlist"
+                hasNestedMenu
+                onClick={() => {
+                    setPlaylistMenu(true)
+                    setArtistMenu(false);
+                }}
+            />
+            {playlistId &&
+            <MenuButton 
+                Icon={RemoveIcon}
+                text="Remove from this playlist"
+                onClick={async () => removeFromPlaylist()}
+            />}
+            <MenuButton 
+                Icon={AddToQueue}
+                text="Add to queue"
+                onClick={async () => await addItemToQueueHandle()}
+            />
+            {album?.id &&
+            <MenuButton 
+                Icon={Album}
+                text="Go to album"
+                buttonType="link-button"
+                to={`/albums/${album.id}`}
+                onClick={() => setIsOpen(false)}
+            />}
+            {(track.artists?.length ?? 0) > 1 
+            ?
+                <MenuButton 
+                    Icon={ArtistIcon}
+                    text="Go to artist"
+                    hasNestedMenu
+                    onClick={() => {
+                        setArtistMenu(true);
+                        setPlaylistMenu(false);
+                    }}
+                />
+            :
+                <MenuButton 
+                    Icon={ArtistIcon}
+                    text="Go to artist"
+                    buttonType="link-button"
+                    to={`/artists/${track.artists?.[0]?.id ?? ""}`}
+                    onClick={() => setIsOpen(false)}                        
+                />
+            }
+            <MenuButton 
+                Icon={controlPanel.isTrackLiked ?
+                    LikeFilled :
+                    Like
+                }
+                text={controlPanel.isTrackLiked ?
+                    "Remove from library" :
+                    "Save to library"
+                }
+                onClick={async () => await saveTrack()}
+            />
+        </ContextMenu>
+        :
         <div className={styles["menu-wrapper"]} onClick={e => e.stopPropagation()}>
-            <DragDownMenu isOpen={isOpen} setIsOpen={setIsOpen}>
-                <div className={styles["menu-content"]}>
-                    <button 
-                        className={styles["menu-button"]}
-                        onClick={() => setPlaylistMenu(true)}    
-                    >
-                        <AddToPlaylist width={40} height={40} />
-                        <Paragraph>Add to playlist</Paragraph>
-                    </button>
-                    {playlistId &&
-                    <button 
-                        className={styles["menu-button"]}
-                        onClick={async () => await removeFromPlaylist()}    
-                    >
-                        <RemoveIcon width={40} height={40} />
-                        <Paragraph>Remove from this playlist</Paragraph>
-                    </button>}
-                    
-                    <button 
-                        className={styles["menu-button"]}
-                        onClick={() => setPlaylistMenu(true)}    
-                    >
-                        {controlPanel.isTrackLiked 
-                        ?
-                        <>
-                            <CheckFilled width={40} height={40} />
-                            <Paragraph>Remove from your Liked Songs</Paragraph>
-                        </>
-                        :
-                        <>
-                            <AddIcon width={40} height={40} />
-                            <Paragraph>Save to your Liked Songs</Paragraph>
-                        </>}
-                    </button>
-                    <button 
-                        className={styles["menu-button"]} 
-                        onClick={async () => await addItemToQueueHandle()}
-                    >
-                        <AddToQueue width={40} height={40} />
-                        <Paragraph>Add to queue</Paragraph>
-                    </button>
-                    {album?.id &&
-                    <Link 
-                        to={`/albums/${album.id}`} 
-                        className={styles["menu-link"]}
-                    >
-                        <Album width={40} height={40} />
-                        <Paragraph>Go to album</Paragraph>
-                    </Link>}
-                    {artists.length > 1 
-                    ?
-                        <button 
-                            className={styles["menu-button"]}
-                            onClick={() => setArtistMenu(true)}
-                        >
-                            <ArtistIcon width={40} height={40} />
-                            <Paragraph>Go to artist</Paragraph>
-                        </button>
-                    : artists?.[0]?.id ?
-                        <Link 
-                            to={`/artists/${artists?.[0].id}`}
-                            className={styles["menu-link"]}
-                        >
-                            <ArtistIcon width={40} height={40} />
-                            <Paragraph>Go to artist</Paragraph>
-                        </Link>
-                    : null}
-                </div>
-            </DragDownMenu>
-            <DragDownMenu 
-                className={styles["menu-artists"]} 
-                isOpen={controlPanel.artistMenu} 
-                setIsOpen={setArtistMenu}
+            <BottomSheet
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
             >
-                <div className={styles["menu-artists-content"]}>
-                    {renderArtists(artists)}
-                </div>
-            </DragDownMenu>
+                <MenuButton 
+                    Icon={AddToPlaylist}
+                    text={"Add to playlist"}
+                    onClick={() => setPlaylistMenu(true)}
+                />
+                {playlistId &&
+                <MenuButton
+                    Icon={RemoveIcon}
+                    text={"Remove from this playlist"}
+                    onClick={async () => await removeFromPlaylist()}
+                />}
+                <MenuButton
+                    Icon={controlPanel.isTrackLiked ?
+                        CheckFilled :
+                        AddIcon
+                    }
+                    text={controlPanel.isTrackLiked ?
+                        "Remove from your Liked Songs" :
+                        "Save to your Liked Songs"
+                    }
+                    onClick={async () => await saveTrack()}
+                />
+                <MenuButton
+                    Icon={AddToQueue}
+                    text={"Add to queue"}
+                    onClick={async () => await addItemToQueueHandle()}
+                />
+                {album?.id &&
+                <MenuButton
+                    Icon={Album}
+                    text={"Go to album"}
+                    buttonType={"link-button"}
+                    to={`/albums/${album.id}`}
+                />}
+                {artists.length > 1 
+                ?
+                    <MenuButton
+                        Icon={ArtistIcon}
+                        text={"Go to artist"}
+                        onClick={() => setArtistMenu(true)}
+                    />
+                : artists?.[0]?.id ?
+                    <MenuButton
+                        Icon={ArtistIcon}
+                        text="Go to artist"
+                        buttonType="link-button"
+                        to={`/artists/${artists?.[0].id}`}
+                    />
+                : null}
+            </BottomSheet>
+            <ArtistMenu 
+                isOpen={controlPanel.artistMenu}
+                setIsOpen={setArtistMenu}
+                artists={artists}
+            />
             <PlaylistMenu 
                 isOpen={controlPanel.playlistMenu}
                 setIsOpen={setPlaylistMenu}

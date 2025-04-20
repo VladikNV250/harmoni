@@ -44,8 +44,10 @@ import {
 } from "features/sort";
 import { IFolder } from "entities/folder";
 import { PlaylistPreview } from "entities/playlist";
-import { usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
+import { 
+    fetchPlaybackState, 
+    usePlaybackAdapter 
+} from "entities/playback";
 import { FolderControlPanel } from "../FolderControlPanel/FolderControlPanel";
 import styles from "./style.module.scss";
 
@@ -152,18 +154,18 @@ const FolderPage: FC = () => {
     return (
         <div className={styles["folder"]}>
             <Loader loading={userLoading || libraryLoading} />
-            <SortMenu<TPlaylistSortBy> 
-                sort={sort}
-                setSort={setSort}
-                sortTypes={PLAYLIST_SORT_TYPES}
-            />
             <FolderControlPanel folder={folder} />
             <div className={styles["folder-body"]}>
                 <header className={styles['folder-body-header']}>
                     <button 
                         className={styles['folder-body-button']}
-                        onClick={() => setSort(prevState => ({...prevState, isOpen: true}))}
+                        onClick={() => setSort(prevState => ({...prevState, isOpen: !sort.isOpen}))}
                     >
+                        <SortMenu<TPlaylistSortBy> 
+                            sort={sort}
+                            setSort={setSort}
+                            sortTypes={PLAYLIST_SORT_TYPES}
+                        />
                         <Sort width={40} height={40} />
                         <Description>
                             {sort.by}

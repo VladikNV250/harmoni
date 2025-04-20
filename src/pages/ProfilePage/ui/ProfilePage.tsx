@@ -1,22 +1,25 @@
 import { 
+    CSSProperties,
     FC, 
     useEffect 
 } from "react";
 import { 
     useAppDispatch, 
-    useAppSelector 
+    useAppSelector, 
+    useColor
 } from "shared/lib";
 import { 
     getUserInfo, 
     selectUser, 
-    selectUserError, 
     selectUserLoading  
 } from "entities/user";
 import { 
     Description, 
     Loader, 
+    OutlinedButton, 
     Paragraph, 
     Subtitle, 
+    Switch, 
     Title 
 } from "shared/ui";
 import { 
@@ -24,136 +27,173 @@ import {
     selectFeedSettings 
 } from "entities/feed";
 import { 
-    AddFriend, 
-    Edit, 
     Logo, 
     PlaceholderProfileImage, 
-    Share 
 } from "shared/assets";
-import { usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
+import { 
+    fetchPlaybackState, 
+    usePlaybackAdapter 
+} from "entities/playback";
+import { 
+    getLibraryArtists, 
+    getLibraryPlaylists, 
+    selectFollowedArtists, 
+    selectLibraryLoading, 
+    selectSavedPlaylists 
+} from "features/library";
+import { useNavigate } from "react-router";
+import { useTheme } from "entities/theme";
+import clsx from "clsx";
 import styles from "./style.module.scss";
 
 
 const ProfilePage: FC = () => {
+    const { theme, toggleTheme } = useTheme();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const libraryPlaylists = useAppSelector(selectSavedPlaylists);
+    const libraryArtists = useAppSelector(selectFollowedArtists);
+    const libraryLoading = useAppSelector(selectLibraryLoading);
     const user = useAppSelector(selectUser);
-    const loading = useAppSelector(selectUserLoading);
-    const error = useAppSelector(selectUserError);
+    const userLoading = useAppSelector(selectUserLoading);
     const feedSettings = useAppSelector(selectFeedSettings);
     const { setUpdateAfterEveryReload } = feedSlice.actions;
     const { setApiPlayback } = usePlaybackAdapter();
+    const color = useColor(user?.images?.[0]?.url ?? PlaceholderProfileImage, true, theme);
+
+    const logoutHandler = () => {
+        localStorage.clear();  
+        navigate("/login");
+    }
 
     useEffect(() => {
         dispatch(getUserInfo());
+        dispatch(getLibraryPlaylists());
+        dispatch(getLibraryArtists());
         (async () => {
             setApiPlayback?.(await fetchPlaybackState());
         })()
     }, [dispatch, setApiPlayback])
 
     return (
-        <div className={styles["profile"]}>
-            <Loader loading={loading} />
-            {user &&
-            <div className={styles["user-info"]}>
+        <div className={styles["profile"]} style={{"--color": color} as CSSProperties}>
+            <Loader loading={userLoading || libraryLoading} />
+            <div 
+                className={clsx(
+                    styles["profile-info"],
+                    theme && styles[theme]
+                )}
+            >
                 <img 
-                    src={user.images[0]?.url ?? PlaceholderProfileImage} 
-                    className={styles["user-avatar"]} 
+                    src={user?.images[0]?.url ?? PlaceholderProfileImage} 
+                    className={styles["profile-info-avatar"]} 
                 />
-                <div className={styles["user-content"]}>
-                    <div className={styles["user-header"]}>
-                        <Title className={styles["user-name"]}>
-                            {user.display_name ?? ""}
+                <div className={styles["profile-info-content"]}>
+                    <div className={styles["profile-info-header"]}>
+                        <Title className={styles["profile-info-name"]}>
+                            {user?.display_name ?? ""}
                         </Title>
-                        <button className={styles["user-button"]}>
-                            <Edit width={40} height={40} className={styles["user-icon"]} />
-                        </button>
-                        <button className={styles["user-button"]}>
-                            <Share width={40} height={40} className={styles["user-icon"]} />
-                        </button>
                     </div>
-                    <div className={styles["user-body"]}>
-                        {user.followers?.total > 0 &&
+                    <div className={styles["profile-info-body"]}>
+                        {(user?.followers?.total ?? 0) > 0 &&
                         <>
-                            <p className={styles["user-text"]}>
+                            <p className={styles["profile-info-text"]}>
                                 <Description className={styles["white"]}>
-                                    {`${user.followers.total}`}
+                                    {`${user?.followers.total ?? 0}`}
                                 </Description>
                                 <Description>followers</Description>
                             </p>
-                            <p className={styles["user-text"]}>&#x2022;</p>
+                            <p className={styles["profile-info-text"]}>&#x2022;</p>
                         </>
-                        
                         }
-                        <p className={styles["user-text"]}>
+                        {((libraryPlaylists.length ?? 0) > 0 || (libraryArtists.length ?? 0) > 0) &&
+                        <p className={styles["profile-info-text"]}>
                             <Description className={styles["white"]}>
-                                30
+                                {`${libraryPlaylists.length + libraryArtists.length}`}
                             </Description>
                             <Description>following</Description>
                         </p>
+                        }
                     </div>
-                    <Description className={styles["user-id"]}>
-                        {user.id}
+                    <Description className={styles["profile-info-id"]}>
+                        {user?.id ?? ""}
                     </Description>
                 </div>
-            </div>}
-            {user && 
-            <div className={styles["plan-info"]}>
-                <div className={styles["plan-header"]}>
-                    <img src={Logo} className={styles["plan-logo"]} />
-                    <p className={styles["plan-title"]}>Current Plan</p>
-                </div>
-                <Subtitle className={styles["plan-status"]}>
-                    {user.product === "premium" ? "Premium - Individual" : "Free"}
-                </Subtitle>
-                <Description className={styles["plan-price"]}>
-                    {user.product === "premium" ? "$10.99 / month" : "$0.0 / month"}
-                </Description>
-            </div>}
-            <div className={`${styles["friends-info"]} ${styles["friends"]}`}>
-                <div className={styles["friends-header"]}>
-                    <p className={styles["friends-title"]}>
-                        Friends
-                    </p>
-                    <button className={styles["friends-button"]}>
-                        <AddFriend width={40} height={40} className={styles["friends-icon"]} />
-                    </button>
-                </div>
-                <Paragraph className={styles["friends-empty"]}>
-                    You haven’t added any friends.
-                </Paragraph>
-                {/* <div className="friends-content">
-                    <div className="friend-container friend">
-                        <img src={placeholderProfileImage} className="friend-avatar" />
-                        <div className="friend-body">
-                            <Text className="friend-name">FriendlyMusicListener</Text>
-                            <div className="friend-content">
-                                <Playing width={30} height={30} className="friend-icon" />
-                                <div className="song-container">
-                                    <Description className="song-name">Get Lucky</Description>
-                                    <p className="song-dot">&#x2022;</p>
-                                    <Description className="song-artist">Daft Punk</Description>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
             </div>
-            <button 
-                className={styles["button"]} 
-                onClick={() => localStorage.clear()}
-            >
-                Clear Local Storage
-            </button>
-            <button 
-                className={styles["button"]} 
-                onClick={() => 
-                    dispatch(setUpdateAfterEveryReload(!feedSettings.updateAfterEveryReload)
+            <div 
+                className={clsx(
+                    styles["profile-plan-info"],
+                    theme && styles[theme]
                 )}
             >
-                Update After Every Reload {`${feedSettings.updateAfterEveryReload}`}
-            </button>
-            {error && error.messageError}
+                <div className={styles["profile-plan-header"]}>
+                    <img src={Logo} className={styles["profile-plan-logo"]} />
+                    <p className={styles["profile-plan-title"]}>Current Plan</p>
+                </div>
+                <Subtitle className={styles["profile-plan-status"]}>
+                    {user?.product === "premium" ? "Premium - Individual" : "Free"}
+                </Subtitle>
+                <Description className={styles["profile-plan-price"]}>
+                    {user?.product === "premium" ? "$10.99 / month" : "$0.0 / month"}
+                </Description>
+            </div>
+            <div 
+                className={clsx(
+                    styles["profile-settings"],
+                    theme && styles[theme]
+                )}
+            >
+                <header className={styles["profile-settings-header"]}>
+                    <Title className={styles["profile-settings-title"]}>
+                        Settings
+                    </Title>
+                </header>
+                <div className={styles["profile-settings-body"]}>
+                    <div className={styles["profile-settings-item"]}>
+                        <Paragraph>
+                            Theme
+                        </Paragraph>
+                        <div className={styles["profile-settings-theme"]}>
+                            <button 
+                                className={clsx(
+                                    styles["profile-settings-theme-button"], 
+                                    theme === "light" && styles["active"]
+                                )}
+                                onClick={() => toggleTheme()}
+                            >
+                                <Description>
+                                    Light
+                                </Description>
+                            </button>
+                            <button 
+                                className={clsx(
+                                    styles["profile-settings-theme-button"], 
+                                    theme === "dark" && styles["active"]
+                                )}
+                                onClick={() => toggleTheme()}
+                            >
+                                <Description>
+                                    Dark
+                                </Description>
+                            </button>
+                        </div>
+                    </div>
+                    <div className={styles["profile-settings-item"]}>
+                        <Paragraph>
+                            Update feed after every reload
+                        </Paragraph>
+                        <Switch 
+                            active={feedSettings.updateAfterEveryReload}
+                            setActive={(active: boolean) => dispatch(setUpdateAfterEveryReload(active))}
+                        />
+                    </div>
+                    <OutlinedButton onClick={logoutHandler}>
+                        <Subtitle>
+                            Log Out
+                        </Subtitle>
+                    </OutlinedButton>
+                </div>
+            </div>
         </div>
     )
 }

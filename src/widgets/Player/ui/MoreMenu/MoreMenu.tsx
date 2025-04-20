@@ -1,207 +1,211 @@
-import { 
-    FC, 
-    MouseEvent 
-} from "react";
-import { 
-    Link, 
-    useNavigate 
-} from "react-router";
+import { FC } from "react";
 import { 
     AddToPlaylist, 
     AddToQueue, 
     Album, 
-    ArtistIcon, 
+    ArtistIcon,
+    Device,
+    Like,
+    LikeFilled,
+    Queue, 
 } from "shared/assets";
 import { 
-    useAppDispatch, 
-    useAppSelector 
+    useAppDispatch,
+    useAppSelector,
+    useWindowDimensions, 
 } from "shared/lib";
 import { 
-    DragDownMenu, 
-    Paragraph, 
+    BottomSheet,
+    ContextMenu,
+    MenuButton,
 } from "shared/ui";
-import { 
-    addItemToQueue, 
-    getUserQueue 
-} from "features/queue";
-import { 
-    createPlaylistThunk, 
-    selectSavedPlaylists 
-} from "features/library";
-import { 
-    addItemsToPlaylist, 
-    fetchPlaylistItems, 
-    IPlaylist 
-} from "shared/api/playlist";
+import { usePlaylistActions, useQueue } from "widgets/Player/lib/player/player";
 import { usePlaybackAdapter } from "entities/playback";
 import { playerSlice } from "widgets/Player/model/playerSlice";
-import { selectUser } from "entities/user";
-import { toast } from "react-toastify";
 import { PlaylistMenu } from "entities/playlist";
+import { ArtistMenu } from "entities/artist";
+import { selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
+import { selectUser } from "entities/user";
 import styles from "./style.module.scss";
 
 
 interface IMoreMenu {
-    readonly menus: Record<string, boolean>,
-    readonly openMenu: (whatOpen: string, openState?: boolean) => void,
+    readonly isLiked?: boolean,
+    readonly handleLike?: () => Promise<void>;
 }
 
-export const MoreMenu: FC<IMoreMenu> = ({ menus, openMenu }) => {
+export const MoreMenu: FC<IMoreMenu> = ({ isLiked, handleLike }) => {
     const dispatch = useAppDispatch();    
-    const navigate = useNavigate();
+    const openedMenu = useAppSelector(selectPlayerOpenedMenu);
     const { adapter } = usePlaybackAdapter();
-    const { toggleFullscreenMode } = playerSlice.actions;
-    const playlists = useAppSelector(selectSavedPlaylists);
+    const { toggleFullscreenMode, setOpenedMenu } = playerSlice.actions;
+    const { width } = useWindowDimensions();
     const user = useAppSelector(selectUser);
     
-    const addItemToQueueHandle = async (uri: string) => {
-        if (uri === "") return;
+    const addItemToQueueHandle = useQueue();
 
-        try {
-            await addItemToQueue(uri);
-            await dispatch(getUserQueue());
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error("ADD-ITEM-TO-QUEUE", e);
+    const { addToPlaylist, addToNewPlaylist } = usePlaylistActions({
+        onAddToNewPlaylist: () => {
+            dispatch(setOpenedMenu("none"));
+            dispatch(toggleFullscreenMode());
+        },
+        onAddToPlaylist: () => {
+            dispatch(setOpenedMenu("none"));
         }
-    }
-
-    const openArtistMenu = (e: MouseEvent) => {
-        e.stopPropagation();
-        openMenu("artistMenu", true);
-    }
-
-    const openPlaylistMenu = (e: MouseEvent) => {
-        e.stopPropagation();
-        openMenu("playlistMenu", true);
-    }
-
-    const addToNewPlaylist = async () => {
-        try {
-            const trackUri = adapter.getTrackURI();
-            if (!user || !trackUri) throw new Error("User or trackURI doesn't exist"); 
-            
-            const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
-                userId: user.id,
-                body: {
-                    name: "New Playlist #" + playlists.length,
-                }
-            })).unwrap();
-    
-            if (newPlaylist) {
-                await addItemsToPlaylist(newPlaylist.id, [trackUri], 0);
-    
-                navigate(`/playlists/${newPlaylist.id}`);
-                openMenu("moreMenu", false);
-                openMenu("playlistMenu", false);
-                dispatch(toggleFullscreenMode());
-            }
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error("ADD-TO-NEW-PLAYLIST", e);
-        }
-    }
-
-    const addToPlaylist = async (playlistId: string) => {
-        try {
-            const trackUri = adapter.getTrackURI();
-            const trackId = adapter.getTrackID();
-            if (!playlistId || !trackId || !trackUri) throw new Error("PlaylistID or trackID or trackURI doesn't exist");
-
-            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
-
-            if (playlistItems.findIndex(item => item.id === trackId) === -1) {
-                await addItemsToPlaylist(playlistId, [trackUri], 0);
-    
-                openMenu("moreMenu", false);
-                toast("The song added to this playlist.");
-            } else {
-                toast.warn("The song have been in this playlist already.");                
-            }
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error("ADD-TO-PLAYLIST", e);
-        }
-    }
-
-    const renderArtists = (artists: {name: string, id: string}[]) => {
-        return artists.map(artist => 
-            <Link 
-                key={artist.id} 
-                to={`/artists/${artist.id}`}
-                className={styles["menu-link"]}
-                onClick={() => {
-                    openMenu("moreMenu", false)
-                    dispatch(toggleFullscreenMode())
-                }}>
-                <ArtistIcon width={40} height={40} />
-                {artist.name}
-            </Link>
-        )
-    }
+    })
 
     return (
-        <>
-            <DragDownMenu isOpen={menus.moreMenu} setIsOpen={(state: boolean) => openMenu("moreMenu", state)}>
-                <div className={styles["menu-content"]}>
-                    <button 
-                        className={styles["menu-button"]}
-                        onClick={openPlaylistMenu}    
-                    >
-                        <AddToPlaylist width={40} height={40} />
-                        <Paragraph>Add to playlist</Paragraph>
-                    </button>
-                    <button 
-                        className={styles["menu-button"]} 
-                        onClick={async () => await addItemToQueueHandle(adapter.getTrackURI())}
-                    >
-                        <AddToQueue width={40} height={40} />
-                        <Paragraph>Add to queue</Paragraph>
-                    </button>
-                    <Link 
-                        to={adapter.getAlbumLink()} 
-                        className={styles["menu-link"]}
-                        onClick={() => dispatch(toggleFullscreenMode())}
-                    >
-                        <Album width={40} height={40} />
-                        <Paragraph>Go to album</Paragraph>
-                    </Link>
-                    {adapter.getArtists().length > 1 
-                    ?
-                        <button 
-                            className={styles["menu-button"]}
-                            onClick={openArtistMenu}
-                        >
-                            <ArtistIcon width={40} height={40} />
-                            <Paragraph>Go to artist</Paragraph>
-                        </button>
-                    :
-                        <Link 
-                            to={`/artists/${adapter.getArtists()?.[0]?.id}`}
-                            className={styles["menu-link"]}
-                            onClick={() => dispatch(toggleFullscreenMode())}
-                        >
-                            <ArtistIcon width={40} height={40} />
-                            <Paragraph>Go to artist</Paragraph>
-                        </Link>
-                    }
-                </div>
-            </DragDownMenu>
-            <DragDownMenu 
-                className={styles["menu-artists"]} 
-                isOpen={menus.artistMenu} 
-                setIsOpen={(state: boolean) => openMenu("artistMenu", state)}
-            >
-                <div className={styles["menu-artists-content"]}>
-                    {renderArtists(adapter.getArtists())}
-                </div>
-            </DragDownMenu>
+        width >= 768 
+        ?
+        <ContextMenu
+            className={styles["context-menu"]}
+            isMenuOpen={openedMenu === "more" || openedMenu === "artist" || openedMenu === "playlist"}
+            setIsMenuOpen={() => dispatch(setOpenedMenu("none"))}
+            hideMainContent={openedMenu === "playlist" || openedMenu === "artist"}
+            hasNested
+            additionalElements={[
+                <PlaylistMenu 
+                    key={"more-playlist"}
+                    isOpen={openedMenu === "playlist"}
+                    setIsOpen={() => dispatch(setOpenedMenu("more"))}
+                    onSelectPlaylist={addToPlaylist}
+                    onCreatePlaylist={addToNewPlaylist}
+                    isNested
+                />,
+                <ArtistMenu 
+                    key={"more-artist"}
+                    isOpen={openedMenu === "artist"}
+                    setIsOpen={() => dispatch(setOpenedMenu("more"))}
+                    artists={adapter.getArtists()}
+                />
+            ]}
+        >
+            <MenuButton 
+                Icon={AddToPlaylist}
+                text="Add to playlist"
+                onClick={() => dispatch(setOpenedMenu("playlist"))}
+                hasNestedMenu
+                disabled={user?.product !== "premium" || !adapter.checkPlayback()}
+            />
+            <MenuButton 
+                Icon={AddToQueue}
+                text="Add to queue"
+                onClick={async () => await addItemToQueueHandle(adapter.getTrackURI())}
+                disabled={user?.product !== "premium" || !adapter.checkPlayback()}
+            />
+            <MenuButton 
+                Icon={Album}
+                text="Go to album"
+                buttonType="link-button"
+                to={adapter.getAlbumLink()}
+                onClick={() => dispatch(setOpenedMenu("none"))}
+                disabled={user?.product !== "premium" || !adapter.checkPlayback()}
+            />
+            {adapter.getArtists().length > 1 
+            ?
+                <MenuButton 
+                    Icon={ArtistIcon}
+                    text="Go to artist"
+                    onClick={() => dispatch(setOpenedMenu("artist"))}
+                    hasNestedMenu
+                    disabled={user?.product !== "premium" || !adapter.checkPlayback()}
+                />
+            :
+                <MenuButton 
+                    Icon={ArtistIcon}
+                    text="Go to artist"
+                    buttonType='link-button'
+                    to={`/artists/${adapter.getArtists()?.[0]?.id}`}                            
+                    onClick={() => dispatch(setOpenedMenu("none"))}
+                    disabled={user?.product !== "premium" || !adapter.checkPlayback()}
+                />
+            }
+            <MenuButton 
+                className={styles["button-overflow"]}
+                Icon={isLiked ?
+                    LikeFilled :
+                    Like
+                }
+                text={isLiked ?
+                    "Remove from library" :
+                    "Save to library"
+                }
+                onClick={async () => await handleLike?.()}
+                disabled={user?.product !== "premium" || !adapter.checkPlayback()}
+            />
+            <MenuButton 
+                className={styles["button-overflow"]}
+                Icon={Device}
+                text="View available devices"
+                onClick={() => dispatch(setOpenedMenu("device"))}
+            />
+            <MenuButton 
+                className={styles["button-overflow"]}
+                Icon={Queue}
+                text="Open queue"
+                onClick={() => dispatch(setOpenedMenu("queue"))}
+                disabled={user?.product !== "premium" || !adapter.checkPlayback()}
+            />
+        </ContextMenu>
+        :
+        <BottomSheet
+            isOpen={openedMenu === "more" || openedMenu === "playlist" || openedMenu === "artist"}
+            setIsOpen={() => dispatch(setOpenedMenu("none"))}
+        >
+            <ArtistMenu
+                className={styles["artist-menu"]}
+                artists={adapter.getArtists()}
+                isOpen={openedMenu === "artist"}
+                setIsOpen={() => dispatch(setOpenedMenu("none"))}
+                />
             <PlaylistMenu 
-                isOpen={menus.playlistMenu}
-                setIsOpen={(state: boolean) => openMenu("playlistMenu", state)}
+                className={styles["playlist-menu"]}
+                isOpen={openedMenu === "playlist"}
+                setIsOpen={() => dispatch(setOpenedMenu("none"))}
                 onCreatePlaylist={addToNewPlaylist}
                 onSelectPlaylist={addToPlaylist}
             />
-        </>
+            <MenuButton
+                Icon={AddToPlaylist}
+                text="Add to playlist"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    dispatch(setOpenedMenu("playlist"))
+                }}
+                hasNestedMenu
+            />
+            <MenuButton
+                Icon={AddToQueue}
+                text="Add to queue"
+                onClick={async () => await addItemToQueueHandle(adapter.getTrackURI())}
+            />
+            <MenuButton
+                Icon={Album}
+                text="Go to album"
+                onClick={() => dispatch(toggleFullscreenMode())}
+                buttonType="link-button"
+                to={adapter.getAlbumLink()}
+            />
+            {adapter.getArtists().length > 1 
+            ?
+                <MenuButton
+                    Icon={ArtistIcon}
+                    text="Go to artist"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(setOpenedMenu("artist"));
+                    }}
+                />
+            :
+                <MenuButton
+                    Icon={ArtistIcon}
+                    text="Go to artist"
+                    onClick={() => dispatch(toggleFullscreenMode())}
+                    buttonType="link-button"
+                    to={`/artists/${adapter.getArtists()?.[0]?.id}`}
+                    hasNestedMenu
+                />
+            }
+        </BottomSheet>
     )
 }

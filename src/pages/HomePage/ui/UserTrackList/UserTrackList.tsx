@@ -19,7 +19,7 @@ export const UserTrackList: FC = () => {
 
     useEffect(() => {
         if (settings.updateAfterEveryReload || userTracks.items.length === 0) {
-            dispatch(getUserTopTracks({ limit: 6 }))
+            dispatch(getUserTopTracks({ limit: 8 }))
         }
     }, [dispatch])
 
@@ -34,13 +34,11 @@ export const UserTrackList: FC = () => {
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
-        }
-
-        
+        }        
     }
 
     const renderUserTracks = (items: ITrack[]) => {
-        return items.map(({album, name, artists, id, uri}) => 
+        return items.length > 0 && items.map(({album, name, artists, id, uri}) => 
             <div className={styles["usertrack-card"]} key={id}>
                 <div 
                     className={styles["card-content"]} 
@@ -72,9 +70,9 @@ export const UserTrackList: FC = () => {
     }
 
     return (
-        (userTracks.items.length > 0 && userTracks.showForUser) &&
+        ((userTracks?.items?.length ?? 0) > 0 && (userTracks?.showForUser ?? false)) &&
         <div className={styles["usertracks-container"]}>
-            {renderUserTracks(userTracks.items)}
+            {renderUserTracks(userTracks?.items ?? [])}
         </div>
     )
 }

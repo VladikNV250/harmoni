@@ -10,3 +10,8 @@ export const selectPlayerFullsreenMode = createSelector(
     selectBase,
     (state: IPlayerState) => state.fullscreenMode,
 )
+
+export const selectPlayerOpenedMenu = createSelector(
+    selectBase,
+    (state: IPlayerState) => state.openedMenu,
+)

@@ -1,34 +1,15 @@
-.menu {
-    &-content {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 30px 20px;
-    }
+@use "app/styles/breakpoints" as *;
 
-    &-button,
-    &-link {
-        max-width: 100%;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        text-align: left;
-        color: var(--fg-secondary);
-        
-        &:hover { color: var(--fg-primary); }
+.context-menu {
+    bottom: calc(100% + 1px);
+    right: calc(7px + 18px);
+    height: 340px;
 
-        > .button-icon { min-width: 40px; }
-    }        
+    .button-overflow {
+        display: grid;
 
-    &-artists {
-        background: var(--bg-main);
-        z-index: 11;
-
-        &-content {
-            padding: 10px;
-            > *:not(:last-child) {
-                margin-bottom: 5px;
-            }
+        @media (min-width: 1240px) {
+            display: none;
         }
-    }    
+    }
 }

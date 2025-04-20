@@ -184,7 +184,7 @@ const ProfilePage: FC = () => {
                         </Paragraph>
                         <Switch 
                             active={feedSettings.updateAfterEveryReload}
-                            setActive={active => dispatch(setUpdateAfterEveryReload(active))}
+                            setActive={(active: boolean) => dispatch(setUpdateAfterEveryReload(active))}
                         />
                     </div>
                     <OutlinedButton onClick={logoutHandler}>

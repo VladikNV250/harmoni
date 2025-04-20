@@ -41,6 +41,11 @@ export const selectFolders = createSelector(
     (state: ILibraryState) => state.folders,
 )
 
+export const selectLibraryFilter = createSelector(
+    selectBase,
+    (state: ILibraryState) => state.filter,
+)
+
 export const selectLibraryLoading = createSelector(
     selectBase,
     (state: ILibraryState) => state.loading,

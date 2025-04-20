@@ -20,7 +20,7 @@ const initialState: IFeedState = {
         showForUser: true,
     },
     settings: {
-        updateAfterEveryReload: false,
+        updateAfterEveryReload: true,
     }
 }
 

@@ -1,3 +1,5 @@
+@use "app/styles/breakpoints" as *;
+
 .artist {
     position: relative;
     display: inline-flex;
@@ -7,27 +9,32 @@
     max-width: 140px;
     min-width: 140px;
     transition: all .1s ease-in-out;
-    // max-width: 170px;
-    // min-width: 141px;
+    @media (min-width: $desktop) {
+        max-width: 170px;
+        min-width: 170px;
+    }
 
     &::before {
         content: "";
         width: 100%;
         height: 100%;
-        background: transparent;
+        background: var(--bg-main);
+        opacity: 0;
         position: absolute;
         top: 0;
         left: 0;
     }
+
     &:active {
         transform: scale(0.95);
+        
         &::before {
-            background: rgba($color: #000000, $alpha: 0.5);
+            opacity: 0.5;
         }
     }
+
     &:hover {
         cursor: pointer;
-        .artist-button { opacity: 1; }
     }
 
     &-image {

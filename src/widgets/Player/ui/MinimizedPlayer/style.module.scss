@@ -1,9 +1,15 @@
+@use "app/styles/breakpoints" as *;
+
 .minimized-player {
     width: 100%;
     position: fixed;
     bottom: 96px;
     left: 0;
     padding: 0 8px;
+    z-index: 8;
+    @media (min-width: $desktop) {
+        display: none;
+    }
 
     &-options {
         width: 100%;

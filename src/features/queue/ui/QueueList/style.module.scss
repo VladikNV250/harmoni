@@ -1,36 +1,98 @@
-.fullscreen-queue {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    transition: all 0.1s ease-in-out;
-    visibility: hidden;
+@use "app/styles/breakpoints" as *;
 
-    &.active {
-        overflow-y: auto;
-        scrollbar-width: none;
-        &::-webkit-scrollbar { display: none; }
-        visibility: visible;
-        height: 100%;
-        opacity: 1;
+.queue {
+    &-list {
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: all 0.1s ease-in-out;
+        visibility: hidden;
+
+        @media (min-width: $desktop) {
+            top: calc(-100vh + 96px + 60px + 1px); // 95.6 -- height of player, 60 - height of navbar, 1 - border of content
+            right: calc(10px + 0.5px);
+            border-radius: 9.5px;
+            backdrop-filter: blur(100px);
+            padding: 12px 12px 0;
+            width: 300px;
+            left: auto;
+            display: none;
+            z-index: 9;
+        }
+    
+        &.active {
+            overflow-y: auto;
+            scrollbar-width: none;
+            &::-webkit-scrollbar { display: none; }
+            visibility: visible;
+            height: 100%;
+            opacity: 1;
+
+            @media (min-width: $desktop) {
+                overflow-y: hidden;
+                height: calc(100vh - 96px - 60px - 1.5px); // 95.6 -- height of player, 60 - height of navbar, 1.5 - border of content
+                display: flex;
+                flex-direction: column;
+                min-width: 325px;
+
+                &::before {
+                    z-index: -1;
+                    content: "";
+                    width: 100%;
+                    height: 100%;
+                    background: var(--bg-secondary);
+                    opacity: 0.8;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+            }
+        }
     }
-
+    
+    &-subtitle,
     &-title {
         color: var(--fg-primary);
         font-weight: 700;
+    }
+
+    &-title {
+        margin-bottom: 8px;
+        display: none;
+
+        @media (min-width: $desktop) {
+            display: block;
+        }
+    }
+
+    &-subtitle {
         margin-bottom: 16px;
+
+        @media (min-width: $desktop) {
+            margin-left: 10px;
+            margin-bottom: 12px;
+        }
     }
     
     &-tracks {
         display: flex;
         flex-direction: column;
         gap: 14px;
+        
+        @media (min-width: $desktop) {
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            &::-webkit-scrollbar { display: none; }
+        }
     }
 
     &-track {
         width: 100%;
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto 1fr;
         gap: 10px;
         align-items: center;
         cursor: default;
@@ -54,7 +116,7 @@
             &-publisher {
                 display: block;
                 color: var(--fg-primary);
-                max-width: 100%;
+                max-width: 200px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;

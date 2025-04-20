@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { IEpisode, ISimplifiedEpisode } from "shared/api/episode";
-import { Description, Paragraph } from "shared/ui";
+import { Description, Paragraph, Subtitle } from "shared/ui";
 import { getDate } from "entities/episode/lib/getDate";
 import { 
     calculateDuration, 
@@ -13,6 +13,7 @@ import {
     AddToPlaylist,
     AddToQueue, 
     CheckFilled, 
+    Pause, 
     PlaceholderImage, 
     Play, 
 } from "shared/assets";
@@ -66,13 +67,17 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
     )
 
     const handlePlay = async () => {
-        try {
-            await adapter.play({
-                context_uri: showURI,
-                offset: {
-                    uri: episode.uri
-                }
-            })
+        try {                        
+            if (adapter.getContextURI() === showURI) {
+                await adapter.resume();
+            } else {
+                await adapter.play({
+                    context_uri: showURI,
+                    offset: {
+                        uri: episode.uri
+                    }
+                })
+            }
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
@@ -116,7 +121,7 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
                 body: {
-                    name: "New Playlist #" + libraryPlaylists.length,
+                    name: "New Playlist #" + (libraryPlaylists.length + 1),
                 }
             })).unwrap();
     
@@ -153,12 +158,6 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
 
     return (
         <div className={styles["episode"]}>
-            <PlaylistMenu 
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                onCreatePlaylist={addToNewPlaylist}
-                onSelectPlaylist={addToPlaylist}
-            />
             <div 
                 className={styles["episode-image-container"]} 
                 onClick={() => navigate(`/episodes/${id}`)}
@@ -171,9 +170,62 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                     <Paragraph className={styles["episode-name"]}>
                         {name ?? ""}
                     </Paragraph>
-                    <Description className={styles["episode-author"]}>
+                    <Subtitle className={styles["episode-name__desktop"]}>
+                        {name ?? ""}
+                    </Subtitle>
+                    <div className={styles["episode-content__desktop"]}>
+                        <Description>
+                            {getDate(release_date, release_date_precision)}
+                        </Description>
+                        <p>&#183;</p>
+                        <Description>
+                            {calculateDuration(duration_ms)}
+                        </Description>
+                    </div>
+                    <Description className={styles["episode-description"]}>
                         {description ?? ""}
                     </Description>
+                    <div 
+                        className={`${styles["episode-control-panel__desktop"]}`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className={styles["button-container"]}>
+                            <button
+                                className={clsx(
+                                    styles["button"],
+                                    isEpisodeInLibrary && styles["active"]
+                                )}
+                                onClick={async () => await saveEpisode()}
+                            >
+                                <AddIcon width={40} height={40} className={styles["icon"]} />
+                                <CheckFilled width={40} height={40} className={styles["icon__active"]} />
+                            </button>
+                            <button className={styles["button"]} onClick={() => setIsOpen(!isOpen)}>
+                                <PlaylistMenu 
+                                    className={styles["playlist-menu"]}
+                                    isOpen={isOpen}
+                                    setIsOpen={setIsOpen}
+                                    onCreatePlaylist={addToNewPlaylist}
+                                    onSelectPlaylist={addToPlaylist}
+                                />
+                                <AddToPlaylist width={40} height={40} />
+                            </button>
+                            <button 
+                                className={styles["button"]} 
+                                onClick={async () => await addToQueueHandle()}
+                            >
+                                <AddToQueue width={40} height={40} />
+                            </button>
+                        </div>
+                        <div className={styles["button-container"]}>
+                            <button 
+                                className={styles["button"]} 
+                                onClick={async () => await handlePlay()}
+                            >
+                                <Play width={40} height={40} />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className={styles["episode-content"]}>
@@ -185,7 +237,10 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                     {calculateDuration(duration_ms)}
                 </Description>
             </div>
-            <div className={`${styles["episode-control-panel"]}`}>
+            <div 
+                className={`${styles["episode-control-panel"]}`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className={styles["button-container"]}>
                     <button
                         className={clsx(
@@ -197,7 +252,14 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                         <AddIcon width={40} height={40} className={styles["icon"]} />
                         <CheckFilled width={40} height={40} className={styles["icon__active"]} />
                     </button>
-                    <button className={styles["button"]} onClick={() => setIsOpen(true)}>
+                    <button className={styles["button"]} onClick={() => setIsOpen(!isOpen)}>
+                        <PlaylistMenu 
+                            className={styles["playlist-menu"]}
+                            isOpen={isOpen}
+                            setIsOpen={setIsOpen}
+                            onCreatePlaylist={addToNewPlaylist}
+                            onSelectPlaylist={addToPlaylist}
+                        />
                         <AddToPlaylist width={40} height={40} />
                     </button>
                     <button 
@@ -212,7 +274,9 @@ export const EpisodeItem: FC<IEpisodeItem> = ({ episode, showURI }) => {
                         className={styles["button"]} 
                         onClick={async () => await handlePlay()}
                     >
-                        <Play width={40} height={40} />
+                        {adapter.getTrackURI() === uri && adapter.getIsPlaying() ?
+                        <Pause width={40} height={40} /> :
+                        <Play width={40} height={40} />}
                     </button>
                 </div>
             </div>

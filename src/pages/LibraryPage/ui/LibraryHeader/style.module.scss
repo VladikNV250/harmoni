@@ -1,11 +1,19 @@
+@use "app/styles/breakpoints" as *;
+
 .library-header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        padding: 12px 15px 6px;
-        z-index: 10;
-        background: var(--bg-main);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px 15px 6px;
+    z-index: 10;
+    background: var(--bg-main);
+    @media (min-width: $desktop) {
+        position: sticky;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 
     &-container {
         display: flex;
@@ -15,7 +23,11 @@
             @extend .library-header-container;
             justify-content: space-between;
             margin-bottom: 12px;
+            @media (min-width: $desktop) {
+                margin-bottom: 0;    
+            }
         }
+
         &__two {
             @extend .library-header-container;
             gap: 16px;
@@ -24,6 +36,21 @@
 
     &-input {
         width: 84%; // 306 * 100 / 363
+
+        &__mobile {
+            @extend .library-header-input;
+            @media (min-width: $desktop) {
+                display: none;
+            }
+        }
+        
+        &__desktop {
+            @extend .library-header-input;
+            display: none;
+            @media (min-width: $desktop) {
+                display: inherit;
+            }
+        }
     }
 
     &-button {
@@ -34,5 +61,11 @@
         transition: all .1s ease-in-out;
 
         &:hover { color: var(--fg-primary); }
+
+        > .button-text {
+            @media (min-width: $desktop) {
+                display: none;
+            }
+        }
     }
 }

@@ -1,6 +1,11 @@
+@use "app/styles/breakpoints" as *;
+
 .library {
     &-groups {
         padding: 115px 15px 0;
+        @media (min-width: $desktop) {
+            padding: 12px 15px ;
+        }
     }
 
     &-empty {

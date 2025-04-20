@@ -59,12 +59,16 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
 
     const handlePlay = async () => {
         try {
-            await adapter.play({ 
-                context_uri: episode?.show?.uri ?? "",
-                offset: {
-                    uri: episode?.uri ?? "",
-                } 
-            });
+            if (adapter.getTrackURI() === episode?.uri) {
+                await adapter.resume();
+            } else {
+                await adapter.play({ 
+                    context_uri: episode?.show?.uri ?? "",
+                    offset: {
+                        uri: episode?.uri ?? "",
+                    } 
+                });
+            }
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
@@ -106,7 +110,7 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
                 body: {
-                    name: "New Playlist #" + libraryPlaylists.length,
+                    name: "New Playlist #" + (libraryPlaylists.length + 1),
                 }
             })).unwrap();
     
@@ -144,18 +148,12 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
     return (
         <>
             <div className={styles["episode-control-panel"]}>
-                <PlaylistMenu 
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}
-                    onCreatePlaylist={addToNewPlaylist}
-                    onSelectPlaylist={addToPlaylist}
-                />
                 <div className={styles["control-panel-button-container"]}>
                     <button 
                         className={styles["control-panel-button"]} 
                         onClick={async () => await handlePlay()}
                         >
-                        {adapter.getTrackURI() === episode?.uri ?
+                        {adapter.getTrackURI() === episode?.uri && adapter.getIsPlaying() ?
                         <Pause width={60} height={60} /> :
                         <Play width={60} height={60} />}
                     </button>
@@ -169,8 +167,17 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
                         <AddIcon width={50} height={50} className={styles["icon"]} />
                         <CheckFilled width={50} height={50} className={styles["icon__active"]} />
                     </button>
-                    <button className={styles["control-panel-button"]} onClick={() => setIsOpen(true)}>
-                        <AddToPlaylist width={40} height={40} />
+                    <button 
+                        className={styles["control-panel-button"]} 
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        <PlaylistMenu 
+                            isOpen={isOpen}
+                            setIsOpen={setIsOpen}
+                            onCreatePlaylist={addToNewPlaylist}
+                            onSelectPlaylist={addToPlaylist}
+                        />
+                        <AddToPlaylist width={50} height={50} />
                     </button>
                     <button
                         className={styles["control-panel-button"]}

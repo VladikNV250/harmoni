@@ -1,5 +1,7 @@
-import clsx from "clsx";
-import { FC } from "react";
+import { 
+    FC, 
+    useCallback 
+} from "react";
 import { 
     Device, 
     Loop, 
@@ -12,89 +14,43 @@ import {
     Shuffle, 
     Volume 
 } from "shared/assets";
-import { calculateDuration, useAppSelector } from "shared/lib";
+import { 
+    usePlay, 
+    useRepeat, 
+    useShuffle 
+} from "widgets/Player/lib/player/player";
+import { calculateDuration, useAppDispatch, useAppSelector } from "shared/lib";
 import { Description, Text } from "shared/ui";
 import { selectDevices } from "features/device";
-import { IPlayback, usePlaybackAdapter } from "entities/playback";
-import styles from "./style.module.scss";
+import { usePlaybackAdapter } from "entities/playback";
 import { selectUser } from "entities/user";
 import { VolumeBar } from "../VolumeBar/VolumeBar";
 import { SeekBar } from "../SeekBar/SeekBar";
-import { toast } from "react-toastify";
+import clsx from "clsx";
+import styles from "./style.module.scss";
+import { selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
+import { playerSlice } from "widgets/Player/model/playerSlice";
 
 
-interface IPlayerPlaybackControl {
-    readonly menus: { [key: string]: boolean },
-    readonly openMenu: (whatOpen: string, openState?: boolean) => void,
-    readonly activeTab: "track" | "devices" | "queue",
-    readonly chooseTab: (tab: "devices" | "queue" | "track") => void,
-}
-
-export const PlayerPlaybackControl: FC<IPlayerPlaybackControl> = ({ menus, openMenu, activeTab, chooseTab }) => {
+export const PlayerPlaybackControl: FC = () => {
+    const dispatch = useAppDispatch();
+    const openedMenu = useAppSelector(selectPlayerOpenedMenu);
+    const { setOpenedMenu } = playerSlice.actions;
     const devices = useAppSelector(selectDevices);
     const user = useAppSelector(selectUser);
-    const { adapter, apiPlayback, setApiPlayback } = usePlaybackAdapter();
+    const { adapter } = usePlaybackAdapter();
     
-    const getActiveDevice = () => devices.find(device => device.is_active)?.name ?? "";
-
-    const handleShuffle = () => {
-        try {
-            const newShuffle = adapter.toggleShuffle();
-
-            if (apiPlayback) {
-                const newApiPlayback: IPlayback = { 
-                    ...apiPlayback, 
-                    shuffle_state: newShuffle, 
-                };
+    const handleShuffle = useShuffle();
+    const handleRepeat = useRepeat();
+    const handlePlay = usePlay();
     
-                setApiPlayback?.(newApiPlayback);
-            }
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page");
-            console.error(`SHUFFLE ERROR`, e);
-        }
-    }
-
-    const handleRepeat = () => {
-        try {
-            const newRepeat = adapter.setRepeatMode();
-
-            if (apiPlayback) {
-                const newApiPlayback: IPlayback = { 
-                    ...apiPlayback, 
-                    repeat_state: newRepeat, 
-                };
-    
-                setApiPlayback?.(newApiPlayback);
-            }
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page");
-            console.log("REPEAT ERROR", e)
-        }
-        
-    }
-
-    const handlePlay = async () => {
-        try {
-            const newIsPlaying = await adapter.resume();
-
-            if (apiPlayback) {
-                const newApiPlayback: IPlayback = {
-                    ...apiPlayback,
-                    is_playing: newIsPlaying
-                }
-    
-                setApiPlayback?.(newApiPlayback);
-            }
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page");
-            console.error("PLAY ERROR", e);
-        }   
-    }
+    const getActiveDevice = useCallback(
+        () => devices.find(device => device.is_active)?.name ?? "", 
+        [devices]
+    );
 
     if (adapter) return (
         <div className={styles["control-bar"]}>
-            
             {user?.product === "premium" 
             ?
             <div className={styles["seek-container"]}>
@@ -163,27 +119,24 @@ export const PlayerPlaybackControl: FC<IPlayerPlaybackControl> = ({ menus, openM
             </div>
             <div className={styles["control-bar-container__two"]}>
                 <button 
-                    onClick={() => {
-                        openMenu("volumeBar", false);
-                        chooseTab("devices");
-                    }}
+                    onClick={() => dispatch(setOpenedMenu("device"))}
                     className={clsx(
                         styles["control-bar-button"], 
-                        activeTab === "devices" && styles["active"]
+                        openedMenu === "device" && styles["active"]
                     )} 
                 >
                     <Device width={50} height={50} />
                 </button>
                 <button 
                     className={styles["control-bar-button"]} 
-                    onClick={() => openMenu("volumeBar")}
+                    onClick={() => dispatch(setOpenedMenu("volume"))}
                     disabled={user?.product !== "premium" || !adapter.checkPlayback()}
                 >
                     <div 
                         onClick={e => e.stopPropagation()}
                         className={clsx(
                             styles["volume-container"], 
-                            menus.volumeBar && styles["active"]
+                            openedMenu === "volume" && styles["active"]
                         )} 
                     >
                         <VolumeBar />
@@ -191,13 +144,10 @@ export const PlayerPlaybackControl: FC<IPlayerPlaybackControl> = ({ menus, openM
                     <Volume width={50} height={50} />
                 </button>
                 <button 
-                    onClick={() => {
-                        openMenu("volumeBar", false);
-                        chooseTab("queue");
-                    }}
+                    onClick={() => dispatch(setOpenedMenu("queue"))}
                     className={clsx(
                         styles["control-bar-button"], 
-                        activeTab === "queue" && styles["active"]
+                        openedMenu === "queue" && styles["active"]
                     )} 
                     disabled={user?.product !== "premium" || !adapter.checkPlayback()}
                 >
@@ -205,10 +155,7 @@ export const PlayerPlaybackControl: FC<IPlayerPlaybackControl> = ({ menus, openM
                 </button>
                 <button 
                     className={styles["control-bar-button"]} 
-                    onClick={() => {
-                        openMenu("volumeBar", false);
-                        openMenu("moreMenu", true)
-                    }}
+                    onClick={() => dispatch(setOpenedMenu("more"))}
                     disabled={!adapter.checkPlayback()}
                 >
                     <More width={50} height={50} />

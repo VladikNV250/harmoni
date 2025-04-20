@@ -23,7 +23,7 @@ export const Switch: FC<ISwitch> = ({ active = false, setActive, disabled }) => 
             onClick={!disabled ? handleChange : () => {}}>
             <input 
                 type="checkbox" 
-                checked={active} 
+                checked={active && !disabled} 
                 onClick={(e) => e.stopPropagation()} 
                 readOnly
             />

@@ -4,8 +4,7 @@ import {
     FC, 
 } from "react"
 import clsx from "clsx"
-import { useAppSelector } from "shared/lib"
-import { useMenu } from "widgets/Player/lib/menu/useMenu"
+import { useAppDispatch, useAppSelector } from "shared/lib"
 import { MoreMenu } from "../MoreMenu/MoreMenu"
 import { PlayerPlaybackControl } from "../PlayerPlaybackControl/PlayerPlaybackControl"
 import { FullscreenHeader } from "../FullscreenHeader/FullscreenHeader"
@@ -13,25 +12,21 @@ import { ForPremiumMessage } from "../ForPremiumMessage/ForPremiumMessage"
 import { FullscreenTrack } from "../FullscreenTrack/FullscrenTrack"
 import { QueueList } from "features/queue"
 import { DeviceList } from "features/device"
-import { selectPlayerFullsreenMode } from "widgets/Player/model/selectors"
+import { selectPlayerFullsreenMode, selectPlayerOpenedMenu } from "widgets/Player/model/selectors"
 import styles from "./style.module.scss";
+import { playerSlice } from "widgets/Player/model/playerSlice"
 
 
 interface IFullscreenPlayer {
     readonly color: string,
-    readonly activeTab: "track" | "devices" | "queue",
-    readonly chooseTab: (tab: "devices" | "queue" | "track") => void,
     readonly isLiked: boolean,
-    readonly setIsLiked: (state: boolean) => void;
+    readonly handleLike: () => Promise<void>;
 }
 
-export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, activeTab, chooseTab, isLiked, setIsLiked }) => {
-    const { menus, openMenu } = useMenu({ 
-        moreMenu: false, 
-        volumeBar: false, 
-        artistMenu: false,
-        playlistMenu: false,
-    })
+export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, isLiked, handleLike }) => {
+    const dispatch = useAppDispatch();
+    const openedMenu = useAppSelector(selectPlayerOpenedMenu);
+    const { setOpenedMenu } = playerSlice.actions;
     const fullscreen = useAppSelector(selectPlayerFullsreenMode);
 
     useEffect(() => {
@@ -46,37 +41,22 @@ export const FullscreenPlayer: FC<IFullscreenPlayer> = ({ color, activeTab, choo
             )} 
             style={{"--color": color} as CSSProperties}
         >
-            <MoreMenu 
-                menus={menus}
-                openMenu={openMenu}
-            />
+            <MoreMenu />
             <div className={styles["fullscreen-player-container"]}>
-                <FullscreenHeader 
-                    activeTab={activeTab}
-                />
+                <FullscreenHeader />
                 <div className={styles["fullscreen-player-content"]}>
                     <FullscreenTrack
-                        activeTab={activeTab} 
                         isLiked={isLiked}
-                        setIsLiked={setIsLiked}
+                        handleLike={handleLike}
                     />
-                    <QueueList 
-                        activeTab={activeTab} 
-                    />
+                    <QueueList isVisited={openedMenu === "queue"} />
                     <DeviceList 
-                        activeTab={activeTab}
-                        chooseTab={chooseTab}
+                        isVisited={openedMenu === "device"}
+                        onTransfer={() => dispatch(setOpenedMenu("track"))}
                     />
-                    <ForPremiumMessage 
-                        activeTab={activeTab}
-                    />
+                    <ForPremiumMessage />
                 </div>
-                <PlayerPlaybackControl 
-                    menus={menus}
-                    openMenu={openMenu}
-                    activeTab={activeTab}
-                    chooseTab={chooseTab}
-                />
+                <PlayerPlaybackControl />
             </div>
         </div> 
     )

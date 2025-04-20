@@ -11,7 +11,7 @@ export const useColor = (src: string, mix: boolean = true, theme: "dark" | "ligh
             try {
                 if (src !== "") {
                     const result: IColor[] = await analyze(src, { 
-                        scale: 0.01,
+                        scale: 0.1,
                         ignore: ["rgb(255,255,255)", 'rgb(0,0,0)'] 
                     });
                     

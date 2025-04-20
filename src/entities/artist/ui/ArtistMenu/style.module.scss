@@ -1,0 +1,13 @@
+@use "app/styles/breakpoints" as *;
+
+.artist {
+    &-menu {
+        z-index: 11;
+    }
+
+    &-list {
+        > *:not(:last-child) {
+            margin-bottom: 5px;
+        }
+    }
+}

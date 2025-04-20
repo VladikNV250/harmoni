@@ -8,11 +8,13 @@
 
     .control-panel-button {
         display: flex;
-        color: var(--fg-secondary);
+        color: #898989;
+        border-color: #898989;
         transition: color .2s ease-in-out;
 
         &:hover {
-            color: var(--fg-primary);
+            color: #E0E0E0;
+            border-color: #E0E0E0;
         }
 
         &.shuffle {

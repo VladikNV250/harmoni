@@ -20,6 +20,8 @@ const initialState: ILibraryState = {
     tracks:    [],
     episodes:  [],
     folders:   [],
+
+    filter: "all",
     
     loading:   false,
     error:     null,
@@ -29,6 +31,9 @@ export const librarySlice = createSlice({
     name: "library",
     initialState,
     reducers: {
+        setFilter: (state, action: PayloadAction<ILibraryState["filter"]>) => {
+            state.filter = action.payload;
+        },
         createFolder: (state, action: PayloadAction<IFolder["name"]>) => {
             const newFolder: IFolder = {
                 id: `${Date.now()}`,

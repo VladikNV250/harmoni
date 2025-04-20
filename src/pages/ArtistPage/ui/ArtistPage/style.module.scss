@@ -1,3 +1,5 @@
+@use "app/styles/breakpoints" as *;
+
 .artist {
     position: relative;
     padding-bottom: 50px;
@@ -15,7 +17,6 @@
     &-image {
         position: relative;
         aspect-ratio: 1 / 1;
-        object-fit: cover;
         width: 100%;
 
         &-container {
@@ -26,6 +27,10 @@
             display: flex;
             align-items: flex-start;
             margin-bottom: 24px;
+            @media (min-width: $desktop) {
+                max-height: 426px;
+                margin-bottom: 0;
+            }
 
             &::before {
                 content: "";
@@ -43,11 +48,22 @@
     &-body {
         position: absolute;
         z-index: 2;
-        bottom: 10px;
-        left: 15px;
+        padding: 0 15px 10px;
+        bottom: 0;
+        left: 0;
+        width: 100%;
         display: flex;
-        flex-direction: column;
-        gap: 6px;
+        align-items: center;
+        justify-content: space-between;
+        @media (min-width: $desktop) {
+            padding: 34px 37px;
+        }
+
+        &-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
     }
 
     &-button {
@@ -59,6 +75,9 @@
         border-radius: 50%;
         z-index: 5;
         overflow: hidden;
+        @media (min-width: $desktop) {
+            display: none;
+        }
         > * { z-index: 1; }
 
         &::before {
@@ -73,7 +92,24 @@
         }
     }
 
-    &-name { color: var(--fg-primary); }
+    &-name { 
+        color: #E0E0E0;
+        @media (min-width: $desktop) {
+            display: none;
+        }
+
+        &__desktop {
+            @extend .artist-name;
+            display: none;
+            font-size: 50px;
+            font-weight: 900;
+            line-height: normal;
+            letter-spacing: normal;
+            @media (min-width: $desktop) {
+                display: block;
+            }
+        }
+    }
     
     &-total { color: var(--fg-secondary); }
 
@@ -96,9 +132,31 @@
 
     &-albums-container {
         width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         flex-wrap: wrap;
+        gap: 10px;
+        @media (min-width: $desktop) {
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        }
+    }
+
+    .control-panel {
+        &__mobile {
+            display: flex;
+            @media (min-width: $desktop) {
+                display: none;
+            }
+        }
+
+        &__desktop {
+            display: none;
+            gap: 14px;
+            margin-bottom: 0;
+            padding: 0;
+            @media (min-width: $desktop) {
+                display: flex;
+            }
+        }
     }
 }

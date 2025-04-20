@@ -14,5 +14,6 @@ export {
     selectBrowseCategories,
     selectSearch,
     selectSearchError,
-    selectSearchLoading
+    selectSearchLoading,
+    selectSearchQuery,
 } from "./model/selectors"

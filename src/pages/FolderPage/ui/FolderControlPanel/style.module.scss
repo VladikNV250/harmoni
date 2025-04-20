@@ -12,6 +12,7 @@
     &-button {
         display: flex;
         color: var(--fg-secondary);
+        position: relative;
 
         &:hover { color: var(--fg-primary); }
     }
@@ -20,5 +21,12 @@
         color: var(--fg-primary);
         text-overflow: ellipsis;
         overflow: hidden;
+    }
+
+    &-playlist-menu {
+        right: 100%;
+        top: 0;
+        left: auto;
+        bottom: auto;
     }
 }

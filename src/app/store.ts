@@ -50,7 +50,6 @@ const store = configureStore({
                     REGISTER,
                 ],
             },
-            immutableCheck: false, //  REMOVE THIS LATER!!!
         }),
 })
 

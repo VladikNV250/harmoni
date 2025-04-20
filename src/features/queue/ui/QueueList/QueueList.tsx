@@ -4,17 +4,17 @@ import { FC } from "react";
 import { Link } from "react-router";
 import { PlaceholderImage } from "shared/assets";
 import { useAppSelector } from "shared/lib";
-import { Loader, Paragraph } from "shared/ui";
+import { Loader, Paragraph, Subtitle } from "shared/ui";
 import { selectQueue, selectQueueLoading } from "features/queue/model/selectors";
 import { usePlaybackAdapter } from "entities/playback";
 import styles from "./style.module.scss";
 
 
 interface IQueueList {
-    readonly activeTab: "track" | "devices" | "queue",
+    readonly isVisited: boolean,
 }
 
-export const QueueList: FC<IQueueList> = ({ activeTab }) => {
+export const QueueList: FC<IQueueList> = ({ isVisited }) => {
     const queue = useAppSelector(selectQueue);
     const loading = useAppSelector(selectQueueLoading);
     const { adapter } = usePlaybackAdapter();
@@ -29,21 +29,26 @@ export const QueueList: FC<IQueueList> = ({ activeTab }) => {
     return (
         <div 
             className={clsx(
-                styles["fullscreen-queue"], 
-                activeTab === "queue" && styles["active"]
+                styles["queue-list"], 
+                isVisited && styles["active"]
             )}
         >
-            <Paragraph className={styles["fullscreen-queue-title"]}>
-                Next up:
-            </Paragraph>
+            <header className={styles["queue-header"]}>
+                <Subtitle className={styles["queue-title"]}>
+                    Queue
+                </Subtitle>
+                <Paragraph className={styles["queue-subtitle"]}>
+                    Next up:
+                </Paragraph>
+            </header>
             <Loader loading={loading} />
-            <div className={styles["fullscreen-queue-tracks"]}>
+            <div className={styles["queue-tracks"]}>
                 {queue?.queue.map((queueTrack, index) =>
                     queueTrack.type === "track" 
                     ? 
                     <div 
                         key={queueTrack.id + index} 
-                        className={styles["fullscreen-queue-track"]} 
+                        className={styles["queue-track"]} 
                         onClick={() => handleClick(queueTrack.uri)}
                     >
                         <img 
@@ -62,7 +67,7 @@ export const QueueList: FC<IQueueList> = ({ activeTab }) => {
                         </div>
                     </div>
                     :
-                    <div className={styles["fullscreen-queue-track"]} key={queueTrack.id}>
+                    <div className={styles["queue-track"]} key={queueTrack.id}>
                         <img 
                             src={queueTrack.show?.images[0]?.url ?? PlaceholderImage} 
                             className={styles["track-image"]}    

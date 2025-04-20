@@ -1,6 +1,9 @@
+@use "app/styles/breakpoints" as *;
+
 .item {
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto 40% 1fr auto;
     align-items: center;
     cursor: pointer;
     overflow: hidden;
@@ -17,6 +20,7 @@
         margin-right: 10px;
     }
 
+    &-text,
     &-name {
         color: var(--fg-primary);
         font-weight: 500;
@@ -24,5 +28,14 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         max-width: 100%;
+    }
+
+    &-text {
+        color: var(--fg-secondary);
+        display: none;
+
+        @media (min-width: $desktop) {
+            display: block;
+        }
     }
 }

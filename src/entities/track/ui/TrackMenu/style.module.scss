@@ -10,31 +10,10 @@
         flex-direction: column;
         gap: 12px;
         padding: 30px 20px;
-    }
+    }       
+}
 
-    &-button,
-    &-link {
-        max-width: 100%;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        text-align: left;
-        color: var(--fg-secondary);
-        
-        &:hover { color: var(--fg-primary); }
-
-        > .button-icon { min-width: 40px; }
-    }        
-
-    &-artists {
-        background: var(--bg-main);
-        z-index: 11;
-
-        &-content {
-            padding: 10px;
-            > *:not(:last-child) {
-                margin-bottom: 5px;
-            }
-        }
-    }
+.track-menu {
+    top: 100%;
+    right: 0;
 }

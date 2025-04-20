@@ -18,8 +18,11 @@ import {
 } from "shared/api/playlist";
 import { 
     Description, 
+    DesktopTitle, 
+    ExpandableSearchInput, 
     Loader, 
     SearchInput, 
+    Subtitle, 
     Title 
 } from "shared/ui";
 import { 
@@ -31,7 +34,7 @@ import {
 } from "shared/lib";
 import { TrackItem } from "entities/track";
 import { PlaylistEpisodeItem } from "entities/episode";
-import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { 
     ArrowLeft,
     PlaceholderImage, 
@@ -46,7 +49,6 @@ import {
     getLibraryPlaylists, 
     selectLibraryLoading, 
 } from "features/library";
-import { fetchPlaybackState } from "entities/playback/api/playback";
 import { PlaylistControlPanel } from "../PlaylistControlPanel/PlaylistControlPanel";
 import { 
     SortMenu,
@@ -163,7 +165,7 @@ const PlaylistPage: FC = () => {
 
         if (sortedTracks.length > 0) {
             if (debouncedValue) {
-                return sortedTracks.map(({ track }) => {
+                return sortedTracks.map(({track}, index) => {
                     const lowerName = track.name?.toLowerCase();
                     const lowerValue = (debouncedValue as string).toLowerCase();
                     const isMatch = lowerName?.includes(lowerValue);
@@ -172,6 +174,9 @@ const PlaylistPage: FC = () => {
                             <TrackItem 
                                 key={track.id} 
                                 track={track} 
+                                sequenceNumber={index + 1}
+                                showAlbum
+                                showImage
                                 contextUri={playlist?.uri} 
                                 playlistId={isUserOwner ? playlist?.id : ""}
                             /> :
@@ -185,11 +190,14 @@ const PlaylistPage: FC = () => {
                     )
                 })
             } else {
-                return sortedTracks.map(({ track }) =>
+                return sortedTracks.map(({track}, index) =>
                     track.type === "track" ?
                         <TrackItem 
                             key={track.id} 
-                            track={track} 
+                            track={track}
+                            sequenceNumber={index + 1}
+                            showAlbum
+                            showImage
                             contextUri={playlist?.uri} 
                             playlistId={isUserOwner ? playlist?.id : ""}
                         /> :
@@ -202,6 +210,12 @@ const PlaylistPage: FC = () => {
                     : null
                 )
             }
+        } else {
+            return (
+                <Subtitle className={styles["playlist-items-empty"]}>
+                    No tracks available in this playlist.
+                </Subtitle>
+            )
         }
     }, [debouncedValue, playlist?.id, playlist?.uri, sortTracks])
 
@@ -224,7 +238,7 @@ const PlaylistPage: FC = () => {
                     value={value}
                     onChange={handleChange}
                     placeholder="Search playlist" 
-                    className={styles["header-input"]} 
+                    className={styles["playlist-search"]} 
                 />
                 <button 
                     className={styles["header-button"]}
@@ -239,33 +253,65 @@ const PlaylistPage: FC = () => {
                     className={styles["playlist-image"]} 
                 />
             </div>
-            <Title className={styles["playlist-name"]}>{playlist?.name ?? ""}</Title>
-            <div className={styles["playlist-description-container"]}>
-                <Description className={styles["playlist-description"]}>By</Description>
-                <Link 
-                    to={`/profile/${playlist?.owner.id}`} 
-                    className={styles["playlist-owner"]}
-                >
-                    {playlist?.owner.display_name ?? ""}
-                </Link>
-                {(playlist?.tracks.total ?? 0) > 0
-                ?
-                <>
-                    <p className="dot">&#183;</p>
-                    <Description className={styles["playlist-description"]}>
-                        {`${playlist?.tracks.total} Songs`}
+            <div className={styles["playlist-content"]}>
+                <Title className={styles["playlist-name"]}>
+                    {playlist?.name ?? ""}
+                </Title>
+                <DesktopTitle className={styles["playlist-name__desktop"]}>
+                    {playlist?.name ?? ""}
+                </DesktopTitle>
+                <div className={styles["playlist-description-container"]}>
+                    <Link 
+                        to={`/profile/${playlist?.owner.id}`} 
+                        className={styles["playlist-owner"]}
+                    >
+                        <span className={styles["by"]}>
+                            By
+                        </span>
+                        {playlist?.owner.display_name ?? ""}
+                    </Link>
+                    {(playlist?.tracks.total ?? 0) > 0
+                    ?
+                    <>
+                        <Description className={styles["playlist-description"]}>
+                            {`${playlist?.tracks.total} Songs`}
+                        </Description>
+                        <Description className={styles["playlist-description"]}>
+                            {calculateTracksDuration(playlist?.tracks.items)}
+                        </Description>
+                    </>
+                    : null
+                    }
+                </div>
+                <div className={styles["control-panel-container"]}>
+                    <PlaylistControlPanel playlist={playlist} />
+                    <ExpandableSearchInput 
+                        value={value} 
+                        onChange={handleChange}    
+                        placeholder={"Search playlist"}
+                        direction="left"
+                        className={styles["playlist-search__desktop"]}
+                    />
+                </div>
+                <header className={styles["playlist-items-header"]}>
+                    <Description className={styles["sequence-number"]}>
+                        #
                     </Description>
-                    <p className="dot">&#183;</p>
-                    <Description className={styles["playlist-description"]}>
-                        {calculateTracksDuration(playlist?.tracks.items)}
+                    <Description className={styles["title"]}>
+                        Title
                     </Description>
-                </>
-                : null
-                }
-            </div>
-            <PlaylistControlPanel playlist={playlist} />
-            <div className={styles["playlist-items-container"]}>
-                {renderPlaylistTracks(playlist?.tracks.items ?? [])}
+                    <div className={styles["gap"]} />
+                    <Description className={styles["album"]}>
+                        Album
+                    </Description>
+                    <Description className={styles["duration"]}>
+                        Duration
+                    </Description>
+                    <div className={styles["gap-button"]} />
+                </header>
+                <div className={styles["playlist-items-body"]}>
+                    {renderPlaylistTracks(playlist?.tracks.items ?? [])}
+                </div>
             </div>
         </div>
     )

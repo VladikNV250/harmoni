@@ -6,7 +6,10 @@ import {
     useEffect, 
     useState 
 } from "react";
-import { useNavigate, useParams } from "react-router";
+import { 
+    useNavigate, 
+    useParams 
+} from "react-router";
 import { 
     fetchShow, 
     IShow 
@@ -18,9 +21,14 @@ import {
     useDebounce, 
     useTabs 
 } from "shared/lib";
-import { ArrowLeft, PlaceholderImage } from "shared/assets";
+import { 
+    ArrowLeft, 
+    PlaceholderImage 
+} from "shared/assets";
 import { 
     Description, 
+    DesktopTitle, 
+    ExpandableSearchInput, 
     Loader, 
     NavigationTabs, 
     SearchInput, 
@@ -36,9 +44,8 @@ import {
     selectLibraryLoading, 
 } from "features/library";
 import { EpisodeItem } from "entities/episode";
-import { usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { ISimplifiedEpisode } from "shared/api/episode";
-import { fetchPlaybackState } from "entities/playback/api/playback";
 import { ShowControlPanel } from "../ShowControlPanel/ShowControlPanel";
 import styles from "./style.module.scss";
 
@@ -142,7 +149,7 @@ const ShowPage: FC = () => {
                     value={value}
                     onChange={handleChange}
                     placeholder="Search episode" 
-                    className={styles["header-input"]} 
+                    className={styles["show-search"]} 
                 />  
             </header>
             <div className={styles["show-image-container"]}>
@@ -152,28 +159,51 @@ const ShowPage: FC = () => {
                 />
                 <div className={styles["show-body"]}>
                     <Title className={styles["show-name"]}>{show?.name ?? ""}</Title>
-                    <Description>
+                    <Description className={styles["show-publisher"]}>
                         {show?.publisher ?? ""}
+                    </Description>
+                    <Title className={styles["show-about"]}>
+                        About
+                    </Title>
+                    <Description className={styles["show-description__desktop"]}>
+                        {show?.description ?? ""}
                     </Description>
                 </div>
             </div>
-            <ShowControlPanel show={show} />
-            <NavigationTabs<string>
-                tabs={tabs}
-                activeTab={activeTab}
-                chooseTab={chooseTab}
-                className={styles["show-tabs"]}
-            />
-            {activeTab === "Episodes" &&
-            <div className={styles["show-items-container"]}>
-            {renderEpisodes(show?.episodes.items ?? [])}
-            </div>}
-            {activeTab === "About" &&
-            <div className={styles["show-description-container"]}>
-                <Description className={styles["show-description"]}>
-                    {show?.description ?? ""}
+            <div className={styles["show-content"]}>
+                <DesktopTitle className={styles["show-name__desktop"]}>
+                    {show?.name ?? ""}
+                </DesktopTitle>
+                <Description className={styles['show-publisher__desktop']}>
+                    {show?.publisher ?? ""}
                 </Description>
-            </div>}
+                <div className={styles["show-control-panel"]}>
+                    <ShowControlPanel show={show} />
+                    <ExpandableSearchInput 
+                        value={value}
+                        onChange={handleChange}
+                        placeholder="Search episode" 
+                        direction="left"
+                        className={styles["show-search__desktop"]}
+                    />
+                </div>
+                <NavigationTabs<string>
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    chooseTab={chooseTab}
+                    className={styles["show-tabs"]}
+                />
+                {activeTab === "Episodes" &&
+                <div className={styles["show-items-container"]}>
+                {renderEpisodes(show?.episodes.items ?? [])}
+                </div>}
+                {activeTab === "About" &&
+                <div className={styles["show-description-container"]}>
+                    <Description className={styles["show-description"]}>
+                        {show?.description ?? ""}
+                    </Description>
+                </div>}
+            </div>
         </div>
     )
 }

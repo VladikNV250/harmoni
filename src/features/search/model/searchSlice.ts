@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ISearchState } from "./type";
 import { 
     getSeveralBrowseCategories, 
@@ -15,6 +15,7 @@ const initialState: ISearchState = {
         tracks: [],
     },
     categories: [],
+    query: "",
     loading: false,
     error: null,
 }
@@ -22,7 +23,11 @@ const initialState: ISearchState = {
 export const searchSlice = createSlice({
     name: "search",
     initialState,
-    reducers: {},
+    reducers: {
+        setQuery: (state, action: PayloadAction<string>) => {
+            state.query = action.payload;
+        }
+    },
     extraReducers: (builder) =>
         builder
             .addCase(searchForItemThunk.pending, (state) => {

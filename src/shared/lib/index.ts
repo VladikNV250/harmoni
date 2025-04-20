@@ -12,3 +12,5 @@ export { usePress } from "./press/usePress";
 export { useTabs } from "./tabs/useTabs";
 
 export { useControlPanel } from "./controlpanel/useControlPanel";
+
+export { useWindowDimensions } from "./window/useWindowDimensions";

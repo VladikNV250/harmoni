@@ -111,7 +111,7 @@ export const PlaylistEpisodeItem: FC<IPlaylistEpisodeItem> = ({ episode, playlis
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
                 body: {
-                    name: "New Playlist #" + libraryPlaylists.length,
+                    name: "New Playlist #" + (libraryPlaylists.length + 1),
                 }
             })).unwrap();
     

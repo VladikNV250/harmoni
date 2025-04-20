@@ -1,6 +1,11 @@
+@use "app/styles/breakpoints" as *;
+
 .search {
     &-results {
         padding: 12px 15px;
+        @media (min-width: $desktop) {
+            padding: 12px 25px;
+        }
     }
 
     &-container {
@@ -11,62 +16,34 @@
         gap: 16px;
     }
 
-    &-item {
-        &-content {
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--fg-secondary);
-        }
+    &-header {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
 
-        &-name {
-            display: block;
-            color: var(--fg-primary);
-            max-width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    &-category {
+        margin-top: 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 21px;
+        color: var(--fg-primary);
 
-        &-publisher { 
-            display: block;
-            color: var(--fg-secondary);
-            max-width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        &-type::first-letter { text-transform: uppercase; }
-
-        &-button {
+        .category-items {
             display: grid;
-            color: var(--fg-secondary);
-            grid-template-columns: 1fr;
-            grid-template-rows: 1fr;
-            align-items: center;
-            justify-content: center;
-
-            > * {
-                grid-area: 1 / 1;
-                transition: all 0.1s ease-in-out;
-                transform-origin: center center;
-                &:nth-child(1) { transform: scale(0); }
-                &:nth-child(2) { transform: scale(1); }
-            }
-            &.active {
-                > * {
-                    grid-area: 1 / 1;
-                    transition: all 0.1s ease-in-out;
-                    transform-origin: center center;
-                    &:nth-child(1) { transform: scale(1); }
-                    &:nth-child(2) { transform: scale(0); }
-                }
-            }
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            row-gap: 48px;
+            column-gap: 10px;
+            max-height: 240px;
+            overflow: hidden;
         }
+    }
 
-        &-button-text { font-weight: 600; }
+    &-grid-container {
+        display: grid;
+        row-gap: 16px;
+        column-gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        justify-items: center;
     }
 }

@@ -3,40 +3,26 @@ import { FC } from "react"
 import { Like, LikeFilled } from "shared/assets"
 import { Subtitle, Title } from "shared/ui"
 import { usePlaybackAdapter } from "entities/playback";
-import { removeTracksFromLibrary, saveTracksToLibrary } from "shared/api/user";
-import { toast } from "react-toastify";
 import styles from "./style.module.scss";
+import { useAppSelector } from "shared/lib";
+import { selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
 
 
 interface IFullscreenTrack {
-    readonly activeTab: "track" | "devices" | "queue",
     readonly isLiked: boolean,
-    readonly setIsLiked: (state: boolean) => void;
+    readonly handleLike: () => Promise<void>;
 }
 
-export const FullscreenTrack: FC<IFullscreenTrack> = ({ activeTab, isLiked, setIsLiked }) => {
+export const FullscreenTrack: FC<IFullscreenTrack> = ({ isLiked, handleLike }) => {
+    const openedMenu = useAppSelector(selectPlayerOpenedMenu);
     const { adapter } = usePlaybackAdapter();
-
-    const handleLike = async () => {
-        try {
-            if (isLiked) {
-                await removeTracksFromLibrary([adapter.getTrackID()]);
-            } else {
-                await saveTracksToLibrary([adapter.getTrackID()]);
-            }
-            setIsLiked(!isLiked);
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error(e)
-        }
-    }
-
     
+
     return (
         <div 
             className={clsx(
                 styles["fullscreen-track"], 
-                activeTab === "track" && styles["active"]
+                (openedMenu === "track" || (openedMenu !== "device" && openedMenu !== "queue")) && styles["active"]
             )}
         >
             {adapter.checkPlayback() 
@@ -48,30 +34,31 @@ export const FullscreenTrack: FC<IFullscreenTrack> = ({ activeTab, isLiked, setI
                         className={styles["fullscreen-track-image"]} 
                     />
                 </div>
-                <div className={styles["fullscreen-track-name-container"]}>
-                    <Title className={styles["fullscreen-track-name"]}>
-                        {adapter.getTrackName()}
-                    </Title>
-                    <button 
-                        className={clsx(
-                            styles["fullscreen-track-button"],
-                            isLiked && styles["liked"],
-                        )}
-                        onClick={async () => await handleLike()}
-                    >
-                        <LikeFilled width={40} height={40} className={styles["icon-like__filled"]} />
-                        <Like width={40} height={40} className={styles["icon-like"]} />
-                    </button>
+                <div className={styles["fullscreen-track-content"]}>
+                    <div className={styles["fullscreen-track-name-container"]}>
+                        <Title className={styles["fullscreen-track-name"]}>
+                            {adapter.getTrackName()}
+                        </Title>
+                        <button 
+                            className={clsx(
+                                styles["fullscreen-track-button"],
+                                isLiked && styles["liked"],
+                            )}
+                            onClick={async () => await handleLike()}
+                        >
+                            <LikeFilled width={40} height={40} className={styles["icon-like__filled"]} />
+                            <Like width={40} height={40} className={styles["icon-like"]} />
+                        </button>
+                    </div>
+                    <Subtitle className={styles["fullscreen-track-artist"]}>
+                        {adapter.getArtists().map(artist => artist.name).join(", ")}
+                    </Subtitle>
                 </div>
-                <Subtitle className={styles["fullscreen-track-artist"]}>
-                    {adapter.getArtists().map(artist => artist.name).join(", ")}
-                </Subtitle>
             </>
             :
             <Title className={styles["fullscreen-track-title"]}>
                 Play the track in one of the apps where Spotify is currently available
             </Title>}
-            
         </div>
     )
 }

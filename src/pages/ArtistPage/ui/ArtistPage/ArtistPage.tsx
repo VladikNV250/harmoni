@@ -43,8 +43,7 @@ import { ITrack } from "shared/api/track";
 import { ISimplifiedAlbum } from "shared/api/album";
 import { AlbumPreview } from "entities/album";
 import { TrackItem } from "entities/track";
-import { usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { ArtistControlPanel } from "../ArtistControlPanel/ArtistControlPanel";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
@@ -138,10 +137,11 @@ const ArtistPage: FC = () => {
     }
 
     const renderTracks = (tracks: ITrack[]) => {
-        return tracks.length > 0 && tracks.map((track) =>
+        return tracks.length > 0 && tracks.map((track, index) =>
             <TrackItem 
                 key={track.id}
                 track={track}
+                sequenceNumber={index + 1}
             />
         )
     }
@@ -167,12 +167,21 @@ const ArtistPage: FC = () => {
                     className={styles["artist-image"]} 
                 />
                 <div className={styles["artist-body"]}>
-                    <Title className={styles["artist-name"]}>
-                        {artist?.name ?? ""}
-                    </Title>
-                    <Description className={styles["artist-total"]}>
-                        {displayFollowers(artist?.followers.total)}
-                    </Description>
+                    <div className={styles["artist-body-container"]}>
+                        <Title className={styles["artist-name"]}>
+                            {artist?.name ?? ""}
+                        </Title>
+                        <h1 className={styles["artist-name__desktop"]}>
+                            {artist?.name ?? ""}
+                        </h1>
+                        <Description className={styles["artist-total"]}>
+                            {displayFollowers(artist?.followers.total)}
+                        </Description>
+                    </div>
+                    <ArtistControlPanel 
+                        artist={artist} 
+                        className={styles["control-panel__desktop"]} 
+                    />
                 </div>
                 <button 
                     className={styles["artist-button"]}
@@ -181,7 +190,10 @@ const ArtistPage: FC = () => {
                     <ArrowLeft width={40} height={40} />
                 </button>
             </div>
-            <ArtistControlPanel artist={artist} />
+            <ArtistControlPanel 
+                artist={artist} 
+                className={styles["control-panel__mobile"]}
+            />
             <NavigationTabs
                 tabs={tabs}
                 activeTab={activeTab}

@@ -314,8 +314,6 @@ export class ApiPlaybackAdapter implements IPlaybackAdapter {
         const contextUri = this.apiPlayback?.context?.uri ?? "";
         const trackUri = this.apiPlayback?.item?.uri ?? "";
 
-        // const contextType = contextUri.split(":")[1]; // spotify:artist:219103iasd -> artist
-
         if (isPlaying) {
             await pauseTrack()
         } else {

@@ -1,6 +1,37 @@
+@use "app/styles/breakpoints" as *;
+
 .layout {
     color: var(--primary);
     background: var(--bg-main);
     min-width: 100%;
-    min-height: 100vh;
+    max-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas: 
+        "header"
+        "content"
+        "player";
+    
+    @media (min-width: $desktop) {
+        grid-template-columns: 273px 1fr;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas: 
+        "sidebar header"
+        "sidebar content"
+        "sidebar player";
+    }
+
+    &-container {
+        grid-area: content;            
+        overflow-y: auto;
+    
+        @media (min-width: $desktop) {
+            border-radius: 10px;
+            border: 1px solid var(--bg-secondary);
+            margin-right: 10px;
+            scrollbar-width: none;
+            &::-webkit-scrollbar { display: none; }
+        }
+    }  
 }

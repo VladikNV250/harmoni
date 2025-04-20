@@ -91,7 +91,7 @@ export const EditMenu: FC<IEditMenu> = ({ playlist, setIsOpen, isOpen }) => {
             if (editData.name !== playlist.name || editData.description !== playlist.description) {
                 await changePlaylistDetails(playlist.id, {
                     name: editData.name ?? playlist.name,
-                    description: editData.description ?? playlist.description ?? "",
+                    description: editData?.description ?? "",
                 })
             }
 

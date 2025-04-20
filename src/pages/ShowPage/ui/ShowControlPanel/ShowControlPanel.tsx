@@ -26,12 +26,14 @@ import { usePlaybackAdapter } from "entities/playback";
 import { IShow } from "shared/api/show";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
+import clsx from "clsx";
 
 interface IShowControlPanel {
     readonly show: IShow | null,
+    readonly className?: string,
 }
 
-export const ShowControlPanel: FC<IShowControlPanel> = ({ show }) => {
+export const ShowControlPanel: FC<IShowControlPanel> = ({ show, className }) => {
     const dispatch = useAppDispatch();
     const libraryShows = useAppSelector(selectSavedShows);
     const { adapter } = usePlaybackAdapter();
@@ -43,7 +45,11 @@ export const ShowControlPanel: FC<IShowControlPanel> = ({ show }) => {
 
     const handlePlay = async () => {
         try {
-            await adapter.play({ context_uri: show?.uri ?? "" });
+            if (adapter.getContextURI() === show?.uri) {
+                await adapter.resume();
+            } else {
+                await adapter.play({ context_uri: show?.uri ?? "" });
+            }
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
@@ -65,13 +71,16 @@ export const ShowControlPanel: FC<IShowControlPanel> = ({ show }) => {
     }
 
     return (
-        <div className={styles["show-control-panel"]}>
+        <div className={clsx(
+            styles["show-control-panel"],
+            className
+        )}>
             <div className={styles["control-panel-button-container"]}>
                 <button 
                     className={styles["control-panel-button"]} 
                     onClick={async () => await handlePlay()}
                     >
-                    {adapter.getContextURI() === show?.uri ?
+                    {adapter.getContextURI() === show?.uri && adapter.getIsPlaying() ?
                     <Pause width={60} height={60} /> :
                     <Play width={60} height={60} />}
                 </button>

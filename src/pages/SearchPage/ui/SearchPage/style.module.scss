@@ -1,6 +1,12 @@
+@use "app/styles/breakpoints" as *;
+
 .search {
     padding-top: 53px;
     padding-bottom: 180px;
+    min-height: 100vh;
+    @media (min-width: $desktop) {
+        padding: 12px 0;
+    }
 
     &-header {
         position: fixed;
@@ -10,6 +16,9 @@
         padding: 12px 15px 6px;
         z-index: 10;
         background: var(--bg-main);
+        @media (min-width: $desktop) {
+            display: none;
+        }
     }
 
     &-browse {
@@ -31,6 +40,13 @@
         gap: 12px;
         grid-template-columns: repeat(2, minmax(auto, 170px));
         grid-auto-flow: row;
+        @media (min-width: $desktop) {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
     }
 
     &-loader {

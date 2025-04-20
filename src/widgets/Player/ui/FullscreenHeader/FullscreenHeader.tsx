@@ -5,19 +5,17 @@ import {
     DownIcon, 
     Playing 
 } from "shared/assets";
-import { useAppDispatch } from "shared/lib";
+import { useAppDispatch, useAppSelector } from "shared/lib";
 import { Text } from "shared/ui";
 import { playerSlice } from "widgets/Player/model/playerSlice";
 import { usePlaybackAdapter } from "entities/playback";
 import styles from "./style.module.scss";
+import { selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
 
 
-interface IFullscreenHeader {
-    readonly activeTab: "track" | "devices" | "queue"
-}
-
-export const FullscreenHeader: FC<IFullscreenHeader> = ({ activeTab }) => {
+export const FullscreenHeader: FC = () => {
     const dispatch = useAppDispatch();
+    const openedMenu = useAppSelector(selectPlayerOpenedMenu);
     const { toggleFullscreenMode } = playerSlice.actions;
     const { adapter } = usePlaybackAdapter();
 
@@ -35,7 +33,7 @@ export const FullscreenHeader: FC<IFullscreenHeader> = ({ activeTab }) => {
                 <div 
                     className={clsx(
                         styles["fullscreen-header-body"], 
-                        activeTab === "track" && styles["active"]
+                        openedMenu === "track" && styles["active"]
                     )}
                 >
                     <Album width={24} height={24} />
@@ -46,7 +44,7 @@ export const FullscreenHeader: FC<IFullscreenHeader> = ({ activeTab }) => {
                 <div 
                     className={clsx(
                         styles["fullscreen-header-body"], 
-                        activeTab !== "track" && styles["active"]
+                        openedMenu !== "track" && styles["active"]
                     )}
                 >
                     <Playing width={24} height={24} style={{color: `var(--primary)`}} />

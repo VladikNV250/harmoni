@@ -1,6 +1,11 @@
+import { 
+    ChangeEvent, 
+    FC, 
+    InputHTMLAttributes, 
+    useState 
+} from "react";
+import { SearchIcon } from "shared/assets";
 import clsx from "clsx";
-import { ChangeEvent, FC, InputHTMLAttributes, useState } from "react";
-import Search from "shared/assets/icons/search-big.svg?react";
 import styles from "./style.module.scss";
 
 
@@ -31,7 +36,7 @@ export const SearchInput: FC<ISearchInput> = (props) => {
                 placeholder={placeholder}
                 onChange={onChange ?? onChangeInputData}
             />
-            <Search width={35} height={35} className={styles["input-icon"]} />
+            <SearchIcon width={35} height={35} className={styles["input-icon"]} />
         </div>
         
     )

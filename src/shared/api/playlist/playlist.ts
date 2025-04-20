@@ -33,13 +33,13 @@ export const checkFollowedPlaylist = (playlistId: string): Promise<boolean[]> =>
 export const changePlaylistDetails = (
     playlistId: string,
     body: {
-        name?: string,
+        name: string,
         description?: string,
     }
 ): Promise<void> => {
     return apiInstance.put(ENDPOINT + `/${playlistId}`, {
-        name: body.name ?? null,
-        description: body.description ?? null,
+        name: body.name,
+        description: body.description ?? "",
     })
 }
 
@@ -121,7 +121,7 @@ export const createPlaylist = (
             name: body.name,
             public: body.public ?? null,
             collaborative: body.collaborative ?? null,
-            description: body.description ?? null,
+            description: body.description ?? "",
         }
     )
 }

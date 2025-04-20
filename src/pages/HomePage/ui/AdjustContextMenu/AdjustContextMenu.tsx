@@ -1,47 +1,73 @@
 import { FC } from "react";
-import { Description, DragDownMenu, Paragraph, Switch } from "shared/ui"
-import { AddSimple } from "shared/assets";
+import { BottomSheet, Description, Paragraph, Switch } from "shared/ui"
 import { useTheme } from "entities/theme";
 import { FeedList, feedSlice, selectFeedUserTracks } from "entities/feed";
-import { useAppDispatch, useAppSelector } from "shared/lib";
+import { useAppDispatch, useAppSelector, useWindowDimensions } from "shared/lib";
 import styles from "./style.module.scss";
+import clsx from "clsx";
 
 interface IAdjustContextMenu {
     readonly isOpen?: boolean;
-    readonly setIsOpen?: (isOpen: boolean) => void;
+    readonly setIsOpen: (state: boolean) => void;
 }
 
-export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setIsOpen }) => {
+export const AdjustContextMenu: FC<IAdjustContextMenu> = ({ isOpen = false, setIsOpen, }) => {
     const { theme } = useTheme();
     const userTracks = useAppSelector(selectFeedUserTracks);
     const dispatch = useAppDispatch();
     const { setShowForUser } = feedSlice.actions;
+    const { width } = useWindowDimensions();
 
     return (
-        <DragDownMenu isOpen={isOpen} setIsOpen={setIsOpen} className={theme}>
+        width >= 768 
+        ?
+        <div className={clsx(
+            styles["context-menu"],
+            isOpen && styles["active"]
+        )}>
             <div className={styles["menu-container"]} onClick={(e) => e.stopPropagation()}>
-                <Paragraph className={styles["menu-title"]}>Customize Feed</Paragraph>
-                <div className={styles["menu-line"]} />
+                <header className={styles["menu-header"]}>
+                    <Paragraph className={styles["menu-title"]}>Customize Feed</Paragraph>
+                    <div className={styles["menu-line"]} />
+                </header>
                 <div className={styles["menu-scroll-container"]}>
-                    <button 
-                        className={styles["menu-button"]} 
-                        >
-                        <AddSimple width={40} height={40} className={styles["button-icon"]} />
-                        Select from Library
-                    </button>
                     <FeedList />
                     <div className={styles["menu-content"]}>
                         <Description className={styles["menu-text"]}>
                             Allow Displaying User Tracks
                         </Description>
                         <Switch 
-                            active={userTracks.showForUser}
+                            active={userTracks?.showForUser ?? false}
                             setActive={(active: boolean) => dispatch(setShowForUser(active))} 
-                            disabled={userTracks.items.length === 0}
+                            disabled={(userTracks?.items?.length ?? 0) === 0}
                         />
                     </div>
                 </div>
             </div>
-        </DragDownMenu>
+        </div>
+        :
+        <BottomSheet
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            className={theme}
+        >
+            <div className={styles["menu-container"]} onClick={(e) => e.stopPropagation()}>
+                <Paragraph className={styles["menu-title"]}>Customize Feed</Paragraph>
+                <div className={styles["menu-line"]} />
+                <div className={styles["menu-scroll-container"]}>
+                    <FeedList />
+                    <div className={styles["menu-content"]}>
+                        <Description className={styles["menu-text"]}>
+                            Allow Displaying User Tracks
+                        </Description>
+                        <Switch 
+                            active={userTracks?.showForUser ?? false}
+                            setActive={(active: boolean) => dispatch(setShowForUser(active))} 
+                            disabled={(userTracks?.items?.length ?? 0) === 0}
+                        />
+                    </div>
+                </div>
+            </div>
+        </BottomSheet>
     )
 }

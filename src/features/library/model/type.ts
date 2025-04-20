@@ -13,6 +13,10 @@ export interface ILibraryState {
     episodes: ISavedEpisode[],
     folders: IFolder[],
     
+    filter: TLibraryFilter,
+
     loading: boolean,
     error: RejectedDataType | null,
 }
+
+export type TLibraryFilter = "all" | "folder" | "playlist" | "album" | "show" | "artist";

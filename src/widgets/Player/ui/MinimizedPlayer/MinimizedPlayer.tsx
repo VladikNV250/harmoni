@@ -1,7 +1,6 @@
 import { 
     CSSProperties, 
     FC, 
-    MouseEvent,
 } from "react";
 import { 
     AddToQueue,
@@ -16,15 +15,14 @@ import {
     useAppSelector, 
     usePress 
 } from "shared/lib";
+import { 
+    usePlay, 
+    useQueue 
+} from "widgets/Player/lib/player/player";
 import { Description } from "shared/ui";
 import { playerSlice } from "widgets/Player/model/playerSlice";
-import { IPlayback, usePlaybackAdapter } from "entities/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { selectUser } from "entities/user";
-import { toast } from "react-toastify";
-import { removeTracksFromLibrary, saveTracksToLibrary } from "shared/api/user";
-import { addItemToQueue } from "features/queue";
-import { getAvailableDevices } from "features/device";
-import { fetchPlaybackState } from "entities/playback/api/playback";
 import { PLAYBACK_NAME } from "shared/consts";
 import clsx from "clsx";
 import styles from "./style.module.scss";
@@ -32,69 +30,26 @@ import styles from "./style.module.scss";
 
 interface IMinimizedPlayer {
     readonly color: string,
-    readonly chooseTab: (tab: "devices" | "queue" | "track") => void,
     readonly isLiked: boolean,
-    readonly setIsLiked: (state: boolean) => void;
+    readonly handleLike: () => Promise<void>;
 }
 
-export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, chooseTab, isLiked, setIsLiked }) => {
+export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, isLiked, handleLike }) => {
     const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
-    const { toggleFullscreenMode } = playerSlice.actions;
+    const { toggleFullscreenMode, setOpenedMenu } = playerSlice.actions;
     const { isPressed, startPress, endPress, clearPressTime } = usePress();
-    const { adapter, apiPlayback, setApiPlayback } = usePlaybackAdapter();
+    const { adapter, setApiPlayback } = usePlaybackAdapter();
      
+    const addItemToQueueHandle = useQueue();
+    const handlePlay = usePlay();
+
     const handleClick = async () => {
         if (!isPressed) {
+            dispatch(setOpenedMenu("track"))
             dispatch(toggleFullscreenMode());
             setApiPlayback?.(await fetchPlaybackState());
         } 
-    }
-
-    const addItemToQueueHandle = async (uri: string) => {
-        if (uri === "") return;
-
-        try {
-            await addItemToQueue(uri);
-            await dispatch(getAvailableDevices());
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error("ADD-ITEM-TO-QUEUE", e);
-        }
-    }
-
-    const handlePlay = async (e: MouseEvent) => {
-        e.stopPropagation();
-
-        try {
-            const newIsPlaying = await adapter.resume();
-
-            if (apiPlayback) {
-                const newApiPlayback: IPlayback = {
-                    ...apiPlayback,
-                    is_playing: newIsPlaying
-                }
-    
-                setApiPlayback?.(newApiPlayback);
-            }
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error("PLAY", e);
-        }
-    }
-
-    const handleLike = async () => {
-        try {
-            if (isLiked) {
-                await removeTracksFromLibrary([adapter.getTrackID()]);
-            } else {
-                await saveTracksToLibrary([adapter.getTrackID()]);
-            }
-            setIsLiked(!isLiked);
-        } catch (e) {
-            toast.error("Something went wrong. Try again or reload the page.");
-            console.error(e)
-        }
     }
 
     return (
@@ -149,7 +104,7 @@ export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, chooseTab, isLike
                     onClick={(e) => {
                         e.stopPropagation(); 
                         dispatch(toggleFullscreenMode()); 
-                        chooseTab("devices")
+                        dispatch(setOpenedMenu("device"));
                     }}
                 >
                     <Device width={40} height={40} />
@@ -158,8 +113,11 @@ export const MinimizedPlayer: FC<IMinimizedPlayer> = ({ color, chooseTab, isLike
                 &&
                 <button 
                     className={styles["track-button"]} 
-                    onClick={async (e) => await handlePlay(e)}
                     disabled={user?.product !== "premium"}
+                    onClick={async (e) => {
+                        e.stopPropagation();
+                        await handlePlay()
+                    }}
                 >
                     {adapter.getIsPlaying()
                     ? <PauseSimple width={40} height={40} />

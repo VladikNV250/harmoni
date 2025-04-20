@@ -1,9 +1,14 @@
+@use "app/styles/breakpoints" as *;
+
 .album-control-panel { 
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+    @media (min-width: $desktop) {
+        margin-bottom: 0;
+    }
 
     .control-panel-button {
         display: grid;
@@ -13,6 +18,7 @@
         justify-content: center;
         color: var(--fg-secondary);
         transition: color .2s ease-in-out;
+        position: relative;
 
         &:hover {
             color: var(--fg-primary);
@@ -40,6 +46,13 @@
             display: flex;
             align-items: center;
             gap: 14px;
+        }
+    }
+
+    .playlist-menu {
+        @media (min-width: $desktop) {
+            top: 0;
+            left: 100%;
         }
     }
 }

@@ -1,7 +1,8 @@
 .seek-bar {
-    background-color: transparent;
+    background: linear-gradient(90deg, var(--fg-primary) var(--value), rgba(219, 219, 219, 0.21) var(--value));
     width: 100%;
     height: 3px;
+    border-radius: 3px;
 
     &:focus {
         outline: none;
@@ -30,7 +31,6 @@
         background: var(--fg-primary);
         border: none;
         border-radius: 50%;
-        margin-top: -3.5px; /** (track height / 2) - (thumb height / 2) */
     }
 
     &.disabled {

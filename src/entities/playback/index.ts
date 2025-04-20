@@ -7,6 +7,7 @@ export {
     skipToNext,
     skipToPrevious,
     transferPlayback,
+    fetchPlaybackState,
 }  from "./api/playback";
 
 export { PlaybackProvider } from "./ui/PlaybackProvider/PlaybackProvider";

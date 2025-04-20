@@ -4,13 +4,13 @@ import { AdjustContextMenu } from "../AdjustContextMenu/AdjustContextMenu";
 import { Adjust } from "shared/assets";
 import { useAppDispatch, useAppSelector, useTabs } from "shared/lib";
 import { selectFeedLoading, TFeedFilter } from "entities/feed";
-import { Catalogue } from "../Catalogue/Catalogue";
 import { UserTrackList } from "../UserTrackList/UserTrackList";
 import { CategoryTabs, Loader } from "shared/ui";
-import { usePlaybackAdapter } from "entities/playback";
-import { fetchPlaybackState } from "entities/playback/api/playback";
+import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
+import { Catalogue } from "../Catalogue/Catalogue";
 import styles from "./style.module.scss";
+
 
 const HomePage: FC = () => {
     const { theme } = useTheme();
@@ -37,7 +37,6 @@ const HomePage: FC = () => {
     return (
         <div className={styles["home"]}>
             <Loader loading={feedLoading || userLoading} />
-            <AdjustContextMenu isOpen={isOpen} setIsOpen={setIsOpen} />
             <div className={styles["filter-bar"]}>
                 <CategoryTabs<TFeedFilter> 
                     tabs={["All", "Music", "Podcasts"]}
@@ -45,12 +44,15 @@ const HomePage: FC = () => {
                     chooseTab={chooseTab}
                     className={theme}
                 />
-                <button 
-                    className={styles["button-adjust"]} 
-                    onClick={() => setIsOpen(true)}
-                >
-                    <Adjust width={40} height={40} className={styles["icon"]} />
-                </button>                
+                <div className={styles["button-adjust-container"]}>
+                    <AdjustContextMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+                    <button 
+                        className={styles["button-adjust"]} 
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        <Adjust width={40} height={40} className={styles["icon"]} />
+                    </button> 
+                </div> 
             </div>
             <UserTrackList />
             <Catalogue type={activeTab} />

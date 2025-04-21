@@ -1,46 +1,49 @@
-import { 
-    CSSProperties, 
-    FC, 
-    useEffect, 
-    useState 
+import {
+    CSSProperties,
+    FC,
+    useEffect,
+    useState
 } from "react";
-import { 
-    Link, 
-    useNavigate, 
-    useParams 
+import {
+    Link,
+    useNavigate,
+    useParams
 } from "react-router";
-import { 
-    fetchEpisode, 
-    IEpisode 
-} from "shared/api/episode";
-import { 
-    calculateDuration, 
-    useAppDispatch, 
-    useAppSelector, 
-    useColor 
-} from "shared/lib";
-import { 
-    Description, 
-    Title, 
-    Loader,
-    DesktopTitle, 
-} from "shared/ui";
-import { 
-    getUserInfo, 
-    selectUser, 
-    selectUserLoading 
-} from "entities/user";
-import { 
-    ArrowLeft, 
-    PlaceholderImage 
-} from "shared/assets";
-import { 
-    getLibraryPlaylists, 
-    getLikedEpisodes, 
-    selectLibraryLoading, 
+import {
+    getLibraryPlaylists,
+    getLikedEpisodes,
+    selectLibraryLoading,
 } from "features/library";
 import { getDate } from "entities/episode";
-import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
+import { 
+    fetchPlaybackState, 
+    usePlaybackAdapter 
+} from "entities/playback";
+import {
+    getUserInfo,
+    selectUser,
+    selectUserLoading
+} from "entities/user";
+import {
+    fetchEpisode,
+    IEpisode
+} from "shared/api/episode";
+import {
+    calculateDuration,
+    useAppDispatch,
+    useAppSelector,
+    useColor
+} from "shared/lib";
+import {
+    Description,
+    Title,
+    Loader,
+    DesktopTitle,
+} from "shared/ui";
+import {
+    ArrowLeft,
+    PlaceholderImage
+} from "shared/assets";
 import { EpisodeControlPanel } from "../EpisodeControlPanel/EpisodeControlPanel";
 import styles from "./style.module.scss";
 
@@ -63,6 +66,7 @@ const EpisodePage: FC = () => {
         }
     }, [dispatch, user])
 
+    /** Loading episode data, updating library and playbackAPI on page load. */
     useEffect(() => {
         (async () => {
             try {
@@ -81,21 +85,21 @@ const EpisodePage: FC = () => {
     }, [id]);
 
     return (
-        <div 
-            className={styles["episode"]} 
-            style={{'--color': color} as CSSProperties}
+        <div
+            className={styles["episode"]}
+            style={{ '--color': color } as CSSProperties}
         >
             <Loader loading={episodeLoading || libraryLoading || userLoading} />
-            <button 
+            <button
                 className={styles["episode-button"]}
                 onClick={() => navigate(-1)}
             >
                 <ArrowLeft width={40} height={40} />
             </button>
             <div className={styles["episode-image-container"]}>
-                <img 
-                    src={episode?.images[0].url || PlaceholderImage} 
-                    className={styles["episode-image"]} 
+                <img
+                    src={episode?.images[0].url || PlaceholderImage}
+                    className={styles["episode-image"]}
                 />
             </div>
             <div className={styles["episode-content"]}>
@@ -105,15 +109,15 @@ const EpisodePage: FC = () => {
                 <DesktopTitle className={styles["episode-name__desktop"]}>
                     {episode?.name ?? ""}
                 </DesktopTitle>
-                <Link 
-                    to={`/shows/${episode?.show.id}`} 
+                <Link
+                    to={`/shows/${episode?.show.id}`}
                     className={styles["episode-publisher"]}
                 >
                     {episode?.show.publisher ?? ""}
                 </Link>
                 <div className={styles["episode-info-container"]}>
-                    <Link 
-                        to={`/shows/${episode?.show.id}`} 
+                    <Link
+                        to={`/shows/${episode?.show.id}`}
                         className={styles["episode-publisher__desktop"]}
                     >
                         {episode?.show.publisher ?? ""}
@@ -130,14 +134,14 @@ const EpisodePage: FC = () => {
                     <Title className={styles["episode-about"]}>
                         About Episode
                     </Title>
-                    <p 
-                        className={styles["episode-description"]} 
+                    <p
+                        className={styles["episode-description"]}
                         dangerouslySetInnerHTML={{
                             __html: episode?.html_description ?? ""
-                        }} 
+                        }}
                     />
                 </div>
-            </div>  
+            </div>
         </div>
     )
 }

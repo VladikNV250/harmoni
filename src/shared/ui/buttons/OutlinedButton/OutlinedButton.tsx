@@ -1,4 +1,7 @@
-import { ButtonHTMLAttributes, FC } from "react";
+import {
+    FC,
+    ButtonHTMLAttributes,
+} from "react";
 import clsx from "clsx";
 import styles from "./style.module.scss";
 
@@ -11,15 +14,15 @@ interface IOutlinedButton extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const OutlinedButton: FC<IOutlinedButton> = (props) => {
-    const { 
-        className, 
+    const {
+        className,
         children,
         onClick,
-        type, 
+        type,
     } = props;
-    
+
     return (
-        <button 
+        <button
             type={type ?? "button"}
             className={clsx(styles["button-outlined"], className)}
             onClick={onClick}

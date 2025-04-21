@@ -7,7 +7,7 @@ interface ISwitch {
     readonly active?: boolean;
     /** Function to change the active state */
     readonly setActive?: (active: boolean) => void;
-    /** Disable switch */
+    /** Controls whether switch is disabled */
     readonly disabled?: boolean;
 }
 
@@ -18,13 +18,13 @@ export const Switch: FC<ISwitch> = ({ active = false, setActive, disabled }) => 
     }
 
     return (
-        <label 
-            className={styles["switch"]} 
-            onClick={!disabled ? handleChange : () => {}}>
-            <input 
-                type="checkbox" 
-                checked={active && !disabled} 
-                onClick={(e) => e.stopPropagation()} 
+        <label
+            className={styles["switch"]}
+            onClick={!disabled ? handleChange : () => { }}>
+            <input
+                type="checkbox"
+                checked={active && !disabled}
+                onClick={(e) => e.stopPropagation()}
                 readOnly
             />
             <div className={styles["slider"]} />

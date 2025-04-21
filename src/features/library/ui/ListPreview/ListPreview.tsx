@@ -1,27 +1,36 @@
 import { FC } from "react";
-import { Description, Paragraph } from "shared/ui";
 import { useNavigate } from "react-router";
-import { IAlbum } from "shared/api/album";
-import { 
-    Album, 
-    ArtistIcon, 
-    FolderIcon, 
-    PlaceholderFolderImage, 
-    PlaceholderImage, 
-    PlaylistIcon 
+import { IFolder } from "entities/folder";
+import {
+    Description,
+    Paragraph
+} from "shared/ui";
+import {
+    Album,
+    ArtistIcon,
+    FolderIcon,
+    PlaceholderFolderImage,
+    PlaceholderImage,
+    PlaylistIcon
 } from "shared/assets";
-import styles from "./style.module.scss";
+import { IAlbum } from "shared/api/album";
 import { IShow } from "shared/api/show";
 import { IEpisode } from "shared/api/episode";
 import { IArtist } from "shared/api/artist";
 import { ISimplifiedPlaylist } from "shared/api/playlist";
-import { IFolder } from "entities/folder";
+import styles from "./style.module.scss";
 
 interface IListPreview {
     /** Rendered item */
     readonly item: ISimplifiedPlaylist | IArtist | IEpisode | IShow | IAlbum | IFolder;
 }
 
+/**
+ * @component ListPreview
+ * @description Component is responsible for render items (playlist, album, artist..) in the from of a list.
+ * 
+ * Typically used when you need to render an item in the "list" view mode.
+ */
 export const ListPreview: FC<IListPreview> = ({ item }) => {
     const { name, id, type } = item;
     const navigate = useNavigate();
@@ -51,11 +60,11 @@ export const ListPreview: FC<IListPreview> = ({ item }) => {
 
     const renderIcon = () => {
         switch (type) {
-            case "playlist": 
+            case "playlist":
                 return <PlaylistIcon width={40} height={40} />
-            case "artist": 
+            case "artist":
                 return <ArtistIcon width={40} height={40} />
-            case "episode": 
+            case "episode":
                 return <PlaylistIcon width={40} height={40} />
             case "show":
                 return <PlaylistIcon width={40} height={40} />
@@ -75,12 +84,12 @@ export const ListPreview: FC<IListPreview> = ({ item }) => {
                     </Description>,
                     <Description className={styles["item-text"]}>
                         {item.tracks.total > 0
-                        ? item.tracks.total + " tracks"
-                        : ""}
+                            ? item.tracks.total + " tracks"
+                            : ""}
                     </Description>
                 ]
             case "artist":
-                return null;                
+                return null;
             case "show":
                 return [
                     <Description className={styles['item-text']}>
@@ -88,52 +97,52 @@ export const ListPreview: FC<IListPreview> = ({ item }) => {
                     </Description>,
                     <Description className={styles["item-text"]}>
                         {item.episodes?.total > 0
-                        ? item.episodes?.total + " episodes"
-                        : ""}
+                            ? item.episodes?.total + " episodes"
+                            : ""}
                     </Description>
                 ]
             case "album":
                 return [
                     <Description className={styles['item-text']}>
-                        {item.artists.map(({name}) => name).join(', ') ?? ""}
+                        {item.artists.map(({ name }) => name).join(', ') ?? ""}
                     </Description>,
                     <Description className={styles['item-text']}>
                         {item.tracks.total > 0
-                        ? item.tracks.total + " songs"
-                        : ""}
+                            ? item.tracks.total + " songs"
+                            : ""}
                     </Description>
                 ]
             case "folder":
                 return (
                     <Description className={styles["item-text"]}>
                         {item.items.length > 0
-                        ? item.items.length + " playlists"
-                        : ""}
+                            ? item.items.length + " playlists"
+                            : ""}
                     </Description>
                 )
-            case "episode": 
+            case "episode":
                 return null;
         }
     }
 
     const getImage = () => {
-        const images = (item as IAlbum).images ;
+        const images = (item as IAlbum).images;
         if (images?.[0]?.url) return images[0].url;
-        
+
         switch (type) {
             case "folder": return PlaceholderFolderImage;
             default: return PlaceholderImage
         }
-    }   
+    }
 
     return (
         <div className={styles["item"]} onClick={navigateToItem}>
             <button className={styles["item-button"]}>
                 {renderIcon()}
             </button>
-            <img 
-                src={getImage()} 
-                className={styles["item-image"]} 
+            <img
+                src={getImage()}
+                className={styles["item-image"]}
             />
             <Paragraph className={styles["item-name"]}>
                 {name}

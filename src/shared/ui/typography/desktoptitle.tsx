@@ -1,6 +1,6 @@
 import { FC } from "react";
-import styles from "./style.module.scss";
 import clsx from "clsx";
+import styles from "./style.module.scss";
 
 interface IDesktopTitle {
     /** Text */

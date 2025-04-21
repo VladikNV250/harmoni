@@ -1,8 +1,8 @@
-import { 
-    ChangeEvent, 
-    FC, 
-    InputHTMLAttributes, 
-    useState 
+import {
+    ChangeEvent,
+    FC,
+    InputHTMLAttributes,
+    useState
 } from "react";
 import { SearchIcon } from "shared/assets";
 import clsx from "clsx";
@@ -26,30 +26,30 @@ export const ExpandableSearchInput: FC<IExpandableSearchInput> = (props) => {
     } = props;
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [inputData, setInputData] = useState<string>("");
-    
+
     const onChangeInputData = (e: ChangeEvent<HTMLInputElement>) => {
         setInputData(e.target.value);
     }
-    
+
     return (
         <div className={clsx(
-            styles["input-container"], 
+            styles["input-container"],
             className,
             isOpen && styles["opened"],
             direction === "left" ? styles["left"] : styles["right"],
         )}>
-            <button 
+            <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={clsx(
                     styles["input-button"],
                     direction === "left" ? styles["left"] : styles["right"],
                     isOpen && styles["opened"]
-                )} 
+                )}
             >
                 <SearchIcon width={40} height={40} className={styles["input-icon"]} />
             </button>
-            <input 
-                type="text" 
+            <input
+                type="text"
                 className={clsx(
                     styles["input"],
                     direction === "left" ? styles["left"] : styles["right"],

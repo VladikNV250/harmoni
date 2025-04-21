@@ -22,7 +22,9 @@ export interface IFeedState {
 }
 
 export interface IFeed {
+    /** Name of feed. */
     name: string,
+    /** List of feed items. */
     items: (
         IPlaylist | 
         IAlbum | 
@@ -30,11 +32,18 @@ export interface IFeed {
         IShow | 
         IEpisode
     )[],
+    /** Hidden object */
     hidden: {
+        /** Whether feed is hidden. */
         isHidden: boolean,
+        /** If true, user cannot change visibility of feed. */
         locked: boolean,
     },
-    order: number, // negative order means feed is pinned, positive is unpinned    
+    /** Sequence number in list of feeds.
+     * - negative order means feed is pinned
+     * - positive order means feed is unpinned
+     */
+    order: number,    
 }
 
 export type TFeedFilter = "All" | "Music" | "Podcasts"

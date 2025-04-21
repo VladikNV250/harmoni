@@ -1,10 +1,14 @@
-import { ButtonHTMLAttributes, FC, MouseEventHandler } from "react";
-import clsx from "clsx";
-import styles from "./style.module.scss";
+import {
+    FC,
+    ButtonHTMLAttributes,
+    MouseEventHandler
+} from "react";
+import { Link } from "react-router";
 import { TIconComponent } from "shared/types";
 import { Paragraph } from "shared/ui/typography/paragraph";
 import { RightIcon } from "shared/assets";
-import { Link } from "react-router";
+import clsx from "clsx";
+import styles from "./style.module.scss";
 
 
 interface IMenuButton extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -25,55 +29,55 @@ interface IMenuButton extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const MenuButton: FC<IMenuButton> = (props) => {
-    const { 
-        className, 
+    const {
+        className,
         onClick,
         disabled,
         Icon,
         text,
         hasNestedMenu = false,
-        isActive = false, 
+        isActive = false,
         buttonType = "button",
         to,
     } = props;
-    
+
     return (
-        buttonType === "link-button" 
-        ?
-        <Link
-            to={disabled ? "" : (to ?? "")} 
-            className={clsx(
-                styles["menu-link"],
-                disabled && styles["disabled"],
-                className
-            )}
-            onClick={disabled ? () => {} : onClick as MouseEventHandler}
-        >
-            <Icon width={40} height={40} />
-            <Paragraph>
-                {text}
-            </Paragraph>
-        </Link>
-        :
-        <button 
-            type={"button"}
-            className={clsx(
-                styles["menu-button"], 
-                className
-            )}
-            onClick={onClick}
-            onMouseLeave={e => e.stopPropagation()}
-            disabled={disabled ?? false}
-        >
-            <Icon 
-                width={40} 
-                height={40} 
-                className={clsx(isActive && styles['active'])} 
-            />
-            <Paragraph>
-                {text}
-            </Paragraph>
-            {hasNestedMenu && <RightIcon width={40} height={40} />}
-        </button>
+        buttonType === "link-button"
+            ?
+            <Link
+                to={disabled ? "" : (to ?? "")}
+                className={clsx(
+                    styles["menu-link"],
+                    disabled && styles["disabled"],
+                    className
+                )}
+                onClick={disabled ? () => { } : onClick as MouseEventHandler}
+            >
+                <Icon width={40} height={40} />
+                <Paragraph>
+                    {text}
+                </Paragraph>
+            </Link>
+            :
+            <button
+                type={"button"}
+                className={clsx(
+                    styles["menu-button"],
+                    className
+                )}
+                onClick={onClick}
+                onMouseLeave={e => e.stopPropagation()}
+                disabled={disabled ?? false}
+            >
+                <Icon
+                    width={40}
+                    height={40}
+                    className={clsx(isActive && styles['active'])}
+                />
+                <Paragraph>
+                    {text}
+                </Paragraph>
+                {hasNestedMenu && <RightIcon width={40} height={40} />}
+            </button>
     )
 }

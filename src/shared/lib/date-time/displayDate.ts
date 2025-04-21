@@ -7,6 +7,31 @@ const DEFAULT_OPTIONS = {
     useShortMonth: false,
 }
 
+/**
+ * @function displayDate
+ * @description Formats an raw date based on Spotify's precision rules. 
+ * 
+ * Typically used for album's or episode's release date to convert into better UI string format.
+ * 
+ * @param {string} date Raw date in the format "YYYY-MM-DD" (e.g, "1981-02-27")
+ * @param {"year" | "month" | "day"} [precision="year"] Precision of the input date. If precision "month", date will be format "1981-02".  
+ * @param {{
+ *  showMonth?: boolean,
+ *  showYear?: boolean,
+ *  showDay?: boolean,
+ *  useShortMonth?: boolean
+ * }} options Optional formatting options:
+ * - `showMonth` - Whether to include the month in the output.
+ * - `showYear` - Whether to include the year.
+ * - `showDay` - Whether to include the day.
+ * - `useShortMonth` - Whether to use short month names (e.g., "Aug" instead of "August").
+ * 
+ * @returns {string} Formatted date based on precision and formatting options.
+ * 
+ * @example
+ * displayDate("1991-08-24", "day", { useShortMonth: true }); // "24 Aug 1991"
+ * displayDate("1981-02", "month") // "February 1981"
+ */
 export const displayDate = (
     date: string = "", 
     precision: "year" | "month" | "day" = "year",

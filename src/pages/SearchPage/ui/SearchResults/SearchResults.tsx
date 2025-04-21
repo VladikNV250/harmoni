@@ -1,44 +1,39 @@
-import { useTheme } from "entities/theme";
-import { 
-    selectSearch, 
-    TSearchFilter 
-} from "features/search";
-import { 
+import {
     FC,
     useMemo,
 } from "react";
-import { 
-    useAppSelector, 
-    useTabs, 
-    useWindowDimensions
-} from "shared/lib";
-import { CategoryTabs, Title } from "shared/ui";
-import { 
-    selectFollowedArtists, 
-    selectLikedEpisodes, 
-    selectLikedTracks, 
-    selectSavedAlbums, 
-    selectSavedPlaylists, 
-    selectSavedShows 
-} from "features/library";
-import { SearchItem } from "../SearchItem/SearchItem";
-import styles from "./style.module.scss";
+import {
+    selectSearch,
+    TSearchFilter
+} from "features/search";
+import { TrackItem } from "features/track";
+import { useTheme } from "entities/theme";
 import { AlbumPreview } from "entities/album";
 import { ArtistPreview } from "entities/artist";
 import { PlaylistPreview } from "entities/playlist";
 import { EpisodePreview } from "entities/episode";
 import { ShowPreview } from "entities/show";
-import { TrackItem } from "entities/track";
+import {
+    useAppSelector,
+    useTabs,
+    useWindowDimensions
+} from "shared/lib";
+import {
+    CategoryTabs,
+    Title
+} from "shared/ui";
+import { SearchItem } from "../SearchItem/SearchItem";
+import styles from "./style.module.scss";
 
 
+/**
+ * @component SearchResults
+ * @description Component responsible for rendering search results grouped by content type 
+ * (tracks, albums, artists, playlists, shows, episodes), supporting category tabs and responsive 
+ * layout. Displays compact previews for mobile and detailed components for desktop.
+ */
 export const SearchResults: FC = () => {
     const search = useAppSelector(selectSearch);
-    const savedPlaylists = useAppSelector(selectSavedPlaylists);
-    const savedAlbums = useAppSelector(selectSavedAlbums);
-    const savedShows = useAppSelector(selectSavedShows);
-    const savedArtists = useAppSelector(selectFollowedArtists);
-    const savedTracks = useAppSelector(selectLikedTracks);
-    const savedEpisodes = useAppSelector(selectLikedEpisodes);
     const tabs: TSearchFilter[] = ["All", "Songs", "Albums", "Artists", "Playlists", "Podcasts"];
     const { theme } = useTheme();
     const { activeTab, chooseTab } = useTabs<TSearchFilter, "All">("All");
@@ -50,11 +45,11 @@ export const SearchResults: FC = () => {
 
     const renderTracks = (limit: number = search.tracks.length) => {
         if (search.tracks.length > 0) {
-            return search.tracks.filter(item => item).map((item, index) => 
+            return search.tracks.filter(item => item).map((item, index) =>
                 index < limit &&
                 (isDesktop
                     ?
-                    <TrackItem 
+                    <TrackItem
                         key={item.id}
                         track={item}
                         sequenceNumber={index + 1}
@@ -65,30 +60,28 @@ export const SearchResults: FC = () => {
                     <SearchItem
                         key={item.id}
                         item={item}
-                        isLiked={savedTracks.findIndex(({ track }) => track.id === item.id) !== -1}
                         artists={item.artists}
                     />
                 )
-            )    
+            )
         }
     }
 
     const renderAlbums = () => {
         if (search.albums.length > 0) {
-            return search.albums.filter(item => item).map(item => 
+            return search.albums.filter(item => item).map(item =>
                 isDesktop
-                ?
-                <AlbumPreview 
-                    key={item.id}
-                    album={item}
-                />
-                :
-                <SearchItem
-                    key={item.id}
-                    item={item}
-                    isLiked={savedAlbums.findIndex(({ album }) => album.id === item.id) !== -1}
-                    artists={item.artists}
-                />
+                    ?
+                    <AlbumPreview
+                        key={item.id}
+                        album={item}
+                    />
+                    :
+                    <SearchItem
+                        key={item.id}
+                        item={item}
+                        artists={item.artists}
+                    />
             )
         }
     }
@@ -97,17 +90,16 @@ export const SearchResults: FC = () => {
         if (search.artists.length > 0) {
             return search.artists.filter(item => item).map(item =>
                 isDesktop
-                ?
-                <ArtistPreview 
-                    key={item.id}
-                    artist={item}
-                />
-                :
-                <SearchItem
-                    key={item.id}
-                    item={item}
-                    isLiked={savedArtists.findIndex((artist) => artist.id === item.id) !== -1}
-                />
+                    ?
+                    <ArtistPreview
+                        key={item.id}
+                        artist={item}
+                    />
+                    :
+                    <SearchItem
+                        key={item.id}
+                        item={item}
+                    />
             )
         }
     }
@@ -116,17 +108,16 @@ export const SearchResults: FC = () => {
         if (search.playlists.length > 0) {
             return search.playlists.filter(item => item).map(item =>
                 isDesktop
-                ?
-                <PlaylistPreview 
-                    key={item.id}
-                    playlist={item}
-                />
-                :
-                <SearchItem
-                    key={item.id}
-                    item={item}
-                    isLiked={savedPlaylists.findIndex((playlist) => playlist.id === item.id) !== -1}
-                />
+                    ?
+                    <PlaylistPreview
+                        key={item.id}
+                        playlist={item}
+                    />
+                    :
+                    <SearchItem
+                        key={item.id}
+                        item={item}
+                    />
             )
         }
     }
@@ -135,17 +126,16 @@ export const SearchResults: FC = () => {
         if (search.episodes.length > 0) {
             return search.episodes.filter(item => item).map(item =>
                 isDesktop
-                ?
-                <EpisodePreview 
-                    key={item.id}
-                    episode={item}
-                />
-                :
-                <SearchItem
-                    key={item.id}
-                    item={item}
-                    isLiked={savedEpisodes.findIndex(({ episode }) => episode.id === item.id) !== -1}
-                />
+                    ?
+                    <EpisodePreview
+                        key={item.id}
+                        episode={item}
+                    />
+                    :
+                    <SearchItem
+                        key={item.id}
+                        item={item}
+                    />
             )
         }
     }
@@ -154,18 +144,17 @@ export const SearchResults: FC = () => {
         if (search.shows.length > 0) {
             return search.shows.filter(item => item).map(item =>
                 isDesktop
-                ?
-                <ShowPreview 
-                    key={item.id}
-                    show={item}
-                />
-                :
-                <SearchItem
-                    key={item.id}
-                    item={item}
-                    isLiked={savedShows.findIndex(({ show }) => show.id === item.id) !== -1}
-                    publisher={item.publisher}
-                />
+                    ?
+                    <ShowPreview
+                        key={item.id}
+                        show={item}
+                    />
+                    :
+                    <SearchItem
+                        key={item.id}
+                        item={item}
+                        publisher={item.publisher}
+                    />
             )
         }
     }
@@ -214,32 +203,32 @@ export const SearchResults: FC = () => {
 
     return (
         <div className={styles["search-results"]}>
-            <CategoryTabs<TSearchFilter> 
+            <CategoryTabs<TSearchFilter>
                 tabs={tabs}
                 activeTab={activeTab}
                 chooseTab={chooseTab}
                 className={theme}
             />
             <div className={styles["search-container"]}>
-                {isDesktop 
-                ?
-                    activeTab === "All"   ? renderAll()    :
-                    activeTab === "Songs" ? renderTracks() :
-                    <div className={styles["search-grid-container"]}>
-                        {activeTab === "Artists"   && renderArtists()}
-                        {activeTab === "Albums"    && renderAlbums()}
-                        {activeTab === "Playlists" && renderPlaylists()}
-                        {activeTab === "Podcasts"  && renderShows()}
-                    </div>
-                :
-                <>
-                    {(activeTab === "All" || activeTab === "Songs")     && renderTracks()}
-                    {(activeTab === "All" || activeTab === "Artists")   && renderArtists()}
-                    {(activeTab === "All" || activeTab === "Albums")    && renderAlbums()}
-                    {(activeTab === "All" || activeTab === "Playlists") && renderPlaylists()}
-                    {(activeTab === "All" || activeTab === "Songs")     && renderEpisodes()}
-                    {(activeTab === "All" || activeTab === "Podcasts")  && renderShows()}
-                </>
+                {isDesktop
+                    ?
+                    activeTab === "All" ? renderAll() :
+                        activeTab === "Songs" ? renderTracks() :
+                            <div className={styles["search-grid-container"]}>
+                                {activeTab === "Artists" && renderArtists()}
+                                {activeTab === "Albums" && renderAlbums()}
+                                {activeTab === "Playlists" && renderPlaylists()}
+                                {activeTab === "Podcasts" && renderShows()}
+                            </div>
+                    :
+                    <>
+                        {(activeTab === "All" || activeTab === "Songs") && renderTracks()}
+                        {(activeTab === "All" || activeTab === "Artists") && renderArtists()}
+                        {(activeTab === "All" || activeTab === "Albums") && renderAlbums()}
+                        {(activeTab === "All" || activeTab === "Playlists") && renderPlaylists()}
+                        {(activeTab === "All" || activeTab === "Songs") && renderEpisodes()}
+                        {(activeTab === "All" || activeTab === "Podcasts") && renderShows()}
+                    </>
                 }
             </div>
         </div>

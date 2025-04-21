@@ -1,61 +1,64 @@
-import { 
+import {
     ChangeEvent,
-    CSSProperties, 
-    FC, 
-    useCallback, 
-    useEffect, 
-    useMemo, 
-    useState 
+    CSSProperties,
+    FC,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState
 } from "react";
-import { 
-    Link, 
-    useNavigate, 
-    useParams 
+import {
+    Link,
+    useNavigate,
+    useParams
 } from "react-router";
-import { 
-    fetchPlaylist, 
-    IPlaylist, 
-} from "shared/api/playlist";
-import { 
-    Description, 
-    DesktopTitle, 
-    ExpandableSearchInput, 
-    Loader, 
-    SearchInput, 
-    Subtitle, 
-    Title 
-} from "shared/ui";
-import { 
-    calculateDuration, 
-    useAppDispatch, 
-    useAppSelector, 
-    useColor, 
-    useDebounce
-} from "shared/lib";
-import { TrackItem } from "entities/track";
-import { PlaylistEpisodeItem } from "entities/episode";
-import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
-import { 
-    ArrowLeft,
-    PlaceholderImage, 
-    Sort 
-} from "shared/assets";
-import { 
-    getUserInfo, 
-    selectUser, 
-    selectUserLoading 
-} from "entities/user";
-import { 
-    getLibraryPlaylists, 
-    selectLibraryLoading, 
+import { TrackItem } from "features/track";
+import { PlaylistEpisodeItem } from "features/episode";
+import {
+    getLibraryPlaylists,
+    selectLibraryLoading,
 } from "features/library";
-import { PlaylistControlPanel } from "../PlaylistControlPanel/PlaylistControlPanel";
-import { 
+import {
     SortMenu,
-    TRACK_SORT_TYPES, 
-    TSortOrder, 
+    TRACK_SORT_TYPES,
+    TSortOrder,
     TTrackSortBy
 } from "features/sort";
+import {
+    getUserInfo,
+    selectUser,
+    selectUserLoading
+} from "entities/user";
+import {
+    fetchPlaybackState,
+    usePlaybackAdapter
+} from "entities/playback";
+import {
+    fetchPlaylist,
+    IPlaylist,
+} from "shared/api/playlist";
+import {
+    Description,
+    DesktopTitle,
+    ExpandableSearchInput,
+    Loader,
+    SearchInput,
+    Subtitle,
+    Title
+} from "shared/ui";
+import {
+    calculateDuration,
+    useAppDispatch,
+    useAppSelector,
+    useColor,
+    useDebounce
+} from "shared/lib";
+import {
+    ArrowLeft,
+    PlaceholderImage,
+    Sort
+} from "shared/assets";
+import { PlaylistControlPanel } from "../PlaylistControlPanel/PlaylistControlPanel";
 import styles from "./style.module.scss";
 
 
@@ -87,6 +90,7 @@ const PlaylistPage: FC = () => {
         [user, playlist]
     )
 
+    /** Loading playlist data, update user, library, and playbackAPI on page load */
     useEffect(() => {
         (async () => {
             try {
@@ -106,13 +110,13 @@ const PlaylistPage: FC = () => {
         })()
     }, [id, setApiPlayback, dispatch]);
 
-    const calculateTracksDuration = (tracks?: IPlaylist["tracks"]["items"]): string => {
-        let total_duration = 0;
+    const calculateTotalDuration = (tracks?: IPlaylist["tracks"]["items"]): string => {
+        let totalDuration = 0;
         tracks?.forEach(({ track }) => {
-            total_duration += track.duration_ms;
+            totalDuration += track.duration_ms;
         })
 
-        return calculateDuration(total_duration);
+        return calculateDuration(totalDuration);
     }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +140,7 @@ const PlaylistPage: FC = () => {
                 })
                 break;
             case "Duration":
-                sortedTracks = tracks.sort((a, b) => 
+                sortedTracks = tracks.sort((a, b) =>
                     a.track.duration_ms - b.track.duration_ms
                 )
                 break;
@@ -165,49 +169,49 @@ const PlaylistPage: FC = () => {
 
         if (sortedTracks.length > 0) {
             if (debouncedValue) {
-                return sortedTracks.map(({track}, index) => {
+                return sortedTracks.map(({ track }, index) => {
                     const lowerName = track.name?.toLowerCase();
                     const lowerValue = (debouncedValue as string).toLowerCase();
                     const isMatch = lowerName?.includes(lowerValue);
                     return isMatch && (
                         track.type === "track" ?
-                            <TrackItem 
-                                key={track.id} 
-                                track={track} 
+                            <TrackItem
+                                key={track.id}
+                                track={track}
                                 sequenceNumber={index + 1}
                                 showAlbum
                                 showImage
-                                contextUri={playlist?.uri} 
+                                contextUri={playlist?.uri}
                                 playlistId={isUserOwner ? playlist?.id : ""}
                             /> :
-                        track.type === "episode" ? 
+                            track.type === "episode" ?
+                                <PlaylistEpisodeItem
+                                    key={track.id}
+                                    episode={track}
+                                    playlistId={isUserOwner ? playlist?.id : ""}
+                                />
+                                : null
+                    )
+                })
+            } else {
+                return sortedTracks.map(({ track }, index) =>
+                    track.type === "track" ?
+                        <TrackItem
+                            key={track.id}
+                            track={track}
+                            sequenceNumber={index + 1}
+                            showAlbum
+                            showImage
+                            contextUri={playlist?.uri}
+                            playlistId={isUserOwner ? playlist?.id : ""}
+                        /> :
+                        track.type === "episode" ?
                             <PlaylistEpisodeItem
                                 key={track.id}
                                 episode={track}
                                 playlistId={isUserOwner ? playlist?.id : ""}
                             />
-                        : null
-                    )
-                })
-            } else {
-                return sortedTracks.map(({track}, index) =>
-                    track.type === "track" ?
-                        <TrackItem 
-                            key={track.id} 
-                            track={track}
-                            sequenceNumber={index + 1}
-                            showAlbum
-                            showImage
-                            contextUri={playlist?.uri} 
-                            playlistId={isUserOwner ? playlist?.id : ""}
-                        /> :
-                    track.type === "episode" ? 
-                        <PlaylistEpisodeItem
-                            key={track.id}
-                            episode={track}
-                            playlistId={isUserOwner ? playlist?.id : ""}
-                        />
-                    : null
+                            : null
                 )
             }
         } else {
@@ -220,7 +224,7 @@ const PlaylistPage: FC = () => {
     }, [debouncedValue, playlist?.id, playlist?.uri, sortTracks])
 
     return (
-        <div className={styles["playlist"]} style={{'--color': color} as CSSProperties}>
+        <div className={styles["playlist"]} style={{ '--color': color } as CSSProperties}>
             <Loader loading={playlistLoading || libraryLoading || userLoading} />
             <SortMenu<TTrackSortBy>
                 sort={sort}
@@ -228,29 +232,29 @@ const PlaylistPage: FC = () => {
                 sortTypes={TRACK_SORT_TYPES}
             />
             <header className={styles["playlist-header"]}>
-                <button 
+                <button
                     className={styles["header-button"]}
                     onClick={() => navigate(-1)}
                 >
                     <ArrowLeft width={40} height={40} />
                 </button>
-                <SearchInput 
+                <SearchInput
                     value={value}
                     onChange={handleChange}
-                    placeholder="Search playlist" 
-                    className={styles["playlist-search"]} 
+                    placeholder="Search playlist"
+                    className={styles["playlist-search"]}
                 />
-                <button 
+                <button
                     className={styles["header-button"]}
-                    onClick={() => setSort(prevState => ({...prevState, isOpen: true}))}
+                    onClick={() => setSort(prevState => ({ ...prevState, isOpen: true }))}
                 >
                     <Sort width={40} height={40} />
-                </button>   
+                </button>
             </header>
             <div className={styles["playlist-image-container"]}>
-                <img 
-                    src={playlist?.images?.[0].url || PlaceholderImage} 
-                    className={styles["playlist-image"]} 
+                <img
+                    src={playlist?.images?.[0].url || PlaceholderImage}
+                    className={styles["playlist-image"]}
                 />
             </div>
             <div className={styles["playlist-content"]}>
@@ -261,8 +265,8 @@ const PlaylistPage: FC = () => {
                     {playlist?.name ?? ""}
                 </DesktopTitle>
                 <div className={styles["playlist-description-container"]}>
-                    <Link 
-                        to={`/profile/${playlist?.owner.id}`} 
+                    <Link
+                        to={`/profile/${playlist?.owner.id}`}
                         className={styles["playlist-owner"]}
                     >
                         <span className={styles["by"]}>
@@ -271,23 +275,23 @@ const PlaylistPage: FC = () => {
                         {playlist?.owner.display_name ?? ""}
                     </Link>
                     {(playlist?.tracks.total ?? 0) > 0
-                    ?
-                    <>
-                        <Description className={styles["playlist-description"]}>
-                            {`${playlist?.tracks.total} Songs`}
-                        </Description>
-                        <Description className={styles["playlist-description"]}>
-                            {calculateTracksDuration(playlist?.tracks.items)}
-                        </Description>
-                    </>
-                    : null
+                        ?
+                        <>
+                            <Description className={styles["playlist-description"]}>
+                                {`${playlist?.tracks.total} Songs`}
+                            </Description>
+                            <Description className={styles["playlist-description"]}>
+                                {calculateTotalDuration(playlist?.tracks.items)}
+                            </Description>
+                        </>
+                        : null
                     }
                 </div>
                 <div className={styles["control-panel-container"]}>
                     <PlaylistControlPanel playlist={playlist} />
-                    <ExpandableSearchInput 
-                        value={value} 
-                        onChange={handleChange}    
+                    <ExpandableSearchInput
+                        value={value}
+                        onChange={handleChange}
                         placeholder={"Search playlist"}
                         direction="left"
                         className={styles["playlist-search__desktop"]}

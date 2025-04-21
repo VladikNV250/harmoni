@@ -13,17 +13,31 @@ interface ICategoryTabs<T = string> {
     readonly className?: string;
 }
 
+/**
+ * @component CategoryTabs
+ * 
+ * Component has custom type of tabs.
+ * @example
+ * // CategoryTabs with custom type of tabs
+ * type TFeedFilter = "All" | "Music" | "Podcasts"
+ * <CategoryTabs<TFeedFilter>
+ *   tabs={["All", "Music", "Podcasts"]}
+ *   activeTab={activeTab}
+ *   chooseTab={chooseTab}
+ *   className={theme}
+ * />
+ */
 export const CategoryTabs = <T,>({ tabs, activeTab, chooseTab, className }: ICategoryTabs<T>) => {
 
     const renderTabs = (items: typeof tabs) => {
-        return items.map((tab, index) => 
-            <div 
+        return items.map((tab, index) =>
+            <div
                 key={index}
                 onClick={() => chooseTab(tab)}
                 className={clsx(
-                    styles["tab"], 
+                    styles["tab"],
                     activeTab === tab && styles["active"]
-                )} 
+                )}
             >
                 <Text>
                     {tab as string ?? ""}
@@ -33,16 +47,15 @@ export const CategoryTabs = <T,>({ tabs, activeTab, chooseTab, className }: ICat
     }
 
     return (
-        <div 
+        <div
             className={clsx(
-                styles["tabs-container"], 
+                styles["tabs-container"],
                 className && styles[className]
             )}
         >
             <div className={styles["tabs-slider"]}>
                 {renderTabs(tabs)}
-            </div>            
+            </div>
         </div>
-        
     )
 }

@@ -1,13 +1,34 @@
-import { FC, useEffect, useState } from "react";
+import {
+    FC,
+    useEffect,
+    useState
+} from "react";
 import { useTheme } from "entities/theme";
-import { AdjustContextMenu } from "../AdjustContextMenu/AdjustContextMenu";
+import {
+    fetchPlaybackState,
+    usePlaybackAdapter
+} from "entities/playback";
+import {
+    getUserInfo,
+    selectUser,
+    selectUserLoading
+} from "entities/user";
+import {
+    selectFeedLoading,
+    TFeedFilter
+} from "entities/feed";
 import { Adjust } from "shared/assets";
-import { useAppDispatch, useAppSelector, useTabs } from "shared/lib";
-import { selectFeedLoading, TFeedFilter } from "entities/feed";
+import {
+    useAppDispatch,
+    useAppSelector,
+    useTabs
+} from "shared/lib";
+import {
+    CategoryTabs,
+    Loader
+} from "shared/ui";
+import { AdjustMenu } from "../AdjustMenu/AdjustMenu";
 import { UserTrackList } from "../UserTrackList/UserTrackList";
-import { CategoryTabs, Loader } from "shared/ui";
-import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
-import { getUserInfo, selectUser, selectUserLoading } from "entities/user";
 import { Catalogue } from "../Catalogue/Catalogue";
 import styles from "./style.module.scss";
 
@@ -33,26 +54,29 @@ const HomePage: FC = () => {
             setApiPlayback?.(await fetchPlaybackState());
         })()
     }, [setApiPlayback])
-    
+
     return (
         <div className={styles["home"]}>
             <Loader loading={feedLoading || userLoading} />
             <div className={styles["filter-bar"]}>
-                <CategoryTabs<TFeedFilter> 
+                <CategoryTabs<TFeedFilter>
                     tabs={["All", "Music", "Podcasts"]}
                     activeTab={activeTab}
                     chooseTab={chooseTab}
                     className={theme}
                 />
                 <div className={styles["button-adjust-container"]}>
-                    <AdjustContextMenu isOpen={isOpen} setIsOpen={setIsOpen} />
-                    <button 
-                        className={styles["button-adjust"]} 
+                    <AdjustMenu
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                    />
+                    <button
+                        className={styles["button-adjust"]}
                         onClick={() => setIsOpen(!isOpen)}
                     >
                         <Adjust width={40} height={40} className={styles["icon"]} />
-                    </button> 
-                </div> 
+                    </button>
+                </div>
             </div>
             <UserTrackList />
             <Catalogue type={activeTab} />

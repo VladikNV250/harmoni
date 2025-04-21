@@ -1,28 +1,28 @@
-import { 
-    ChangeEvent, 
-    FC 
+import {
+    ChangeEvent,
+    FC
 } from "react";
-import { 
-    Link, 
-    NavLink 
+import {
+    Link,
+    NavLink
 } from "react-router";
-import { 
-    HomeFilled, 
-    HomeIcon, 
-    PlaceholderProfileImage, 
-    SearchIcon 
-} from "shared/assets";
-import { 
-    useAppDispatch, 
-    useAppSelector 
-} from "shared/lib";
-import { 
-    searchSlice, 
-    selectSearchQuery 
-} from "features/search";
-import { Description } from "shared/ui";
-import { selectUser } from "entities/user";
 import { librarySlice } from "features/library";
+import {
+    searchSlice,
+    selectSearchQuery
+} from "features/search";
+import { selectUser } from "entities/user";
+import {
+    HomeFilled,
+    HomeIcon,
+    PlaceholderProfileImage,
+    SearchIcon
+} from "shared/assets";
+import {
+    useAppDispatch,
+    useAppSelector
+} from "shared/lib";
+import { Description } from "shared/ui";
 import clsx from "clsx";
 import styles from "./style.module.scss";
 
@@ -32,6 +32,11 @@ interface IDesktopNavbar {
     readonly className?: string
 }
 
+/**
+ * @component DesktopNavbar
+ * @description Component responsible for rendering navigation bar on desktop screens. 
+ * Has links and search input.
+ */
 export const DesktopNavbar: FC<IDesktopNavbar> = ({ className }) => {
     const user = useAppSelector(selectUser);
     const dispatch = useAppDispatch();
@@ -42,20 +47,20 @@ export const DesktopNavbar: FC<IDesktopNavbar> = ({ className }) => {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         dispatch(setQuery(value));
-    }    
+    }
 
     return (
-        <nav 
+        <nav
             className={clsx(
-                styles["desktop-navbar"], 
-                className, 
+                styles["desktop-navbar"],
+                className,
             )}
         >
             <ul className={styles["navbar-list"]}>
                 <li className={styles["list-item"]}>
                     <NavLink
                         to={`/`}
-                        className={({isActive}) => 
+                        className={({ isActive }) =>
                             `${styles["item-link"]} ${isActive ? styles["active"] : ""}`
                         }
                         onClick={() => dispatch(setFilter("all"))}
@@ -70,14 +75,14 @@ export const DesktopNavbar: FC<IDesktopNavbar> = ({ className }) => {
                 <li>
                     <NavLink
                         to={`/search`}
-                        className={({isActive}) => 
+                        className={({ isActive }) =>
                             `${styles["search-link"]} ${isActive ? styles["active"] : ""}`
                         }
                         onClick={() => dispatch(setFilter("all"))}
                     >
                         <SearchIcon width={40} height={40} className={styles["search-icon"]} />
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             className={styles["search-input"]}
                             value={query}
                             placeholder={"Search"}
@@ -86,9 +91,9 @@ export const DesktopNavbar: FC<IDesktopNavbar> = ({ className }) => {
                     </NavLink>
                 </li>
             </ul>
-            <Link 
-                to={`/profile`} 
-                className={styles["profile-link"]} 
+            <Link
+                to={`/profile`}
+                className={styles["profile-link"]}
                 onClick={() => dispatch(setFilter("all"))}
             >
                 <img src={user?.images?.[0]?.url ?? PlaceholderProfileImage} />

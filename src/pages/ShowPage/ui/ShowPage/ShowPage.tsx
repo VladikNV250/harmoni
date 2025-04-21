@@ -43,11 +43,11 @@ import {
     getLibraryShows, 
     selectLibraryLoading, 
 } from "features/library";
-import { EpisodeItem } from "entities/episode";
 import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { ISimplifiedEpisode } from "shared/api/episode";
 import { ShowControlPanel } from "../ShowControlPanel/ShowControlPanel";
 import styles from "./style.module.scss";
+import { EpisodeItem } from "features/episode";
 
 
 const ShowPage: FC = () => {
@@ -111,7 +111,7 @@ const ShowPage: FC = () => {
                     const lowerValue = (debouncedValue as string).toLowerCase();
                     const isMatch = lowerName?.includes(lowerValue);
                     return isMatch && (
-                        <EpisodeItem 
+                        <EpisodeItem
                             key={episode.id} 
                             episode={episode} 
                             showURI={show?.uri ?? ""}

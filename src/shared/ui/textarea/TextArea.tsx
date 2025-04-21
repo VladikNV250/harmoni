@@ -1,5 +1,10 @@
+import {
+    FC,
+    ChangeEvent,
+    InputHTMLAttributes,
+    useState
+} from "react";
 import clsx from "clsx";
-import { ChangeEvent, FC, InputHTMLAttributes, useState } from "react";
 import styles from "./style.module.scss";
 
 
@@ -17,14 +22,14 @@ export const TextArea: FC<ITextArea> = (props) => {
         className,
     } = props;
     const [inputData, setInputData] = useState<string>("");
-    
+
     const onChangeInputData = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setInputData(e.target.value);
     }
-    
+
     return (
         <div className={clsx(styles["textarea-container"], className)}>
-            <textarea 
+            <textarea
                 className={styles["textarea"]}
                 name={name}
                 value={value ?? inputData}
@@ -32,6 +37,6 @@ export const TextArea: FC<ITextArea> = (props) => {
                 onChange={onChange ?? onChangeInputData}
             />
         </div>
-        
+
     )
 }

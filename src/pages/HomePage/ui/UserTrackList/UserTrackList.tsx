@@ -1,15 +1,34 @@
-import { FC, useEffect } from "react"
-import { Description } from "shared/ui";
-import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
+import {
+    FC,
+    useEffect
+} from "react"
 import { useNavigate } from "react-router";
-import { ITrack } from "shared/api/track";
-import { useAppDispatch, useAppSelector } from "shared/lib";
-import { getUserTopTracks, selectFeedSettings, selectFeedUserTracks } from "entities/feed";
-import { Pause, Play } from "shared/assets";
+import {
+    getUserTopTracks,
+    selectFeedSettings,
+    selectFeedUserTracks
+} from "entities/feed";
 import { usePlaybackAdapter } from "entities/playback";
+import { Description } from "shared/ui";
+import { ITrack } from "shared/api/track";
+import {
+    useAppDispatch,
+    useAppSelector
+} from "shared/lib";
+import {
+    Pause,
+    PlaceholderImage,
+    Play
+} from "shared/assets";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
+/**
+ * @component UserTrackList
+ * @description Component responsible for rendering user top tracks.
+ * Clicking on the play/pause button of track you can play/resume track playback.
+ * Clicking on the track item itself you can go to the album track page. 
+ */
 export const UserTrackList: FC = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -34,19 +53,19 @@ export const UserTrackList: FC = () => {
         } catch (e) {
             toast.error("Something went wrong. Player may not be available at this time.")
             console.error("PLAY", e);
-        }        
+        }
     }
 
     const renderUserTracks = (items: ITrack[]) => {
-        return items.length > 0 && items.map(({album, name, artists, id, uri}) => 
+        return items.length > 0 && items.map(({ album, name, artists, id, uri }) =>
             <div className={styles["usertrack-card"]} key={id}>
-                <div 
-                    className={styles["card-content"]} 
+                <div
+                    className={styles["card-content"]}
                     onClick={() => navigate(`/albums/${album.id}`)}
                 >
-                    <img 
-                        src={album.images[0].url || PlaceholderImage} 
-                        className={styles["card-image"]} 
+                    <img
+                        src={album.images[0].url || PlaceholderImage}
+                        className={styles["card-image"]}
                     />
                     <div className={styles["card-body"]}>
                         <Description className={styles["card-title"]}>
@@ -57,13 +76,13 @@ export const UserTrackList: FC = () => {
                         </Description>
                     </div>
                 </div>
-                <button 
-                    className={styles["card-button"]} 
+                <button
+                    className={styles["card-button"]}
                     onClick={async () => await handlePlay(album.uri, uri)}
                 >
                     {adapter.getTrackName() === name ?
-                    <Pause width={40} height={40} /> :
-                    <Play width={40} height={40} />}
+                        <Pause width={40} height={40} /> :
+                        <Play width={40} height={40} />}
                 </button>
             </div>
         )

@@ -1,48 +1,60 @@
-import { 
-    FC, 
+import {
+    FC,
     useMemo,
-    useState, 
+    useState,
 } from "react";
-import { 
-    AddIcon, 
-    AddToPlaylist, 
-    AddToQueue, 
-    CheckFilled, 
-    Pause, 
-    Play 
-} from "shared/assets";
-import { 
-    useAppDispatch, 
-    useAppSelector 
-} from "shared/lib";
-import { 
-    addItemToQueue, 
-    getUserQueue 
-} from "features/queue";
-import { 
-    removeEpisodesFromLibrary, 
-    saveEpisodesToLibrary 
-} from "shared/api/user";
-import { 
-    createPlaylistThunk,
-    getLikedEpisodes, 
-    selectLikedEpisodes,
-    selectSavedPlaylists, 
-} from "features/library";
-import { usePlaybackAdapter } from "entities/playback";
-import { IEpisode } from "shared/api/episode";
-import { PlaylistMenu } from "entities/playlist";
-import { selectUser } from "entities/user";
-import { addItemsToPlaylist, fetchPlaylistItems, IPlaylist } from "shared/api/playlist";
 import { useNavigate } from "react-router";
+import {
+    addItemToQueue,
+    getUserQueue
+} from "features/queue";
+import {
+    createPlaylistThunk,
+    getLikedEpisodes,
+    selectLikedEpisodes,
+    selectSavedPlaylists,
+} from "features/library";
+import { PlaylistMenu } from "features/menus";
+import { usePlaybackAdapter } from "entities/playback";
+import { selectUser } from "entities/user";
+import {
+    AddIcon,
+    AddToPlaylist,
+    AddToQueue,
+    CheckFilled,
+    Pause,
+    Play
+} from "shared/assets";
+import {
+    useAppDispatch,
+    useAppSelector
+} from "shared/lib";
+import {
+    removeEpisodesFromLibrary,
+    saveEpisodesToLibrary
+} from "shared/api/user";
+import {
+    addItemsToPlaylist,
+    fetchPlaylistItems,
+    IPlaylist
+} from "shared/api/playlist";
+import { IEpisode } from "shared/api/episode";
 import { toast } from "react-toastify";
 import clsx from "clsx";
 import styles from "./style.module.scss";
 
 interface IEpisodeControlPanel {
+    /** Episode to which the control panel applied. */
     readonly episode: IEpisode | null;
 }
 
+/**
+ * @component EpisodeControlPanel
+ * @description Control panel for episode playback. Allows you to control playback, 
+ * save to the library, add to the queue, add to the playlist, or create a new one.
+ * 
+ * It adapts to the state of the episode: if it is already playing, it shows pause button, otherwise shows play button.
+ */
 export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -62,11 +74,11 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
             if (adapter.getTrackURI() === episode?.uri) {
                 await adapter.resume();
             } else {
-                await adapter.play({ 
+                await adapter.play({
                     context_uri: episode?.show?.uri ?? "",
                     offset: {
                         uri: episode?.uri ?? "",
-                    } 
+                    }
                 });
             }
         } catch (e) {
@@ -94,7 +106,7 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
     const addToQueueHandle = async () => {
         try {
             if (!episode) throw new Error("Episode doesn't exist");
-            
+
             await addItemToQueue(episode.uri);
             await dispatch(getUserQueue());
             toast.info("The episode have been added to the queue.");
@@ -113,10 +125,10 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
                     name: "New Playlist #" + (libraryPlaylists.length + 1),
                 }
             })).unwrap();
-    
+
             if (newPlaylist) {
                 await addItemsToPlaylist(newPlaylist.id, [episode.uri], 0);
-    
+
                 navigate(`/playlists/${newPlaylist.id}`);
                 setIsOpen(false);
             }
@@ -129,15 +141,16 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
     const addToPlaylist = async (playlistId: string) => {
         try {
             if (!playlistId || !episode?.id || !episode?.uri) throw new Error("PlaylistId or EpisodeId or EpisodeURI doesn't exist");
-            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
+            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({ track }) => track);
 
+            /** Check that the episode has not been added to the playlist to avoid adding the same episode twice. */
             if (playlistItems.findIndex(item => item.id === episode.id) === -1) {
                 await addItemsToPlaylist(playlistId, [episode.uri], 0);
-    
+
                 setIsOpen(false);
                 toast("The episode added to this playlist.");
             } else {
-                toast.warn("The episode have been in this playlist already.");                
+                toast.warn("The episode have been in this playlist already.");
             }
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page.");
@@ -149,13 +162,13 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
         <>
             <div className={styles["episode-control-panel"]}>
                 <div className={styles["control-panel-button-container"]}>
-                    <button 
-                        className={styles["control-panel-button"]} 
+                    <button
+                        className={styles["control-panel-button"]}
                         onClick={async () => await handlePlay()}
-                        >
+                    >
                         {adapter.getTrackURI() === episode?.uri && adapter.getIsPlaying() ?
-                        <Pause width={60} height={60} /> :
-                        <Play width={60} height={60} />}
+                            <Pause width={60} height={60} /> :
+                            <Play width={60} height={60} />}
                     </button>
                     <button
                         className={clsx(
@@ -167,11 +180,11 @@ export const EpisodeControlPanel: FC<IEpisodeControlPanel> = ({ episode }) => {
                         <AddIcon width={50} height={50} className={styles["icon"]} />
                         <CheckFilled width={50} height={50} className={styles["icon__active"]} />
                     </button>
-                    <button 
-                        className={styles["control-panel-button"]} 
+                    <button
+                        className={styles["control-panel-button"]}
                         onClick={() => setIsOpen(!isOpen)}
                     >
-                        <PlaylistMenu 
+                        <PlaylistMenu
                             isOpen={isOpen}
                             setIsOpen={setIsOpen}
                             onCreatePlaylist={addToNewPlaylist}

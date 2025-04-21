@@ -1,4 +1,7 @@
-import { ButtonHTMLAttributes, FC } from "react";
+import {
+    FC,
+    ButtonHTMLAttributes,
+} from "react";
 import clsx from "clsx";
 import styles from "./style.module.scss";
 
@@ -11,15 +14,15 @@ interface IFilledButton extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const FilledButton: FC<IFilledButton> = (props) => {
-    const { 
-        className, 
+    const {
+        className,
         children,
         onClick,
-        type, 
+        type,
     } = props;
-    
+
     return (
-        <button 
+        <button
             type={type ?? "button"}
             className={clsx(styles["button-filled"], className)}
             onClick={onClick}

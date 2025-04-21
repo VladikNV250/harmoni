@@ -1,46 +1,49 @@
-import { 
-    FC, 
-    useEffect, 
+import {
+    FC,
+    useEffect,
     useState
 } from "react";
-import { 
-    Loader, 
-} from "shared/ui";
-import { 
-    useAppDispatch, 
-    useAppSelector, 
-    useDebounce,
-    useWindowDimensions
-} from "shared/lib";
-import { 
+import {
     getLibraryAlbums,
     getLibraryArtists,
     getLibraryPlaylists,
     getLibraryShows,
     getLikedTracks,
-    selectLibraryLoading, 
-    useView 
+    selectLibraryLoading,
+    useView
 } from "features/library";
-import { 
-    getUserInfo, 
-    selectUserLoading 
+import {
+    getUserInfo,
+    selectUserLoading
 } from "entities/user";
-import { LibraryGroupList } from "../LibraryGroupList/LibraryGroupList";
+import {
+    fetchPlaybackState,
+    usePlaybackAdapter
+} from "entities/playback";
+import {
+    Loader,
+} from "shared/ui";
+import {
+    useAppDispatch,
+    useAppSelector,
+    useDebounce,
+    useWindowDimensions
+} from "shared/lib";
 import { LibraryHeader } from "../LibraryHeader/LibraryHeader";
-import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
-import styles from "./style.module.scss";
 import { LibraryFlatList } from "../LibraryFlatList/LibraryFlatList";
+import { LibraryGroupList } from "../LibraryGroupList/LibraryGroupList";
+import styles from "./style.module.scss";
 
 
 
 const LibraryPage: FC = () => {
     const dispatch = useAppDispatch();
     const { viewMode, switchMode } = useView();
-    const [value, setValue] = useState("");
-    const debouncedValue = useDebounce(value, 300);
+    const [query, setQuery] = useState("");
+    const debouncedQuery = useDebounce(query, 300);
     const libraryLoading = useAppSelector(selectLibraryLoading);
-    const userLoading = useAppSelector(selectUserLoading);     
-    const { setApiPlayback } = usePlaybackAdapter();  
+    const userLoading = useAppSelector(selectUserLoading);
+    const { setApiPlayback } = usePlaybackAdapter();
     const { width } = useWindowDimensions();
 
     useEffect(() => {
@@ -60,23 +63,23 @@ const LibraryPage: FC = () => {
     return (
         <div className={styles["library"]}>
             <Loader loading={libraryLoading || userLoading} />
-            <LibraryHeader 
-                value={value}
-                setValue={setValue}
+            <LibraryHeader
+                query={query}
+                setQuery={setQuery}
                 viewMode={viewMode}
                 switchMode={switchMode}
             />
-            {width >= 768 
-            ?
-            <LibraryFlatList 
-                query={`${debouncedValue}`}
-                viewMode={viewMode}
-            />
-            :
-            <LibraryGroupList 
-                query={`${debouncedValue}`}
-                viewMode={viewMode}
-            />
+            {width >= 768
+                ?
+                <LibraryFlatList
+                    query={`${debouncedQuery}`}
+                    viewMode={viewMode}
+                />
+                :
+                <LibraryGroupList
+                    query={`${debouncedQuery}`}
+                    viewMode={viewMode}
+                />
             }
         </div>
     )

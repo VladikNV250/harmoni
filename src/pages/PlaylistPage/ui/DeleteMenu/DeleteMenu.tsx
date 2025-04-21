@@ -1,30 +1,37 @@
 import { FC } from "react";
-import { 
-    FilledButton, 
-    Modal, 
-    Subtitle, 
-    TextButton, 
-    Title 
-} from "shared/ui";
-import { 
-    IPlaylist, 
-    unfollowPlaylist 
-} from "shared/api/playlist";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
-import { useAppDispatch } from "shared/lib";
 import { getLibraryPlaylists } from "features/library";
+import {
+    FilledButton,
+    Modal,
+    Subtitle,
+    TextButton,
+    Title
+} from "shared/ui";
+import {
+    IPlaylist,
+    unfollowPlaylist
+} from "shared/api/playlist";
+import { useAppDispatch } from "shared/lib";
+import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
 interface IDeleteMenu {
+    /** Id of the playlist that can be deleted */
     readonly id: IPlaylist["id"];
+    /** Controls whether menu is visible */
     readonly isOpen: boolean;
+    /** Callback toggle the menu's visibility.  */
     readonly setIsOpen: (isOpen: boolean) => void;
+    /** Called when user confirm deleting of playlist. */
     readonly onDelete?: () => void;
 }
 
-
-export const DeleteMenu: FC<IDeleteMenu> = ({id, isOpen, setIsOpen, onDelete}) => {   
+/**
+ * @component DeleteMenu
+ * @description Confirmation modal for deleting a user's playlist.
+ */
+export const DeleteMenu: FC<IDeleteMenu> = ({ id, isOpen, setIsOpen, onDelete }) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -44,25 +51,25 @@ export const DeleteMenu: FC<IDeleteMenu> = ({id, isOpen, setIsOpen, onDelete}) =
 
     return (
         <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-            <div className={styles["edit-wrapper"]}>
-                <div className={styles["edit-menu"]} onClick={(e) => e.stopPropagation()}>
-                    <Title  className={styles["edit-title"]}>
+            <div className={styles["delete-wrapper"]}>
+                <div className={styles["delete-menu"]} onClick={(e) => e.stopPropagation()}>
+                    <Title className={styles["delete-title"]}>
                         Do you really want to delete this playlist?
                     </Title>
-                    <div className={styles["edit-button-container"]}>
+                    <div className={styles["delete-button-container"]}>
                         <TextButton onClick={() => setIsOpen(false)}>
-                            <Subtitle className={styles["edit-button-text"]}>
+                            <Subtitle className={styles["delete-button-text"]}>
                                 Cancel
                             </Subtitle>
                         </TextButton>
                         <FilledButton onClick={async () => await handleDelete()}>
-                            <Subtitle className={styles["edit-button-text"]}>
+                            <Subtitle className={styles["delete-button-text"]}>
                                 Delete
                             </Subtitle>
                         </FilledButton>
                     </div>
                 </div>
-            </div>        
+            </div>
         </Modal>
     )
 }

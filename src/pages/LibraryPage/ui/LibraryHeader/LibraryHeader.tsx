@@ -1,42 +1,54 @@
-import { 
-    ChangeEvent, 
-    FC, 
-    useCallback 
+import {
+    ChangeEvent,
+    FC,
+    useCallback
 } from "react";
-import { 
-    Description, 
-    ExpandableSearchInput, 
-    SearchInput 
-} from "shared/ui";
-import { 
-    AddFolder,
-    AddToPlaylist,
-    GridIcon, 
-    ListIcon, 
-} from "shared/assets";
-import { 
-    useAppDispatch, 
-    useAppSelector 
-} from "shared/lib";
-import { 
-    createPlaylistThunk, 
-    librarySlice, 
-    selectFolders, 
-    selectSavedPlaylists 
-} from "features/library";
-import { selectUser } from "entities/user";
 import { shallowEqual } from "react-redux";
 import { useNavigate } from "react-router";
+import {
+    createPlaylistThunk,
+    librarySlice,
+    selectFolders,
+    selectSavedPlaylists
+} from "features/library";
+import { selectUser } from "entities/user";
+import {
+    Description,
+    ExpandableSearchInput,
+    SearchInput
+} from "shared/ui";
+import {
+    AddFolder,
+    AddToPlaylist,
+    GridIcon,
+    ListIcon,
+} from "shared/assets";
+import {
+    useAppDispatch,
+    useAppSelector
+} from "shared/lib";
 import styles from "./style.module.scss";
 
 interface ILibraryHeader {
-    readonly value: string;
-    readonly setValue: (value: string) => void;
-    readonly switchMode: () => void;
+    /** Search query string used to filter saved library items. */
+    readonly query: string;
+    /** Callback to change query string.  */
+    readonly setQuery: (value: string) => void;
+    /** View mode for displaying items: 
+     * - "list" - detailed row view (via ListPreview) 
+     * - "grid" - card preview (via each entity's Preview component) 
+     */
     readonly viewMode: "list" | "grid";
+    /** Callback to switch between viewing modes. */
+    readonly switchMode: () => void;
 }
 
-export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, switchMode }) => {
+/**
+ * @component LibraryHeader
+ * @description Header panel for the library that provides controls 
+ * for switching view mode, searching through saved items, and creating a new folder or playlist.
+ */
+export const LibraryHeader: FC<ILibraryHeader> = ({ query, setQuery, viewMode, switchMode }) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const playlists = useAppSelector(selectSavedPlaylists, shallowEqual);
@@ -53,9 +65,9 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
 
     const handleCreatePlaylist = useCallback(async () => {
         if (!user) return;
-            
+
         const playlist = await dispatch(createPlaylistThunk({
-            userId: user.id, 
+            userId: user.id,
             body: {
                 name: `New Playlist #${playlists.length + 1}`,
                 collaborative: false,
@@ -64,42 +76,42 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
             }
         })).unwrap();
 
-        navigate(`/playlists/${playlist.id}`)
+        navigate(`/playlists/${playlist.id}`);
     }, [dispatch, navigate, playlists.length, user])
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        setValue(value);
+        setQuery(value);
     }
 
     return (
         <header className={styles["library-header"]}>
             <div className={styles["library-header-container__one"]}>
-                <SearchInput 
+                <SearchInput
                     placeholder="Search in library"
-                    value={value}
+                    value={query}
                     onChange={handleChange}
-                    className={styles["library-header-input__mobile"]} 
+                    className={styles["library-header-input__mobile"]}
                 />
-                <button 
-                    className={styles["library-header-button"]} 
+                <button
+                    className={styles["library-header-button"]}
                     onClick={switchMode}
                 >
-                    {viewMode === "list" 
-                    ? <ListIcon width={40} height={40} />
-                    : <GridIcon width={40} height={40} />}
+                    {viewMode === "list"
+                        ? <ListIcon width={40} height={40} />
+                        : <GridIcon width={40} height={40} />}
                 </button>
-                <ExpandableSearchInput 
+                <ExpandableSearchInput
                     placeholder="Search in library"
-                    value={value}
+                    value={query}
                     onChange={handleChange}
                     className={styles["library-header-input__desktop"]}
                     direction="right"
                 />
             </div>
             <div className={styles["library-header-container__two"]}>
-                <button 
-                    className={styles["library-header-button"]} 
+                <button
+                    className={styles["library-header-button"]}
                     onClick={handleCreateFolder}
                 >
                     <AddFolder width={40} height={40} />
@@ -107,7 +119,7 @@ export const LibraryHeader: FC<ILibraryHeader> = ({ value, setValue, viewMode, s
                         Create folder
                     </Description>
                 </button>
-                <button 
+                <button
                     className={styles["library-header-button"]}
                     onClick={async () => await handleCreatePlaylist()}
                 >

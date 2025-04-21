@@ -1,11 +1,14 @@
 import { 
+    FC, 
+    useMemo 
+} from "react";
+import { 
     ListPreview, 
     selectFollowedArtists, 
     selectSavedAlbums, 
     selectSavedPlaylists, 
     selectSavedShows 
 } from "features/library";
-import { FC, useMemo } from "react";
 import { useAppSelector } from "shared/lib";
 import { ISimplifiedPlaylist } from "shared/api/playlist";
 import { IArtist } from "shared/api/artist";
@@ -14,9 +17,15 @@ import { IShow } from "shared/api/show";
 import styles from "./style.module.scss";
 
 interface ILibrarySearchResults {
+    /** Search query string to filter saved items. */
     readonly query: string;
 }
 
+/**
+ * @component LibrarySearchResults
+ * @description Component responsible for rendering flat list of library items
+ * that match the given search query.
+ */
 export const LibrarySearchResults: FC<ILibrarySearchResults> = ({ query }) => {
     const playlists = useAppSelector(selectSavedPlaylists);
     const albums = useAppSelector(selectSavedAlbums);

@@ -1,7 +1,14 @@
-import { FC, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { 
+    FC, 
+    useEffect 
+} from "react";
+import { 
+    useNavigate, 
+    useSearchParams 
+} from "react-router";
 import { currentToken } from "shared/api/authorization";
 
+/** This page is required to receive an access token after you have logged in to Spotify. */
 export const Callback: FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();

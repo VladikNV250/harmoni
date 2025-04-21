@@ -1,6 +1,11 @@
 import { IFeed, TFeedFilter } from "entities/feed"
 import { useEffect, useState } from "react"
 
+/**
+ * @hook useFilterFeeds
+ * @description Filter feeds depending on selected type.
+ * @returns {{[key: string]: IFeed}} Filtered feeds.
+ */
 export const useFilterFeeds = (
     feeds: {[key: string]: IFeed}, 
     type: TFeedFilter

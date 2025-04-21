@@ -1,10 +1,10 @@
-import clsx from "clsx";
 import { FC } from "react";
 import { NavLink } from "react-router";
 import { INavLinkType } from "shared/types";
 import { Text } from "shared/ui";
-import styles from "./style.module.scss";
 import { NAVIGATION_LINKS_MOBILE } from "shared/consts";
+import clsx from "clsx";
+import styles from "./style.module.scss";
 
 interface IMobileNavbar {
     /** Additional styles */
@@ -19,7 +19,7 @@ export const MobileNavbar: FC<IMobileNavbar> = ({ className, theme }) => {
             <li key={href} className={styles["list-item"]}>
                 <NavLink
                     to={`/${href}`}
-                    className={({isActive}) => 
+                    className={({ isActive }) =>
                         `${styles["item-link"]} ${isActive ? styles["active"] : ""}`
                     }
                 >
@@ -34,11 +34,11 @@ export const MobileNavbar: FC<IMobileNavbar> = ({ className, theme }) => {
     }
 
     return (
-        <nav 
+        <nav
             className={clsx(
-                styles["mobile-navbar"], 
+                styles["mobile-navbar"],
                 theme && styles[theme],
-                className, 
+                className,
             )}
         >
             <ul className={styles["navbar-list"]}>

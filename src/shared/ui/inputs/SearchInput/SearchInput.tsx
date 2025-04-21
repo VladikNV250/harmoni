@@ -1,8 +1,8 @@
-import { 
-    ChangeEvent, 
-    FC, 
-    InputHTMLAttributes, 
-    useState 
+import {
+    ChangeEvent,
+    FC,
+    InputHTMLAttributes,
+    useState
 } from "react";
 import { SearchIcon } from "shared/assets";
 import clsx from "clsx";
@@ -22,15 +22,15 @@ export const SearchInput: FC<ISearchInput> = (props) => {
         className,
     } = props;
     const [inputData, setInputData] = useState<string>("");
-    
+
     const onChangeInputData = (e: ChangeEvent<HTMLInputElement>) => {
         setInputData(e.target.value);
     }
-    
+
     return (
         <div className={clsx(styles["input-container"], className)}>
-            <input 
-                type="text" 
+            <input
+                type="text"
                 className={styles["input"]}
                 value={value ?? inputData}
                 placeholder={placeholder}
@@ -38,6 +38,6 @@ export const SearchInput: FC<ISearchInput> = (props) => {
             />
             <SearchIcon width={35} height={35} className={styles["input-icon"]} />
         </div>
-        
+
     )
 }

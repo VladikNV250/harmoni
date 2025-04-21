@@ -1,52 +1,67 @@
-import { 
-    FC, 
-    useCallback, 
-    useMemo 
+import {
+    FC,
+    useCallback,
+    useMemo
 } from "react";
-import { 
+import { useNavigate } from "react-router";
+import {
+    createPlaylistThunk,
+    librarySlice,
+    selectFolders,
+    selectSavedPlaylists
+} from "features/library";
+import { FolderMenu } from "features/folder";
+import { PlaylistMenu } from "features/menus";
+import { selectUser } from "entities/user";
+import {
     BottomSheet,
     ContextMenu,
-    MenuButton, 
+    MenuButton,
 } from "shared/ui";
-import { 
-    AddToPlaylist, 
-    Edit, 
-    FolderIcon, 
-    RemoveIcon 
+import {
+    AddToPlaylist,
+    Edit,
+    FolderIcon,
+    RemoveIcon
 } from "shared/assets";
-import { 
-    useAppDispatch, 
-    useAppSelector, 
-    useControlPanel, 
+import {
+    useAppDispatch,
+    useAppSelector,
+    useControlPanel,
     useWindowDimensions
 } from "shared/lib";
-import { 
-    createPlaylistThunk, 
-    librarySlice, 
-    selectFolders, 
-    selectSavedPlaylists 
-} from "features/library";
-import { 
-    addItemsToPlaylist, 
-    fetchPlaylistItems, 
-    IPlaylist 
+import {
+    addItemsToPlaylist,
+    fetchPlaylistItems,
+    IPlaylist
 } from "shared/api/playlist";
-import { PlaylistMenu } from "entities/playlist";
-import { DeleteMenu } from "../DeleteMenu/DeleteMenu";
 import { EditMenu } from "../EditMenu/EditMenu";
-import { useNavigate } from "react-router";
-import { selectUser } from "entities/user";
-import { FolderMenu } from "entities/folder";
+import { DeleteMenu } from "../DeleteMenu/DeleteMenu";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
 
 interface IMoreMenu {
+    /** Controls whether the menu is visible */
     readonly isOpen: boolean;
+    /** Callback toggle the menu's visibility */
     readonly setIsOpen: (state: boolean) => void;
+    /** Object of playlist */
     readonly playlist: IPlaylist | null;
 }
 
+/**
+ * @component MoreMenu
+ * @description Responsive menu of playlist page, which contains additional actions to interact with playlist. 
+ * On desktop (>=768): shows a dropdown context menu.
+ * On mobile: shows a bottom sheet.
+ * 
+ * Additional actions to interact with playlist:
+ * - Adding/removing playlist tracks from other playlist.
+ * - Adding/removing playlist from the folder.
+ * - Editing details of playlist.
+ * - Deleting user's playlist.
+ */
 export const MoreMenu: FC<IMoreMenu> = ({ isOpen, setIsOpen, playlist }) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -57,18 +72,18 @@ export const MoreMenu: FC<IMoreMenu> = ({ isOpen, setIsOpen, playlist }) => {
     const { width } = useWindowDimensions();
     const { controlPanel, updateControlPanel } = useControlPanel({
         playlistMenu: false,
-        folderMenu:   false,
-        deleteMenu:   false,
-        editMenu:     false,
+        folderMenu: false,
+        deleteMenu: false,
+        editMenu: false,
     } as Record<string, boolean>);
 
     const setPlaylistMenu = (state: boolean) => updateControlPanel('playlistMenu', state);
-    const setFolderMenu =   (state: boolean) => updateControlPanel('folderMenu', state);
-    const setDeleteMenu =   (state: boolean) => updateControlPanel('deleteMenu', state);
-    const setEditMenu =     (state: boolean) => updateControlPanel('editMenu', state);
+    const setFolderMenu = (state: boolean) => updateControlPanel('folderMenu', state);
+    const setDeleteMenu = (state: boolean) => updateControlPanel('deleteMenu', state);
+    const setEditMenu = (state: boolean) => updateControlPanel('editMenu', state);
 
     const findFolderIdByPlaylist = useCallback(() => {
-        const folder = folders.find(folder => 
+        const folder = folders.find(folder =>
             folder.items.some(item => item.id === playlist?.id)
         );
 
@@ -113,40 +128,40 @@ export const MoreMenu: FC<IMoreMenu> = ({ isOpen, setIsOpen, playlist }) => {
         try {
             if (!playlistId || !playlist) throw new Error("Playlist doesn't exist");
 
-            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
+            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({ track }) => track);
 
             const notAddedTrackURIs = playlist.tracks.items
                 .filter(({ track }) => playlistItems.findIndex(item => item.id === track.id) === -1)
                 .map(({ track }) => track.uri)
                 .filter(uri => uri !== undefined);
-            
-            
+
+
             if (notAddedTrackURIs.length > 0 && notAddedTrackURIs.length <= 100) {
                 await addItemsToPlaylist(playlistId, [...notAddedTrackURIs], 0);
-                
+
                 setPlaylistMenu(false);
                 toast("The songs from the playlist have been added to this playlist.");
             } else if (notAddedTrackURIs.length > 100) {
-                toast.warn("Cannot handle this operation. Tracks in playlist are over 100.");                
+                toast.warn("Cannot handle this operation. Tracks in playlist are over 100.");
             } else {
-                toast.warn("All songs from the playlist is already in this playlist.");                
-            }            
+                toast.warn("All songs from the playlist is already in this playlist.");
+            }
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("ADD-TO-PLAYLIST", e);
         }
     }
-    
+
     const removeFromFolderHandle = () => {
         if (!playlist) return;
         if (findFolderIdByPlaylist() !== null) {
             dispatch(removeFromFolder({
-                id: findFolderIdByPlaylist() ?? "", 
+                id: findFolderIdByPlaylist() ?? "",
                 itemId: playlist.id ?? ""
             }));
             toast("The playlist has been removed.");
         }
-    } 
+    }
 
     const addToNewFolder = () => {
         if (!playlist) return;
@@ -154,15 +169,15 @@ export const MoreMenu: FC<IMoreMenu> = ({ isOpen, setIsOpen, playlist }) => {
 
         const newFolderId = dispatch(createFolder("Folder #" + (folders.length + 1))).payload;
         dispatch(addToFolder({
-            id: newFolderId, 
+            id: newFolderId,
             item: playlist
         }));
         navigate(`/folders/${newFolderId}`);
     }
-    
+
     const addToFolderHandle = (folderID: string) => {
         if (!playlist) return;
-        removeFromFolderHandle();        
+        removeFromFolderHandle();
 
         dispatch(addToFolder({
             id: folderID,
@@ -175,122 +190,122 @@ export const MoreMenu: FC<IMoreMenu> = ({ isOpen, setIsOpen, playlist }) => {
     return (
         <>
             {width >= 768
-            ?
-            <ContextMenu 
-                className={styles["more-menu"]}
-                isMenuOpen={isOpen}
-                setIsMenuOpen={() => {
-                    setIsOpen(false);
-                    setPlaylistMenu(false);
-                    setFolderMenu(false);
-                }}
-                hideMainContent={(controlPanel.playlistMenu || controlPanel.folderMenu)}
-                hasNested
-                additionalElements={
-                    <>
-                        <PlaylistMenu 
-                            isOpen={controlPanel.playlistMenu}
-                            setIsOpen={setPlaylistMenu}
-                            onSelectPlaylist={addToPlaylist}
-                            onCreatePlaylist={addToNewPlaylist}
-                            isNested
-                        />
-                        <FolderMenu 
-                            isOpen={controlPanel.folderMenu}
-                            setIsOpen={setFolderMenu}
-                            onCreateFolder={addToNewFolder}
-                            onSelectFolder={addToFolderHandle}
-                            onRemoveFromFolder={removeFromFolderHandle}
-                            folderId={findFolderIdByPlaylist() ?? null}
-                            isNested
-                        />
-                    </>
-                }
-            >
-                <MenuButton 
-                    Icon={AddToPlaylist}
-                    text="Add to playlist"
-                    onClick={() => setPlaylistMenu(true)}
-                    hasNestedMenu
-                />
-                <MenuButton 
-                    Icon={FolderIcon}
-                    text="Add to folder"
-                    onClick={() => setFolderMenu(true)}
-                    hasNestedMenu
-                />
-                {isUserOwner && 
-                    <>
-                        <MenuButton 
-                            Icon={Edit}
-                            text="Edit details"
-                            onClick={() => setEditMenu(true)}
-                        />,
-                        <MenuButton 
-                            Icon={RemoveIcon}
-                            text="Delete"
-                            onClick={() => setDeleteMenu(true)}
-                        />
-                    </>
-                }
-            </ContextMenu>
-            :
-            <BottomSheet
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-            >
-                <MenuButton 
-                    Icon={AddToPlaylist}
-                    text="Add to playlist"
-                    onClick={() => setPlaylistMenu(true)}
-                />
-                <MenuButton 
-                    Icon={FolderIcon}
-                    text="Add to folder"
-                    onClick={() => setFolderMenu(true)}
-                />
-                {isUserOwner
                 ?
-                <>
-                    <MenuButton 
-                        Icon={Edit}
-                        text="Edit details"
-                        onClick={() => setEditMenu(true)}
+                <ContextMenu
+                    className={styles["more-menu"]}
+                    isMenuOpen={isOpen}
+                    setIsMenuOpen={() => {
+                        setIsOpen(false);
+                        setPlaylistMenu(false);
+                        setFolderMenu(false);
+                    }}
+                    hideMainContent={(controlPanel.playlistMenu || controlPanel.folderMenu)}
+                    hasNested
+                    additionalElements={
+                        <>
+                            <PlaylistMenu
+                                isOpen={controlPanel.playlistMenu}
+                                setIsOpen={setPlaylistMenu}
+                                onSelectPlaylist={addToPlaylist}
+                                onCreatePlaylist={addToNewPlaylist}
+                                isNested
+                            />
+                            <FolderMenu
+                                isOpen={controlPanel.folderMenu}
+                                setIsOpen={setFolderMenu}
+                                onCreateFolder={addToNewFolder}
+                                onSelectFolder={addToFolderHandle}
+                                onRemoveFromFolder={removeFromFolderHandle}
+                                folderId={findFolderIdByPlaylist() ?? null}
+                                isNested
+                            />
+                        </>
+                    }
+                >
+                    <MenuButton
+                        Icon={AddToPlaylist}
+                        text="Add to playlist"
+                        onClick={() => setPlaylistMenu(true)}
+                        hasNestedMenu
                     />
-                    <MenuButton 
-                        Icon={RemoveIcon}
-                        text="Delete"
-                        onClick={() => setDeleteMenu(true)}
+                    <MenuButton
+                        Icon={FolderIcon}
+                        text="Add to folder"
+                        onClick={() => setFolderMenu(true)}
+                        hasNestedMenu
                     />
-                </>
-                : null}
-                <PlaylistMenu 
-                    isOpen={controlPanel.playlistMenu}
-                    setIsOpen={setPlaylistMenu}
-                    onCreatePlaylist={addToNewPlaylist}
-                    onSelectPlaylist={addToPlaylist}
-                    playlistId={playlist?.id}
-                />
-                <FolderMenu 
-                    isOpen={controlPanel.folderMenu}
-                    setIsOpen={setFolderMenu}
-                    onCreateFolder={addToNewFolder}
-                    onSelectFolder={addToFolderHandle}
-                    onRemoveFromFolder={removeFromFolderHandle}
-                    folderId={findFolderIdByPlaylist() ?? null}
-                />
-            </BottomSheet>}
-            <DeleteMenu 
+                    {isUserOwner &&
+                        <>
+                            <MenuButton
+                                Icon={Edit}
+                                text="Edit details"
+                                onClick={() => setEditMenu(true)}
+                            />
+                            <MenuButton
+                                Icon={RemoveIcon}
+                                text="Delete"
+                                onClick={() => setDeleteMenu(true)}
+                            />
+                        </>
+                    }
+                </ContextMenu>
+                :
+                <BottomSheet
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                >
+                    <MenuButton
+                        Icon={AddToPlaylist}
+                        text="Add to playlist"
+                        onClick={() => setPlaylistMenu(true)}
+                    />
+                    <MenuButton
+                        Icon={FolderIcon}
+                        text="Add to folder"
+                        onClick={() => setFolderMenu(true)}
+                    />
+                    {isUserOwner
+                        ?
+                        <>
+                            <MenuButton
+                                Icon={Edit}
+                                text="Edit details"
+                                onClick={() => setEditMenu(true)}
+                            />
+                            <MenuButton
+                                Icon={RemoveIcon}
+                                text="Delete"
+                                onClick={() => setDeleteMenu(true)}
+                            />
+                        </>
+                        : null}
+                    <PlaylistMenu
+                        isOpen={controlPanel.playlistMenu}
+                        setIsOpen={setPlaylistMenu}
+                        onCreatePlaylist={addToNewPlaylist}
+                        onSelectPlaylist={addToPlaylist}
+                        playlistId={playlist?.id}
+                    />
+                    <FolderMenu
+                        isOpen={controlPanel.folderMenu}
+                        setIsOpen={setFolderMenu}
+                        onCreateFolder={addToNewFolder}
+                        onSelectFolder={addToFolderHandle}
+                        onRemoveFromFolder={removeFromFolderHandle}
+                        folderId={findFolderIdByPlaylist() ?? null}
+                    />
+                </BottomSheet>}
+            <DeleteMenu
                 id={playlist?.id ?? ""}
                 isOpen={controlPanel.deleteMenu}
                 setIsOpen={setDeleteMenu}
                 onDelete={removeFromFolderHandle}
             />
-            <EditMenu 
+            <EditMenu
                 playlist={playlist}
                 isOpen={controlPanel.editMenu}
                 setIsOpen={setEditMenu}
-            /> 
+            />
         </>
     );
 }

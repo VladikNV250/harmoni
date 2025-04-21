@@ -1,20 +1,37 @@
 import { IEpisode } from "shared/api/episode";
 import { displayDate } from "shared/lib";
 
+/**
+ * @function getDate
+ * @description
+ * Formats an episode's release date based on Spotify's precision rules.
+ *
+ * If the precision is less than a day (e.g., "month" or "year"), we show a
+ * simplified short format to match Spotify's UX. If it's a full date:
+ *
+ * - If it's today, we return "Today" to highlight freshness.
+ * - If it's within the past 6 days, we use the weekday name (e.g., "Tue")
+ *   to keep the UI concise and intuitive.
+ * - Otherwise, we fall back to a consistent short-date format.
+ *
+ * @param {IEpisode["release_date"]} rawDate - The raw release date from the API.
+ * @param {IEpisode["release_date_precision"]} datePrecision - Indicates how precise the release date is.
+ * @returns {string} A formatted date string to be displayed in the UI.
+ */
 export const getDate = (
-    release_date?: IEpisode["release_date"], 
-    release_date_precision?: IEpisode["release_date_precision"]
+    rawDate?: IEpisode["release_date"], 
+    datePrecision?: IEpisode["release_date_precision"]
 ): string => {
-    if (release_date && release_date_precision) {
-        if (release_date_precision !== "day") {
-            return displayDate(release_date, release_date_precision, {
+    if (rawDate && datePrecision) {
+        if (datePrecision !== "day") {
+            return displayDate(rawDate, datePrecision, {
                 showYear: false,
                 useShortMonth: true,
             });
         } 
             
 
-        const date = new Date(release_date);
+        const date = new Date(rawDate);
         const today = new Date();
 
         date.setHours(0, 0, 0, 0);
@@ -30,7 +47,7 @@ export const getDate = (
         if (date >= thisWeek && date <= today)
             return DAYS_OF_WEEK[date.getDay()];
 
-        return displayDate(release_date, release_date_precision, {
+        return displayDate(rawDate, datePrecision, {
             showYear: false,
             useShortMonth: true
         });

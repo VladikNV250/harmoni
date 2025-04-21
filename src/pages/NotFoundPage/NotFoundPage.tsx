@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Title } from "shared/ui";
-import styles from "./style.module.scss"
 import { Link } from "react-router";
+import styles from "./style.module.scss"
 
 export const NotFoundPage: FC = () => {
     return (
@@ -10,7 +10,7 @@ export const NotFoundPage: FC = () => {
                 Error 404. Page Not Found
             </Title>
             <Link to={"/"} className={styles["not-found-link"]}>
-                Back to Home 
+                Back to Home
             </Link>
         </div>
     )

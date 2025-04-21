@@ -1,20 +1,40 @@
 import { FC } from "react";
-import { Text } from "shared/ui";
 import { useNavigate } from "react-router";
-import { displayDate, useColor } from "shared/lib";
-import { IAlbum, ISimplifiedAlbum } from "shared/api/album";
 import { usePlaybackAdapter } from "entities/playback";
-import { Pause, PlaceholderImage, Play } from "shared/assets";
+import { Text } from "shared/ui";
+import { 
+    displayDate, 
+    useColor 
+} from "shared/lib";
+import { 
+    IAlbum, 
+    ISimplifiedAlbum 
+} from "shared/api/album";
+import { 
+    Pause, 
+    PlaceholderImage, 
+    Play 
+} from "shared/assets";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
 
 interface IAlbumPreview {
-    /** Rendered album */
+    /** Object of album, which will be rendered */
     readonly album: IAlbum | ISimplifiedAlbum;
-    /** What display under name? */
+    /** 
+     * Type of description under name of album. 
+     * - "artists" - display artist names.
+     * - "date-year" - display date of release.
+     */
     readonly description?: "artists" | "date-year";
 }
 
+/**
+ * @component AlbumPreview
+ * @description Preview component of album with cover image, name, description and Play/Pause button.
+ * - Clicking on the cover image goes to the album page.
+ * - Clicking the play/resume button to play album using the PlaybackAPI.
+ */
 export const AlbumPreview: FC<IAlbumPreview> = ({ album, description = "artists" }) => {
     const { name, artists, images, release_date, id, uri } = album;
     const navigate = useNavigate();
@@ -33,21 +53,21 @@ export const AlbumPreview: FC<IAlbumPreview> = ({ album, description = "artists"
             console.error("PLAY", e);
         }
     }
-    
+
     return (
         <div className={styles["album"]}>
-            <div 
-                className={styles["album-content"]} 
+            <div
+                className={styles["album-content"]}
                 onClick={() => navigate(`/albums/${id}`)}
             >
                 <div className={styles["album-image-container"]}>
-                    <img 
-                        src={images[0]?.url || PlaceholderImage} 
-                        className={styles["album-image"]} 
+                    <img
+                        src={images[0]?.url || PlaceholderImage}
+                        className={styles["album-image"]}
                     />
-                    <div 
-                        className={styles["album-image__back"]} 
-                        style={{background: color}} 
+                    <div
+                        className={styles["album-image__back"]}
+                        style={{ background: color }}
                     />
                 </div>
                 <Text className={styles["album-name"]}>
@@ -58,13 +78,13 @@ export const AlbumPreview: FC<IAlbumPreview> = ({ album, description = "artists"
                     {description === "date-year" && displayDate(release_date, "year")}
                 </p>
             </div>
-            <button 
-                className={styles["album-button"]} 
+            <button
+                className={styles["album-button"]}
                 onClick={async () => await handlePlay()}
             >
                 {adapter.getContextURI() === uri && adapter.getIsPlaying() ?
-                <Pause width={40} height={40} /> :
-                <Play width={40} height={40} />}
+                    <Pause width={40} height={40} /> :
+                    <Play width={40} height={40} />}
             </button>
         </div>
     )

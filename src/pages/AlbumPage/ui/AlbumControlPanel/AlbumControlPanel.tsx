@@ -1,50 +1,58 @@
-import { 
-    FC, 
-    useEffect, 
-    useMemo, 
+import {
+    FC,
+    useEffect,
+    useMemo,
 } from "react";
 import { useNavigate } from "react-router";
-import { 
-    AddIcon, 
-    AddToPlaylist, 
-    CheckFilled, 
-    Pause, 
-    Play, 
-    Shuffle 
-} from "shared/assets";
-import { 
-    useAppDispatch, 
-    useAppSelector, 
-    useControlPanel
-} from "shared/lib";
-import { 
-    createPlaylistThunk, 
-    getLibraryAlbums, 
-    selectSavedAlbums, 
-    selectSavedPlaylists 
+import {
+    createPlaylistThunk,
+    getLibraryAlbums,
+    selectSavedAlbums,
+    selectSavedPlaylists
 } from "features/library";
-import { 
-    removeAlbumsFromLibrary, 
-    saveAlbumsToLibrary 
-} from "shared/api/user";
-import { 
-    addItemsToPlaylist, 
-    fetchPlaylistItems, 
-    IPlaylist 
-} from "shared/api/playlist";
-import { IAlbum } from "shared/api/album";
+import { PlaylistMenu } from "features/menus";
 import { usePlaybackAdapter } from "entities/playback";
 import { selectUser } from "entities/user";
-import { PlaylistMenu } from "entities/playlist";
+import {
+    AddIcon,
+    AddToPlaylist,
+    CheckFilled,
+    Pause,
+    Play,
+    Shuffle
+} from "shared/assets";
+import {
+    useAppDispatch,
+    useAppSelector,
+    useControlPanel
+} from "shared/lib";
+import {
+    removeAlbumsFromLibrary,
+    saveAlbumsToLibrary
+} from "shared/api/user";
+import {
+    addItemsToPlaylist,
+    fetchPlaylistItems,
+    IPlaylist
+} from "shared/api/playlist";
+import { IAlbum } from "shared/api/album";
 import { toast } from "react-toastify";
 import clsx from "clsx";
 import styles from "./style.module.scss";
 
 
 interface IAlbumControlPanel {
+    /** Album to which the control panel applied. */
     readonly album: IAlbum | null;
 }
 
+/**
+ * @component AlbumControlPanel
+ * @description Control panel for album playback. Allows you to control playback, 
+ * shuffle, save to the library, add to the playlist, or create a new one.
+ * 
+ * It adapts to the state of the album: if it is already playing, it shows pause button, otherwise shows play button.
+ */
 export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -58,13 +66,14 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
     } as Record<string, boolean>);
 
     const setPlaylistMenu = (state: boolean) => updateControlPanel('playlistMenu', state);
-    const setShuffle =      (state: boolean) => updateControlPanel("shuffle", state);
+    const setShuffle = (state: boolean) => updateControlPanel("shuffle", state);
 
     const isAlbumInLibrary = useMemo(
         () => libraryAlbums.findIndex(item => item.album.id === album?.id) !== -1,
         [libraryAlbums, album]
     );
 
+    /** Synchronizes shuffle state in the control panel with shuffle in playback if current album is playing now. */
     useEffect(() => {
         if (adapter.getContextURI() === album?.uri) {
             setShuffle(adapter.getShuffle());
@@ -111,7 +120,7 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
 
     const addToNewPlaylist = async () => {
         try {
-            if (!user || !album) throw new Error("User or album doesn't exist"); 
+            if (!user || !album) throw new Error("User or album doesn't exist");
 
             const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
                 userId: user.id,
@@ -119,7 +128,7 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
                     name: "New Playlist #" + (libraryPlaylists.length + 1),
                 }
             })).unwrap();
-    
+
             if (newPlaylist) {
                 const albumTrackURIs = album.tracks.items
                     .map(item => item.uri)
@@ -128,7 +137,7 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
 
 
                 await addItemsToPlaylist(newPlaylist.id, [...albumTrackURIs], 0);
-    
+
                 navigate(`/playlists/${newPlaylist.id}`);
                 setPlaylistMenu(false);
             }
@@ -142,24 +151,25 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
         try {
             if (!playlistId || !album) throw new Error("PlaylistID or album doesn't exist");
 
-            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
+            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({ track }) => track);
 
+            /** Get unadded tracks to avoid adding them twice in the same playlist. */
             const notAddedTrackURIs = album.tracks.items
                 .filter(track => playlistItems.findIndex(item => item.id === track.id) === -1)
                 .map(track => track.uri)
                 .filter(uri => uri !== undefined);
-            
-            
+
+
             if (notAddedTrackURIs.length > 0 && notAddedTrackURIs.length <= 100) {
                 await addItemsToPlaylist(playlistId, [...notAddedTrackURIs], 0);
-                
+
                 setPlaylistMenu(false);
                 toast("The songs from the album have been added to this playlist.");
             } else if (notAddedTrackURIs.length > 100) {
-                toast.warn("Cannot handle this operation. Tracks in albums are over 100.");                
+                toast.warn("Cannot handle this operation. Tracks in albums are over 100.");
             } else {
-                toast.warn("All songs from the album is already in this playlist.");                
-            }            
+                toast.warn("All songs from the album is already in this playlist.");
+            }
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("ADD-TO-PLAYLIST", e);
@@ -170,19 +180,19 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
         <>
             <div className={styles["album-control-panel"]}>
                 <div className={styles["control-panel-button-container"]}>
-                    <button 
-                        className={styles["control-panel-button"]} 
+                    <button
+                        className={styles["control-panel-button"]}
                         onClick={async () => await handlePlay()}
-                        >
+                    >
                         {adapter.getContextURI() === album?.uri && adapter.getIsPlaying() ?
-                        <Pause width={60} height={60} /> :
-                        <Play width={60} height={60} />}
+                            <Pause width={60} height={60} /> :
+                            <Play width={60} height={60} />}
                     </button>
-                    <button 
+                    <button
                         className={clsx(
                             styles["control-panel-button"],
                             controlPanel.shuffle && styles["shuffle"],
-                        )} 
+                        )}
                         onClick={toggleShuffle}
                     >
                         <Shuffle width={50} height={50} />
@@ -201,7 +211,7 @@ export const AlbumControlPanel: FC<IAlbumControlPanel> = ({ album }) => {
                         className={styles["control-panel-button"]}
                         onClick={() => setPlaylistMenu(!controlPanel.playlistMenu)}
                     >
-                        <PlaylistMenu 
+                        <PlaylistMenu
                             className={styles["playlist-menu"]}
                             isOpen={controlPanel.playlistMenu}
                             setIsOpen={setPlaylistMenu}

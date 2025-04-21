@@ -1,56 +1,59 @@
-import { 
+import {
     ChangeEvent,
-    CSSProperties, 
-    FC, 
-    useCallback, 
-    useEffect, 
-    useState 
+    CSSProperties,
+    FC,
+    useCallback,
+    useEffect,
+    useState
 } from "react";
-import { 
-    fetchAlbum, 
-    IAlbum 
-} from "shared/api/album";
-import { 
+import {
     Link,
     useNavigate,
-    useParams 
+    useParams
 } from "react-router";
-import { 
-    calculateDuration,
-    displayDate, 
-    useAppDispatch, 
-    useAppSelector, 
-    useColor, 
-    useDebounce
-} from "shared/lib";
-import { 
-    Description, 
-    DesktopTitle, 
-    ExpandableSearchInput, 
-    Loader, 
-    Paragraph, 
-    SearchInput, 
-    Title 
-} from "shared/ui";
-import { 
-    getUserInfo, 
-    selectUser, 
-    selectUserLoading 
-} from "entities/user";
-import { 
-    ArrowLeft, 
-    ArtistIcon, 
-    PlaceholderImage 
-} from "shared/assets";
-import { 
-    getLibraryAlbums, 
-    getLibraryPlaylists, 
+import {
+    getLibraryAlbums,
+    getLibraryPlaylists,
     selectLibraryLoading,
 } from "features/library";
-import { TrackItem } from "entities/track";
-import { ISimplifiedTrack } from "shared/api/track";
+import { TrackItem } from "features/track";
+import {
+    getUserInfo,
+    selectUser,
+    selectUserLoading
+} from "entities/user";
 import { ArtistList } from "entities/artist";
-import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
+import { 
+    fetchPlaybackState, 
+    usePlaybackAdapter 
+} from "entities/playback";
+import {
+    fetchAlbum,
+    IAlbum
+} from "shared/api/album";
+import {
+    calculateDuration,
+    displayDate,
+    useAppDispatch,
+    useAppSelector,
+    useColor,
+    useDebounce
+} from "shared/lib";
+import {
+    Description,
+    DesktopTitle,
+    ExpandableSearchInput,
+    Loader,
+    Paragraph,
+    SearchInput,
+    Title
+} from "shared/ui";
+import {
+    ArrowLeft,
+    ArtistIcon,
+    PlaceholderImage
+} from "shared/assets";
+import { ISimplifiedTrack } from "shared/api/track";
 import { AlbumControlPanel } from "../AlbumControlPanel/AlbumControlPanel";
 import styles from "./style.module.scss";
 
@@ -69,12 +72,13 @@ const AlbumPage: FC = () => {
     const color = useColor(album?.images[0]?.url ?? PlaceholderImage);
     const { setApiPlayback } = usePlaybackAdapter();
 
+    /** Loading album data, update library and playback on page load. */
     useEffect(() => {
         (async () => {
             try {
                 setAlbumLoading(true);
                 if (id) setAlbum(await fetchAlbum(id));
-                
+
                 dispatch(getLibraryAlbums());
                 dispatch(getLibraryPlaylists());
                 setApiPlayback?.(await fetchPlaybackState());
@@ -105,9 +109,9 @@ const AlbumPage: FC = () => {
                     const lowerValue = (debouncedValue as string).toLowerCase();
                     const isMatch = lowerName?.includes(lowerValue);
                     return isMatch && (
-                        <TrackItem 
-                            key={track.id} 
-                            track={track} 
+                        <TrackItem
+                            key={track.id}
+                            track={track}
                             sequenceNumber={index + 1}
                             showAlbum={false}
                             showImage={false}
@@ -119,9 +123,9 @@ const AlbumPage: FC = () => {
             } else {
                 return tracks.map((track, index) => {
                     return (
-                        <TrackItem 
-                            key={track.id} 
-                            track={track} 
+                        <TrackItem
+                            key={track.id}
+                            track={track}
                             sequenceNumber={index + 1}
                             showAlbum={false}
                             showImage={false}
@@ -134,19 +138,18 @@ const AlbumPage: FC = () => {
         }
     }, [debouncedValue, album]);
 
-    const calculateAlbumDuration = () => {
+    const calculateTotalDuration = () => {
         let totalDuration = 0;
         album?.tracks.items.map(item => totalDuration += item?.duration_ms ?? 0);
 
         return calculateDuration(totalDuration, "word");
     }
 
-
-    const renderArtists = () => {
+    const renderDesktopArtists = () => {
         return (album?.artists.length ?? 0) > 0 && album?.artists.map(item =>
             <div key={item.id} className={styles["album-artist__desktop"]}>
-                <Link 
-                    to={`/artists/${item.id}`} 
+                <Link
+                    to={`/artists/${item.id}`}
                     className={styles["album-artist-link"]}
                 >
                     <ArtistIcon width={60} height={60} />
@@ -159,31 +162,31 @@ const AlbumPage: FC = () => {
     }
 
     return (
-        <div 
-            className={styles["album"]} 
-            style={{'--color': color} as CSSProperties}>
+        <div
+            className={styles["album"]}
+            style={{ '--color': color } as CSSProperties}>
             <Loader loading={albumLoading || libraryLoading || userLoading} />
             <header className={styles["album-header"]}>
-                <button 
+                <button
                     className={styles["header-button"]}
                     onClick={() => navigate(-1)}
                 >
                     <ArrowLeft width={40} height={40} />
                 </button>
-                <SearchInput 
-                    value={value} 
-                    onChange={handleChange}    
+                <SearchInput
+                    value={value}
+                    onChange={handleChange}
                     placeholder={"Find in album"}
-                    className={styles["album-search"]} 
+                    className={styles["album-search"]}
                 />
             </header>
             <div className={styles["album-image-container"]}>
-                <img 
-                    src={album?.images[0].url || PlaceholderImage} 
-                    className={styles["album-image"]} 
+                <img
+                    src={album?.images[0].url || PlaceholderImage}
+                    className={styles["album-image"]}
                 />
                 <div className={styles["album-artists-list__desktop"]}>
-                    {renderArtists()}
+                    {renderDesktopArtists()}
                 </div>
             </div>
             <div className={styles["album-content"]}>
@@ -195,8 +198,8 @@ const AlbumPage: FC = () => {
                 </DesktopTitle>
                 <div className={styles["album-info-container"]}>
                     <div className={styles["album-artists-list"]}>
-                        <ArtistList 
-                            artists={album?.artists} 
+                        <ArtistList
+                            artists={album?.artists}
                             className={styles["album-artists"]}
                         />
                     </div>
@@ -207,7 +210,7 @@ const AlbumPage: FC = () => {
                         {(album?.total_tracks ?? 0) > 0 ? album?.total_tracks + " Songs" : ""}
                     </Description>
                     <Description>
-                        {calculateAlbumDuration()}
+                        {calculateTotalDuration()}
                     </Description>
                     <Description>
                         {displayDate(album?.release_date, album?.release_date_precision)}
@@ -215,10 +218,10 @@ const AlbumPage: FC = () => {
                 </div>
                 <div className={styles["control-panel-container"]}>
                     <AlbumControlPanel album={album} />
-                    <ExpandableSearchInput 
+                    <ExpandableSearchInput
                         className={styles["album-search__desktop"]}
-                        value={value} 
-                        onChange={handleChange}    
+                        value={value}
+                        onChange={handleChange}
                         placeholder={"Find in album"}
                         direction="left"
                     />

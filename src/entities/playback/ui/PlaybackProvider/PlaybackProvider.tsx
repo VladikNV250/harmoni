@@ -10,6 +10,10 @@ interface IPlaybackProvider {
     children: React.ReactNode;
 }
 
+/**
+ * @component PlaybackProvider
+ * @description Provider provides PlaybackAdapter throughout the app.
+ */
 export const PlaybackProvider: FC<IPlaybackProvider> = ({ children }) => {
     const [apiPlayback, setApiPlayback] = useState<IPlayback | null>(null);
     const sdkPlayback = usePlaybackState(true, 1000);

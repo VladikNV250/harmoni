@@ -1,13 +1,16 @@
-import { 
-    ChangeEvent, 
-    CSSProperties, 
-    FC, 
-    useEffect, 
-    useState 
+import {
+    ChangeEvent,
+    CSSProperties,
+    FC,
+    useEffect,
+    useState
 } from "react"
+import {
+    IPlayback,
+    usePlaybackAdapter
+} from "entities/playback";
 import { useDebounce } from "shared/lib";
 import clsx from "clsx";
-import { IPlayback, usePlaybackAdapter } from "entities/playback";
 import styles from "./style.module.scss";
 
 
@@ -16,6 +19,11 @@ interface ISeekBar {
     readonly className?: string,
 }
 
+/**
+ * @component SeekBar
+ * @description Component used to render bar that allows you to seek to the given position 
+ * in the user’s currently playing track. 
+ */
 export const SeekBar: FC<ISeekBar> = ({ className }) => {
     const { adapter, apiPlayback, setApiPlayback } = usePlaybackAdapter();
     const position = adapter.getTrackPosition();
@@ -49,17 +57,17 @@ export const SeekBar: FC<ISeekBar> = ({ className }) => {
     }
 
     return (
-        <input 
-            type="range" 
+        <input
+            type="range"
             className={clsx(
                 styles["seek-bar"],
                 !adapter.checkPlayback() && styles["disabled"],
                 className,
-            )} 
-            min={0} max={Math.floor(duration / 1000)} 
+            )}
+            min={0} max={Math.floor(duration / 1000)}
             value={Math.floor(position / 1000)}
-            onChange={handleChange} 
-            style={{"--value": `${getPercentage(position, duration )}%`} as CSSProperties}
+            onChange={handleChange}
+            style={{ "--value": `${getPercentage(position, duration)}%` } as CSSProperties}
         />
     )
 }

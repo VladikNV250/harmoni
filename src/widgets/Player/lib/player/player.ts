@@ -2,23 +2,30 @@ import {
     useEffect, 
     useState 
 } from "react";
+import { useNavigate } from "react-router";
+import { 
+    createPlaylistThunk, 
+    selectSavedPlaylists 
+} from "features/library";
+import { getAvailableDevices } from "features/device";
+import { addItemToQueue } from "features/queue";
+import { selectUser } from "entities/user";
 import { 
     IPlayback, 
     usePlaybackAdapter 
 } from "entities/playback";
-import { 
-    checkLikedTracks, 
-    removeTracksFromLibrary, 
-    saveTracksToLibrary 
+import {
+    checkLikedTracks,
+    removeTracksFromLibrary,
+    saveTracksToLibrary,
 } from "shared/api/user";
-import { toast } from "react-toastify";
-import { addItemToQueue } from "features/queue";
 import { useAppDispatch, useAppSelector } from "shared/lib";
-import { getAvailableDevices } from "features/device";
-import { useNavigate } from "react-router";
-import { selectUser } from "entities/user";
-import { createPlaylistThunk, selectSavedPlaylists } from "features/library";
-import { addItemsToPlaylist, fetchPlaylistItems, IPlaylist } from "shared/api/playlist";
+import {
+    addItemsToPlaylist,
+    fetchPlaylistItems,
+    IPlaylist,
+} from "shared/api/playlist";
+import { toast } from "react-toastify";
 
 export const useShuffle = () => {
     const { adapter, apiPlayback, setApiPlayback } = usePlaybackAdapter();
@@ -28,19 +35,19 @@ export const useShuffle = () => {
             const newShuffle = adapter.toggleShuffle();
 
             if (apiPlayback) {
-                const newApiPlayback: IPlayback = { 
-                    ...apiPlayback, 
-                    shuffle_state: newShuffle, 
+                const newApiPlayback: IPlayback = {
+                    ...apiPlayback,
+                    shuffle_state: newShuffle,
                 };
-    
+
                 setApiPlayback?.(newApiPlayback);
             }
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page");
             console.error(`SHUFFLE ERROR`, e);
         }
-    }
-}
+    };
+};
 
 export const useRepeat = () => {
     const { adapter, apiPlayback, setApiPlayback } = usePlaybackAdapter();
@@ -50,19 +57,19 @@ export const useRepeat = () => {
             const newRepeat = adapter.setRepeatMode();
 
             if (apiPlayback) {
-                const newApiPlayback: IPlayback = { 
-                    ...apiPlayback, 
-                    repeat_state: newRepeat, 
+                const newApiPlayback: IPlayback = {
+                    ...apiPlayback,
+                    repeat_state: newRepeat,
                 };
-    
+
                 setApiPlayback?.(newApiPlayback);
             }
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page");
-            console.log("REPEAT ERROR", e)
+            console.log("REPEAT ERROR", e);
         }
-    }
-}
+    };
+};
 
 export const usePlay = () => {
     const { adapter, apiPlayback, setApiPlayback } = usePlaybackAdapter();
@@ -74,36 +81,38 @@ export const usePlay = () => {
             if (apiPlayback) {
                 const newApiPlayback: IPlayback = {
                     ...apiPlayback,
-                    is_playing: newIsPlaying
-                }
-    
+                    is_playing: newIsPlaying,
+                };
+
                 setApiPlayback?.(newApiPlayback);
             }
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("PLAY", e);
         }
-    }
-}
+    };
+};
 
 export const useLike = () => {
-    const { adapter, }  = usePlaybackAdapter();
+    const { adapter } = usePlaybackAdapter();
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
 
     useEffect(() => {
         (async () => {
             if (currentTrackId !== null) {
-                const isTrackLiked = (await checkLikedTracks([currentTrackId]))[0];
+                const isTrackLiked = (
+                    await checkLikedTracks([currentTrackId])
+                )[0];
                 setIsLiked(isTrackLiked);
             }
-        })()
-    }, [currentTrackId])
+        })();
+    }, [currentTrackId]);
 
     useEffect(() => {
         if (currentTrackId !== adapter.getTrackID()) {
             setCurrentTrackId(adapter.getTrackID());
-        }        
+        }
     }, [adapter]);
 
     const handleLike = async () => {
@@ -116,12 +125,12 @@ export const useLike = () => {
             setIsLiked(!isLiked);
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page.");
-            console.error(e)
+            console.error(e);
         }
-    }
+    };
 
-    return { isLiked, handleLike }
-}
+    return { isLiked, handleLike };
+};
 
 export const useQueue = () => {
     const dispatch = useAppDispatch();
@@ -136,12 +145,12 @@ export const useQueue = () => {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("ADD-ITEM-TO-QUEUE", e);
         }
-    }
-}
+    };
+};
 
 export const usePlaylistActions = (callbacks?: {
-    onAddToNewPlaylist?: () => void, 
-    onAddToPlaylist?: () => void,
+    onAddToNewPlaylist?: () => void;
+    onAddToPlaylist?: () => void;
 }) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -152,18 +161,21 @@ export const usePlaylistActions = (callbacks?: {
     const addToNewPlaylist = async () => {
         try {
             const trackUri = adapter.getTrackURI();
-            if (!user || !trackUri) throw new Error("User or trackURI doesn't exist"); 
-            
-            const newPlaylist: IPlaylist = await dispatch(createPlaylistThunk({
-                userId: user.id,
-                body: {
-                    name: "New Playlist #" + (playlists.length + 1), 
-                }
-            })).unwrap();
-    
+            if (!user || !trackUri)
+                throw new Error("User or trackURI doesn't exist");
+
+            const newPlaylist: IPlaylist = await dispatch(
+                createPlaylistThunk({
+                    userId: user.id,
+                    body: {
+                        name: "New Playlist #" + (playlists.length + 1),
+                    },
+                })
+            ).unwrap();
+
             if (newPlaylist) {
                 await addItemsToPlaylist(newPlaylist.id, [trackUri], 0);
-    
+
                 navigate(`/playlists/${newPlaylist.id}`);
                 callbacks?.onAddToNewPlaylist?.();
             }
@@ -171,29 +183,35 @@ export const usePlaylistActions = (callbacks?: {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("ADD-TO-NEW-PLAYLIST", e);
         }
-    }
+    };
 
     const addToPlaylist = async (playlistId: string) => {
         try {
             const trackUri = adapter.getTrackURI();
             const trackId = adapter.getTrackID();
-            if (!playlistId || !trackId || !trackUri) throw new Error("PlaylistID or trackID or trackURI doesn't exist");
+            if (!playlistId || !trackId || !trackUri)
+                throw new Error(
+                    "PlaylistID or trackID or trackURI doesn't exist"
+                );
 
-            const playlistItems = (await fetchPlaylistItems(playlistId)).items.map(({track}) => track);
+            const playlistItems = (
+                await fetchPlaylistItems(playlistId)
+            ).items.map(({ track }) => track);
 
-            if (playlistItems.findIndex(item => item.id === trackId) === -1) {
+            /** Check that the track has not been added to the playlist to avoid adding the same track twice. */
+            if (playlistItems.findIndex((item) => item.id === trackId) === -1) {
                 await addItemsToPlaylist(playlistId, [trackUri], 0);
-    
+
                 toast("The song added to this playlist.");
                 callbacks?.onAddToPlaylist?.();
             } else {
-                toast.warn("The song have been in this playlist already.");                
+                toast.warn("The song have been in this playlist already.");
             }
         } catch (e) {
             toast.error("Something went wrong. Try again or reload the page.");
             console.error("ADD-TO-PLAYLIST", e);
         }
-    }
+    };
 
-    return { addToPlaylist, addToNewPlaylist }
-}
+    return { addToPlaylist, addToNewPlaylist };
+};

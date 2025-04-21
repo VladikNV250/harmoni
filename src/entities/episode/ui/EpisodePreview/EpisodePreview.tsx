@@ -1,19 +1,36 @@
 import { FC } from "react";
-import { Text } from "shared/ui";
 import { useNavigate } from "react-router";
-import { calculateDuration, useColor } from "shared/lib";
-import { IEpisode, ISimplifiedEpisode } from "shared/api/episode";
-import { getDate } from "entities/episode/lib/getDate";
 import { usePlaybackAdapter } from "entities/playback";
-import { Pause, PlaceholderImage, Play } from "shared/assets";
-import styles from "./style.module.scss";
+import { Text } from "shared/ui";
+import { 
+    calculateDuration, 
+    useColor 
+} from "shared/lib";
+import { 
+    IEpisode, 
+    ISimplifiedEpisode 
+} from "shared/api/episode";
+import { 
+    Pause, 
+    PlaceholderImage, 
+    Play 
+} from "shared/assets";
+import { getDate } from "entities/episode/lib/getDate";
 import { toast } from "react-toastify";
+import styles from "./style.module.scss";
 
 
 interface IEpisodePreview {
-    episode: IEpisode | ISimplifiedEpisode;
+    /** Object of episode to render */
+    readonly episode: IEpisode | ISimplifiedEpisode;
 }
 
+/**
+ * @component EpisodePreview
+ * @description Preview component of episode with cover image, name, release date, duration and Play/Pause button.
+ * - Clicking on the cover image goes to the episode page.
+ * - Clicking the play/resume button to play episode using the PlaybackAPI.
+ */
 export const EpisodePreview: FC<IEpisodePreview> = ({ episode }) => {
     const { 
         name, 

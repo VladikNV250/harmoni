@@ -1,53 +1,51 @@
-import { 
-    FC, 
-    useCallback, 
-    useEffect, 
-    useState 
+import {
+    FC,
+    useCallback,
+    useEffect,
+    useState
 } from "react";
-import { 
-    GridIcon, 
-    ListIcon, 
-    Sort 
-} from "shared/assets";
-import { 
-    Description, 
-    Loader, 
-    Title 
-} from "shared/ui";
-import { 
-    getLibraryPlaylists, 
-    ListPreview, 
-    selectFolders, 
-    selectLibraryLoading, 
-    useView 
+import { useParams } from "react-router";
+import {
+    getLibraryPlaylists,
+    ListPreview,
+    selectFolders,
+    selectLibraryLoading,
+    useView
 } from "features/library";
-import { 
-    useParams 
-} from "react-router";
-import { 
-    useAppDispatch, 
-    useAppSelector, 
-} from "shared/lib";
-import { 
-    getUserInfo, 
-    selectUserLoading 
-} from "entities/user";
-import { 
-    IPlaylist, 
-    ISimplifiedPlaylist 
-} from "shared/api/playlist";
-import { 
-    PLAYLIST_SORT_TYPES, 
-    SortMenu, 
-    TPlaylistSortBy, 
-    TSortOrder 
+import {
+    PLAYLIST_SORT_TYPES,
+    SortMenu,
+    TPlaylistSortBy,
+    TSortOrder
 } from "features/sort";
 import { IFolder } from "entities/folder";
 import { PlaylistPreview } from "entities/playlist";
-import { 
-    fetchPlaybackState, 
-    usePlaybackAdapter 
+import {
+    fetchPlaybackState,
+    usePlaybackAdapter
 } from "entities/playback";
+import {
+    getUserInfo,
+    selectUserLoading
+} from "entities/user";
+import {
+    GridIcon,
+    ListIcon,
+    Sort
+} from "shared/assets";
+import {
+    Description,
+    Loader,
+    Title
+} from "shared/ui";
+import {
+    useAppDispatch,
+    useAppSelector,
+} from "shared/lib";
+import {
+    IPlaylist,
+    ISimplifiedPlaylist
+} from "shared/api/playlist";
 import { FolderControlPanel } from "../FolderControlPanel/FolderControlPanel";
 import styles from "./style.module.scss";
 
@@ -71,6 +69,7 @@ const FolderPage: FC = () => {
         order: "Ascending"
     });
 
+    /** Getting folder from redux store using id on page load. */
     useEffect(() => {
         const findedFolder = folders.find(item => item.id === id);
 
@@ -81,6 +80,7 @@ const FolderPage: FC = () => {
         }
     }, [id, folders]);
 
+    /** Updating user data, library, and playbackAPI on page load. */
     useEffect(() => {
         dispatch(getUserInfo());
         dispatch(getLibraryPlaylists());
@@ -135,7 +135,7 @@ const FolderPage: FC = () => {
             case "list":
                 return (
                     <div className={styles["folder-list"]}>
-                        {sortedItems.map(item => 
+                        {sortedItems.map(item =>
                             <ListPreview key={item.id} item={item} />
                         )}
                     </div>
@@ -143,7 +143,7 @@ const FolderPage: FC = () => {
             case "grid":
                 return (
                     <div className={styles["folder-grid"]}>
-                        {sortedItems.map(item => 
+                        {sortedItems.map(item =>
                             <PlaylistPreview key={item.id} playlist={item} />
                         )}
                     </div>
@@ -157,11 +157,11 @@ const FolderPage: FC = () => {
             <FolderControlPanel folder={folder} />
             <div className={styles["folder-body"]}>
                 <header className={styles['folder-body-header']}>
-                    <button 
+                    <button
                         className={styles['folder-body-button']}
-                        onClick={() => setSort(prevState => ({...prevState, isOpen: !sort.isOpen}))}
+                        onClick={() => setSort(prevState => ({ ...prevState, isOpen: !sort.isOpen }))}
                     >
-                        <SortMenu<TPlaylistSortBy> 
+                        <SortMenu<TPlaylistSortBy>
                             sort={sort}
                             setSort={setSort}
                             sortTypes={PLAYLIST_SORT_TYPES}
@@ -171,27 +171,27 @@ const FolderPage: FC = () => {
                             {sort.by}
                         </Description>
                     </button>
-                    <button 
-                        className={styles['folder-body-button']} 
+                    <button
+                        className={styles['folder-body-button']}
                         onClick={switchMode}
                     >
                         <Description>
-                            {viewMode === "list" 
-                            ? "List" 
-                            : "Grid"}
+                            {viewMode === "list"
+                                ? "List"
+                                : "Grid"}
                         </Description>
-                        {viewMode === "list" 
-                        ? <ListIcon width={40} height={40} />
-                        : <GridIcon width={40} height={40} />}
+                        {viewMode === "list"
+                            ? <ListIcon width={40} height={40} />
+                            : <GridIcon width={40} height={40} />}
                     </button>
                 </header>
-                {(folder?.items.length ?? 0) === 0 
-                ?
-                <Title className={styles["folder-empty"]}>
-                    This folder looks empty
-                </Title>
-                :
-                renderItems(folder?.items ?? [])
+                {(folder?.items.length ?? 0) === 0
+                    ?
+                    <Title className={styles["folder-empty"]}>
+                        This folder looks empty
+                    </Title>
+                    :
+                    renderItems(folder?.items ?? [])
                 }
             </div>
         </div>

@@ -63,7 +63,7 @@ import UserFilled from "shared/assets/icons/user-big__filled.svg?react";
 
 
 import Logo from "shared/assets/Spotify_Primary_Logo_RGB_Green.png";
-import LikedSongsImage from "shared/assets/liked_songs.png"; 
+import HarmoniLogo from "shared/assets/harmoni_logo.png";
 import PlaceholderImage from "shared/assets/placeholder/placeholder.jpg";
 import PlaceholderProfileImage from "shared/assets/placeholder/placeholder.jpg";
 import PlaceholderFolderImage from "shared/assets/placeholder/folder_placeholder.png";
@@ -139,6 +139,6 @@ export {
     PlaceholderProfileImage,
     PlaceholderFolderImage,
     PlaceholderImage,
-    LikedSongsImage,
+    HarmoniLogo,
     Logo
 }

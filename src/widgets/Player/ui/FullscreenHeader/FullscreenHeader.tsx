@@ -1,18 +1,26 @@
-import clsx from "clsx";
 import { FC } from "react";
+import { usePlaybackAdapter } from "entities/playback";
 import { 
     Album, 
     DownIcon, 
     Playing 
 } from "shared/assets";
-import { useAppDispatch, useAppSelector } from "shared/lib";
+import { 
+    useAppDispatch, 
+    useAppSelector 
+} from "shared/lib";
 import { Text } from "shared/ui";
 import { playerSlice } from "widgets/Player/model/playerSlice";
-import { usePlaybackAdapter } from "entities/playback";
-import styles from "./style.module.scss";
 import { selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
+import clsx from "clsx";
+import styles from "./style.module.scss";
 
 
+/**
+ * @component FullscreenHeader
+ * @description Component responsible for rendering the top of fullscreen player. 
+ * Allows you to close player, display track name or track album name.
+ */
 export const FullscreenHeader: FC = () => {
     const dispatch = useAppDispatch();
     const openedMenu = useAppSelector(selectPlayerOpenedMenu);

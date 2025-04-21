@@ -1,18 +1,32 @@
 import { FC } from "react";
-import { NavLink, useLocation } from "react-router";
+import {
+    NavLink,
+    useLocation
+} from "react-router";
+import {
+    librarySlice,
+    selectLibraryFilter
+} from "features/library";
 import { Description } from "shared/ui";
-import { 
-    LibraryFilled, 
-    LibraryIcon, 
+import {
+    LibraryFilled,
+    LibraryIcon,
 } from "shared/assets";
+import {
+    useAppDispatch,
+    useAppSelector
+} from "shared/lib";
 import { ILibraryFilterOptions } from "../model/types";
 import { LIBRARY_FILTER_OPTIONS } from "../consts/library";
 import clsx from "clsx";
 import styles from "./style.module.scss";
-import { useAppDispatch, useAppSelector } from "shared/lib";
-import { librarySlice, selectLibraryFilter } from "features/library";
 
-
+/**
+ * @component LibrarySidebar
+ * @description Component responsible for rendering link to library page 
+ * and list of library filter options (e.g., playlits, folders, artists etc.).
+ * Allows switching between library content groups using filters.  
+ */
 export const LibrarySidebar: FC = () => {
     const { pathname } = useLocation();
     const dispatch = useAppDispatch();
@@ -20,11 +34,11 @@ export const LibrarySidebar: FC = () => {
     const { setFilter } = librarySlice.actions;
 
     const renderItems = (items: ILibraryFilterOptions[]) => {
-        return items.map(({ name, Icon, filter }) =>    
+        return items.map(({ name, Icon, filter }) =>
             <li key={name} className={styles["library-navbar-item"]} >
                 <NavLink
                     to={`/library`}
-                    className={({isActive}) =>
+                    className={({ isActive }) =>
                         `
                          ${styles["library-navbar-item-link"]} 
                          ${isActive && selectedFilter === filter ? styles["active"] : ""}
@@ -49,7 +63,7 @@ export const LibrarySidebar: FC = () => {
             )}>
                 <NavLink
                     to={`/library`}
-                    className={({isActive}) => 
+                    className={({ isActive }) =>
                         `${styles["library-navbar-link"]} ${isActive ? styles["active"] : ""}`
                     }
                     onClick={() => dispatch(setFilter("all"))}

@@ -8,6 +8,21 @@ import {
     useNavigate, 
     useParams 
 } from "react-router";
+import { TrackItem } from "features/track";
+import { 
+    getLibraryArtists, 
+    selectLibraryLoading 
+} from "features/library";
+import { AlbumPreview } from "entities/album";
+import { 
+    fetchPlaybackState, 
+    usePlaybackAdapter 
+} from "entities/playback";
+import { 
+    getUserInfo, 
+    selectUser, 
+    selectUserLoading 
+} from "entities/user";
 import { 
     fetchArtist, 
     fetchArtistAlbums, 
@@ -27,23 +42,11 @@ import {
     Title 
 } from "shared/ui";
 import { 
-    getUserInfo, 
-    selectUser, 
-    selectUserLoading 
-} from "entities/user";
-import { 
-    getLibraryArtists, 
-    selectLibraryLoading 
-} from "features/library";
-import { 
     ArrowLeft, 
     PlaceholderProfileImage 
 } from "shared/assets";
 import { ITrack } from "shared/api/track";
 import { ISimplifiedAlbum } from "shared/api/album";
-import { AlbumPreview } from "entities/album";
-import { TrackItem } from "entities/track";
-import { fetchPlaybackState, usePlaybackAdapter } from "entities/playback";
 import { ArtistControlPanel } from "../ArtistControlPanel/ArtistControlPanel";
 import { toast } from "react-toastify";
 import styles from "./style.module.scss";
@@ -76,6 +79,7 @@ const ArtistPage: FC = () => {
         }
     }, [dispatch, user])
 
+    /** Load artist data,tracks,albums, update library and playback on load page.  */
     useEffect(() => {
         (async () => {
             try {
@@ -85,7 +89,11 @@ const ArtistPage: FC = () => {
                     dispatch(getLibraryArtists());
                     setApiPlayback?.(await fetchPlaybackState());
 
-
+                    /** 
+                     * Preload all artist data (tracks, albums, singles, compilations)
+                     * to conditionally render tabs only when content exists.
+                     * Trades performance for simpler UI logic and better UX (no empty tabs). 
+                     */
                     const tracks = (await fetchArtistTopTracks(id)).tracks;
                     const albums = (await fetchArtistAlbums(id, {include_groups: "album"})).items;
                     const singles = (await fetchArtistAlbums(id, {include_groups: "single"})).items;

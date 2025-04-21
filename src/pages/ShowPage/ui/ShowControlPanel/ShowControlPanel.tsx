@@ -1,38 +1,46 @@
-import { 
-    FC, 
-    useMemo, 
+import {
+    FC,
+    useMemo,
 } from "react";
-import { 
-    Pause, 
-    Play, 
-} from "shared/assets";
-import { 
-    Description, 
-    OutlinedButton 
-} from "shared/ui";
-import { 
-    useAppDispatch, 
-    useAppSelector 
-} from "shared/lib";
-import { 
-    getLibraryShows, 
-    selectSavedShows 
+import {
+    getLibraryShows,
+    selectSavedShows
 } from "features/library";
-import { 
-    removeShowsFromLibrary, 
-    saveShowsToLibrary 
-} from "shared/api/user";
 import { usePlaybackAdapter } from "entities/playback";
+import {
+    Pause,
+    Play,
+} from "shared/assets";
+import {
+    Description,
+    OutlinedButton
+} from "shared/ui";
+import {
+    useAppDispatch,
+    useAppSelector
+} from "shared/lib";
+import {
+    removeShowsFromLibrary,
+    saveShowsToLibrary
+} from "shared/api/user";
 import { IShow } from "shared/api/show";
 import { toast } from "react-toastify";
-import styles from "./style.module.scss";
 import clsx from "clsx";
+import styles from "./style.module.scss";
 
 interface IShowControlPanel {
+    /** Album to which the control panel applied. */
     readonly show: IShow | null,
+    /** Additional styles. */
     readonly className?: string,
 }
 
+/**
+ * @component ShowControlPanel
+ * @description Control panel for show playback. Allows you to control playback and save to the library.
+ * 
+ * It adapts to the state of the show: if it is already playing, it shows pause button, otherwise shows play button.
+ */
 export const ShowControlPanel: FC<IShowControlPanel> = ({ show, className }) => {
     const dispatch = useAppDispatch();
     const libraryShows = useAppSelector(selectSavedShows);
@@ -76,19 +84,19 @@ export const ShowControlPanel: FC<IShowControlPanel> = ({ show, className }) => 
             className
         )}>
             <div className={styles["control-panel-button-container"]}>
-                <button 
-                    className={styles["control-panel-button"]} 
+                <button
+                    className={styles["control-panel-button"]}
                     onClick={async () => await handlePlay()}
-                    >
+                >
                     {adapter.getContextURI() === show?.uri && adapter.getIsPlaying() ?
-                    <Pause width={60} height={60} /> :
-                    <Play width={60} height={60} />}
+                        <Pause width={60} height={60} /> :
+                        <Play width={60} height={60} />}
                 </button>
                 <OutlinedButton onClick={async () => await saveShow()}>
                     <Description>
                         {isShowInLibrary
-                        ? "Unfollow"
-                        : "Follow"}
+                            ? "Unfollow"
+                            : "Follow"}
                     </Description>
                 </OutlinedButton>
             </div>

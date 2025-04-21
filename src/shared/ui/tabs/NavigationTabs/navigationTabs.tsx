@@ -14,6 +14,20 @@ interface INavigationTabs<T = string> {
     readonly className?: string;
 }
 
+/**
+ * @component NavigationTabs
+ * 
+ * Component has custom type of tabs.
+ * @example
+ * // NavigationTabs with custom type of tabs
+ * type TArtistTabs = "Albums" | "Top Tracks" | "Compilations"
+ * <NavigationTabs<TArtistTabs>
+ *   tabs={["Albums", "Top Tracks", "Compilations"]}
+ *   activeTab={activeTab}
+ *   chooseTab={chooseTab}
+ *   className={theme}
+ * />
+ */
 export const NavigationTabs = <T,>({ tabs, activeTab, chooseTab, className }: INavigationTabs<T>) => {    
     
     const renderTabs = (items: typeof tabs) => {

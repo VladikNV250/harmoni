@@ -1,4 +1,8 @@
 import { FC } from "react";
+import { PlaylistMenu } from "features/menus";
+import { ArtistMenu } from "entities/artist";
+import { selectUser } from "entities/user";
+import { usePlaybackAdapter } from "entities/playback";
 import { 
     AddToPlaylist, 
     AddToQueue, 
@@ -20,20 +24,25 @@ import {
     MenuButton,
 } from "shared/ui";
 import { usePlaylistActions, useQueue } from "widgets/Player/lib/player/player";
-import { usePlaybackAdapter } from "entities/playback";
 import { playerSlice } from "widgets/Player/model/playerSlice";
-import { PlaylistMenu } from "entities/playlist";
-import { ArtistMenu } from "entities/artist";
 import { selectPlayerOpenedMenu } from "widgets/Player/model/selectors";
-import { selectUser } from "entities/user";
 import styles from "./style.module.scss";
 
 
 interface IMoreMenu {
+    /** Controls whether track is saved in the library. */
     readonly isLiked?: boolean,
+    /** Callback to save or remove track from the library. */
     readonly handleLike?: () => Promise<void>;
 }
 
+/**
+ * @component MoreMenu
+ * @description Provides additional playback-related actions in a contextual menu. 
+ * 
+ * Users can add the track to a playlist or queue, like/unlike it, open album or artist pages, or view available devices.
+ * Renders as a ContextMenu on desktop and a BottomSheet on mobile.
+ */
 export const MoreMenu: FC<IMoreMenu> = ({ isLiked, handleLike }) => {
     const dispatch = useAppDispatch();    
     const openedMenu = useAppSelector(selectPlayerOpenedMenu);

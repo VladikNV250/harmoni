@@ -4,6 +4,7 @@ import {
     useEffect, 
     useState 
 } from "react";
+import { librarySlice } from "features/library";
 import { 
     Description, 
     FilledButton, 
@@ -12,16 +13,23 @@ import {
     Subtitle 
 } from "shared/ui";
 import { useAppDispatch } from "shared/lib";
-import { librarySlice } from "features/library";
 import styles from "./style.module.scss";
 
 interface IEditMenu {
+    /** Id of the folder that can be edited */
     readonly id: string;
+    /** Current folder name */
     readonly name: string;
+    /** Controls whether menu is visible */
     readonly isOpen: boolean;
+    /** Callback to toggle the menu's visibility */
     readonly setIsOpen: (isOpen: boolean) => void;
 }
 
+/**
+ * @component EditMenu
+ * @description Modal dialog that allows editing the name of a folder.
+ */
 export const EditMenu: FC<IEditMenu> = ({ id, name, setIsOpen, isOpen }) => {
     const [value, setValue] = useState(name);
     const dispatch = useAppDispatch();
@@ -36,7 +44,6 @@ export const EditMenu: FC<IEditMenu> = ({ id, name, setIsOpen, isOpen }) => {
         setIsOpen(false);
         dispatch(changeFolderName({id, newName: value}));
     }
-
     useEffect(() => {
         setValue(name)
     }, [name])

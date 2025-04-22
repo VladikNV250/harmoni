@@ -60,3 +60,7 @@ Then you need to go to `src/shared/consts/auth.ts` and change the CLIEND_ID cons
 Vlad Nemichev - [Telegram](https://nemichev_v.t.me/) - [Instagram](https://www.instagram.com/nemichev.v/?next=%2F) - vladiknemichev@gmail.com
 
 Project Link: [https://github.com/VladikNV250/harmoni](https://github.com/VladikNV250/harmoni)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE.md).

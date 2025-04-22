@@ -1,50 +1,62 @@
-# React + TypeScript + Vite
+<p align="center">
+  <img src="./src/shared/assets/harmoni_logo.png" alt="Harmoni Logo" height="80"/>
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<h1 align="center">Harmoni – A Spotify-inspired music streaming application.</h1> 
 
-Currently, two official plugins are available:
+Harmoni is a frontend application emulating core Spotify functionalities. Built with React, TypeScript, and Vite, it offers features like track playback, playlist management, and responsive design for both desktop and mobile platforms.<br />
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Image](https://github.com/user-attachments/assets/bd715fb2-d7c9-4f86-ac87-1d21ba748c1d)
+<p align="center">
+  <a href="https://harmoni-nu-six.vercel.app/">
+    <img src="https://img.shields.io/badge/View-%20Demo-green" alt="View Demo" />
+  </a>
+</p>
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Full-featured audio player with real-time playback sync
 
-- Configure the top-level `parserOptions` property like this:
+- Responsive design (mobile/desktop player UIs)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- User queue, library of saved media, and available devices
+
+- Feature-Sliced Design architecture
+
+- Flexible library management with albums, artists, playlists and others.
+
+- Playlist editing, deletion, sorting (by title, date, etc.)
+
+## Tech Stack
+
+- React + TypeScript
+
+- Redux Toolkit for state management
+
+- React Router for routing
+
+- Spotify Web API and Web Playback SDK
+
+- Vite for blazing fast dev builds
+
+- SCSS for flexible UI styling
+
+- Feature-Sliced Design (FSD)
+
+- Custom hooks, adapters, selectors for clean logic separation
+
+## Installation
+For installation app, you need to run the commands below.
+```bash
+git clone https://github.com/VladikNV250/harmoni.git
+cd harmoni
+npm install
+npm run dev
 ```
+Once you run the commands, you need to create your app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) and get a ClientID.
+Then you need to go to `src/shared/consts/auth.ts` and change the CLIEND_ID constant to your ClientID.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Contact
+Vlad Nemichev - [Telegram](https://nemichev_v.t.me/) - [Instagram](https://www.instagram.com/nemichev.v/?next=%2F) - vladiknemichev@gmail.com
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+Project Link: [https://github.com/VladikNV250/harmoni](https://github.com/VladikNV250/harmoni)
